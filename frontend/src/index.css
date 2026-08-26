@@ -1,0 +1,78 @@
+@import "leaflet/dist/leaflet.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#F8FAFC] text-[#374151] font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Custom official Government of India style UI components */
+.btn-primary {
+  @apply bg-[#1E3A5F] hover:bg-[#152a45] text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm inline-flex items-center gap-2;
+}
+
+.btn-secondary {
+  @apply bg-white hover:bg-[#EBF3FB] text-[#1E3A5F] border border-[#1E3A5F] font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-2;
+}
+
+.btn-danger {
+  @apply bg-[#9B1B1B] hover:bg-[#7f1515] text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm inline-flex items-center gap-2;
+}
+
+.card-official {
+  @apply bg-white border border-[#D1D5DB] rounded-lg p-4 shadow-[0_2px_4px_rgba(0,0,0,0.04)];
+}
+
+.badge-open {
+  @apply bg-[#0F6B6B] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+}
+
+.badge-restricted {
+  @apply bg-[#B85C00] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+}
+
+.badge-degraded {
+  @apply bg-[#ea580c] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+}
+
+.badge-closed {
+  @apply bg-[#9B1B1B] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+}
+
+.badge-unknown {
+  @apply bg-[#6b7280] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+}
+
+.badge-seasonal {
+  @apply bg-[#2563A8] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+}
+
+/* Table styles */
+.table-official th {
+  @apply bg-[#1E3A5F] text-white font-semibold text-xs tracking-wider uppercase px-4 py-3 text-left;
+}
+
+.table-official tr:nth-child(even) {
+  @apply bg-[#EBF3FB]/50;
+}
+
+.table-official tr:nth-child(odd) {
+  @apply bg-white;
+}
+
+.table-official td {
+  @apply px-4 py-3 text-sm text-[#374151] border-b border-[#D1D5DB]/60;
+}
+
+/* Custom map styling */
+.leaflet-container {
+  font-family: 'Inter', sans-serif !important;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+}
