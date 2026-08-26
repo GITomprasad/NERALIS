@@ -1,257 +1,336 @@
 # NERALIS
 
-### AI & GIS Smart Logistics Command Center for the North Eastern Region
+## AI & GIS Smart Logistics Command Center for the North Eastern Region
 
-> **NERALIS** is an AI-powered, GIS-enabled smart logistics and disaster-resilience platform designed to support transportation, emergency response, infrastructure monitoring, fleet management, and administrative decision-making across the North Eastern Region of India.
+NERALIS is an AI-powered, GIS-enabled smart logistics and accessibility intelligence platform designed for the North Eastern Region (NER) of India.
 
-[![Live Frontend](https://img.shields.io/badge/Live-Demo-2ea44f?style=for-the-badge)](https://neralis-frontend.onrender.com)
-[![Backend](https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge)](https://neralis-backend.onrender.com)
-[![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20TypeScript-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![Backend](https://img.shields.io/badge/Backend-Python%20%2B%20FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![GIS](https://img.shields.io/badge/GIS-Leaflet-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com/)
-[![Deployment](https://img.shields.io/badge/Deployed-Render-46E3B7?style=for-the-badge)](https://render.com/)
+It brings **road accessibility, disruption intelligence, route optimization, fleet visibility, field reporting, alerts, analytics, and offline resilience** into one operational platform.
+
+The goal is simple:
+
+> **See the problem → understand the risk → predict disruption → choose a better route → monitor the mission → alert the right people → record the outcome.**
 
 ---
 
-## 🌐 Live Demo
+## 🚀 Live Deployment
 
 ### Frontend
-**https://neralis-frontend.onrender.com**
+
+https://neralis-frontend.onrender.com
 
 ### Backend API
-**https://neralis-backend.onrender.com**
+
+https://neralis-backend.onrender.com
+
+> Deployment status and API availability can change. The application also supports demo/fallback data for development and presentation scenarios.
 
 ---
 
-## 📌 Overview
+## 🎯 Purpose
 
-The North Eastern Region faces unique logistical and disaster-management challenges due to mountainous terrain, landslides, floods, remote locations, infrastructure constraints, and limited connectivity.
+NER faces unique logistics challenges because of:
 
-NERALIS provides a unified command-center interface that brings together GIS intelligence, route optimization, disaster prediction, fleet monitoring, infrastructure telemetry, alerts, field reporting, analytics, and administrative reporting.
+- Difficult and mountainous terrain
+- Heavy rainfall and extreme weather
+- Landslides and floods
+- Road and bridge disruptions
+- Limited connectivity in remote areas
+- Delays in movement of essential goods
+- Difficulty collecting real-time field information
+- Fragmented logistics and infrastructure information
 
-The platform is designed around the principle of:
+NERALIS is designed to provide a **single operational view** of these conditions.
 
-> **Observe → Predict → Decide → Respond → Report**
+It can support the movement and monitoring of:
 
----
-
-## 🎯 Objectives
-
-- Improve accessibility and logistics planning across the North Eastern Region.
-- Provide a unified GIS-based operational dashboard.
-- Support intelligent route optimization.
-- Predict potential disruptions and disaster risks.
-- Monitor vehicles and fleet operations.
-- Integrate infrastructure and IoT telemetry.
-- Provide multilingual alerts for field-level communication.
-- Support offline-first field reporting.
-- Generate decision-support reports for administrators.
-- Improve emergency response and resource allocation.
+- Medicines and emergency supplies
+- Food and essential commodities
+- Agricultural produce
+- Construction materials
+- Other priority logistics missions
 
 ---
 
-## ✨ Key Features
+# 🧭 What NERALIS Does
 
-### 🗺️ GIS Grid Command Center
+NERALIS combines multiple operational capabilities into one platform:
 
-A centralized GIS dashboard for monitoring districts, roads, corridors, bridges, and operational conditions.
-
-**Capabilities:**
-
-- Interactive GIS map
-- District-level monitoring
-- State filtering
-- Road accessibility visualization
-- Critical corridor diagnostics
-- Infrastructure monitoring
-- Map expansion and navigation
-- OpenStreetMap-based visualization
-
----
-
-### 🤖 AI Route Optimizer
-
-Intelligent route planning designed for logistics and emergency response.
-
-**Planned capabilities:**
-
-- Route optimization
-- Road accessibility consideration
-- Restricted/degraded/closed route handling
-- Alternative route suggestions
-- Logistics-aware routing
-- Emergency route planning
+| Capability | Purpose |
+|---|---|
+| GIS Accessibility Monitoring | Visualize roads, districts, bridges, depots, vehicles and incidents |
+| Route Optimization | Compare routes using travel, risk and operational constraints |
+| Fleet Telemetry | Monitor vehicle movement and trip information |
+| Disruption Forecasting | Estimate future disruption risk using AI/ML inputs |
+| Field Reporting | Collect geo-tagged ground information and photographs |
+| Alert Broadcast | Generate and manage operational warnings |
+| Command Analytics | Monitor KPIs, disruptions and corridor performance |
+| Offline Resilience | Support low-network/offline field workflows |
+| Data Provenance | Show where operational information comes from |
+| ML Transparency | Expose model metadata and evaluation information |
 
 ---
 
-### 🌧️ Predictive Disaster Intelligence
+# 🗺️ Core Modules
 
-A predictive intelligence layer for identifying potential disruptions.
+## 1. Accessibility Monitor
 
-**Target capabilities:**
+The GIS command center is the main operational view.
 
-- 72-hour disruption prediction
-- Disaster-risk assessment
-- Landslide/flood-related risk indicators
-- Critical corridor risk monitoring
-- Early-warning support
-- Predictive operational recommendations
+It provides a map-based view of:
 
----
+- Road/corridor status
+- District connectivity
+- Bridges
+- Depots
+- Vehicles
+- Incidents
+- Selected routes
+- Route alternatives
 
-### 🚚 Vehicle & Fleet Tracking
+Road conditions can be represented using operational states such as:
 
-A fleet-management module for monitoring operational vehicles.
+- `OPEN`
+- `RESTRICTED`
+- `DEGRADED`
+- `CLOSED`
 
-**Capabilities:**
-
-- Vehicle tracking
-- Fleet status
-- GPS-based monitoring
-- Route visibility
-- Operational status
-- Fleet analytics
-- Navigation support
+The map is designed to become the central decision-support layer of NERALIS.
 
 ---
 
-### 🌉 Bridge & Infrastructure IoT
+## 2. Route Optimizer
 
-An infrastructure-monitoring layer designed to integrate telemetry from bridges and other critical infrastructure.
+The Route Optimizer helps operators select practical routes for logistics missions.
 
-**Target capabilities:**
+Inputs can include:
 
-- Bridge sensor monitoring
-- Infrastructure health indicators
-- IoT telemetry
-- Threshold-based alerts
-- Critical infrastructure status
-- Historical monitoring
+- Origin
+- Destination
+- Cargo type
+- Vehicle weight
+- Departure time
+- Route constraints
+- Hazard/risk information
+- Optional multimodal/waterway alternatives
 
----
+The system can compare:
 
-### 🚨 Multilingual Alert Center
+- Distance
+- Transit time
+- Hazard/risk
+- Bridge verification
+- Route alternatives
+- Recommended departure windows
 
-A centralized alert and emergency communication system.
-
-**Features:**
-
-- Emergency alerts
-- Critical corridor warnings
-- Multilingual communication
-- Priority-based notifications
-- State/district targeting
-- Field-level communication
+The objective is not simply to find the shortest route, but to support **safer and operationally suitable logistics decisions**.
 
 ---
 
-### 📱 Field Reporting PWA
+## 3. Fleet Telemetry
 
-A Progressive Web App concept for field personnel operating in remote or low-connectivity areas.
+The fleet module provides vehicle-oriented operational visibility.
 
-**Target capabilities:**
+It supports concepts such as:
 
-- Field incident reporting
-- Offline data capture
-- Synchronization when connectivity returns
-- Mobile-friendly interface
-- Location-aware reports
-- Media/evidence attachment support
+- Vehicle location
+- GPS/telemetry information
+- Trip details
+- Event timelines
+- Vehicle map visualization
+- Trip playback
+- QR/checkpoint verification
+- Telemetry simulation for demonstrations
 
----
-
-### 📊 Central Analytics Dashboard
-
-A command-level analytics module for operational decision-making.
-
-**Target capabilities:**
-
-- Logistics analytics
-- Fleet analytics
-- Route performance
-- Disaster-risk trends
-- Infrastructure status
-- District-level insights
-- Operational KPIs
+The production architecture can later ingest real GPS/telematics data from vehicles.
 
 ---
 
-### 📴 Offline & Resilience Layer
+## 4. Predictive Intelligence
 
-NERALIS is designed with the connectivity challenges of remote regions in mind.
+NERALIS includes a predictive intelligence layer for transportation disruption.
 
-**Target capabilities:**
+The current project contains ML components for:
 
-- Offline-first workflows
-- Local data caching
-- Delayed synchronization
-- Low-bandwidth operation
-- Connectivity status
-- Data synchronization monitoring
+### Disruption intelligence
 
----
+`backend/app/ml/disruption_model.py`
 
-### 🏛️ Parliament / MLA Brief
+### Road damage intelligence
 
-A reporting module designed to convert operational information into concise administrative briefs.
+`backend/app/ml/damage_classifier.py`
 
-**Target capabilities:**
+These components provide the foundation for models that can use factors such as:
 
-- Region/state/district summaries
-- Infrastructure status
-- Critical incidents
-- Route accessibility
-- Disaster-risk summaries
-- Key operational statistics
-- Report generation
+- Weather
+- Historical disruptions
+- Terrain
+- Road conditions
+- Field reports
+- Damage observations
 
----
+The prediction interface is designed to expose:
 
-## 🖥️ Platform Dashboard
+- Risk level
+- Probability/confidence
+- Predicted event
+- Contributing factors
+- Recommended action
+- Model/version information
 
-The current dashboard provides a centralized operational view containing:
+### Important
 
-- Active Alerts
-- Open Corridors
-- Tracked Fleet
-- Pending Reports
-- GIS Map
-- District monitoring
-- Platform modules
-- Critical corridor diagnostics
-- Road accessibility status
+Model metrics shown in the UI should be treated as **prototype/evaluation information unless the corresponding dataset, training pipeline and validation process are available and reproducible**.
+
+NERALIS intentionally separates model information from unsupported claims of real-world accuracy.
 
 ---
 
-## 🏗️ System Architecture
+## 5. Alert Broadcast
+
+The Alert Center is designed for operational response.
+
+It supports concepts such as:
+
+- Advisory alerts
+- Warning alerts
+- Critical alerts
+- Alert acknowledgement
+- Manual alert creation
+- Multilingual message previews
+- CAP-style emergency messaging
+- Broadcast workflows
+- High-risk corridor briefings
+
+Potential notification channels include:
+
+- SMS
+- Voice/IVR
+- WhatsApp Business
+- CAP/XML-based emergency communication
+
+Actual delivery depends on the configured provider/API.
+
+---
+
+## 6. Field Reporting
+
+Field officials can provide ground-level information to the platform.
+
+The field workflow is designed around:
+
+1. Location
+2. Incident classification
+3. Photo/evidence
+4. Measurements
+5. Review
+6. Submission/synchronization
+
+Possible incident types include:
+
+- Flood
+- Landslide
+- Pothole
+- Bridge damage
+- Road debris
+- Road cracking
+- Other infrastructure incidents
+
+The system also includes concepts for:
+
+- GPS/location capture
+- Photo-based damage classification
+- Voice-to-text
+- Measurement assistance
+- Digital signature
+- Offline report queue
+- Human verification
+
+This creates a **field-to-command-center feedback loop**.
+
+---
+
+## 7. Command Analytics
+
+The analytics module provides a centralized operational view.
+
+It can include:
+
+- Accessibility KPIs
+- Active alerts
+- Vehicle information
+- Disruption logs
+- Corridor status
+- Risk information
+- State/district comparisons
+- Operational reports
+
+Export workflows include:
+
+- CSV
+- Excel
+- PDF/report generation
+
+The long-term goal is to make every KPI traceable to the underlying operational data.
+
+---
+
+## 8. Offline & Low-Network Resilience
+
+NER has areas where network availability can be limited.
+
+NERALIS therefore includes an offline-first design concept.
+
+Supported states include:
+
+- Online
+- Low 2G
+- Offline
+
+The project includes concepts for:
+
+- Offline report queues
+- Queued/syncing/synced/failed states
+- Cached district data
+- Vector-tile/MBTiles concepts
+- Delta synchronization
+- Low-bandwidth optimization
+- USSD/feature-phone workflows
+- Multilingual interfaces
+
+This is an important differentiator because the platform is designed for **real field conditions**, not only high-speed internet environments.
+
+---
+
+# 🤖 AI + GIS + Logistics Architecture
 
 ```text
-                         ┌──────────────────────────┐
-                         │        NERALIS UI        │
-                         │ React + TypeScript + Vite │
-                         └────────────┬─────────────┘
-                                      │
-                                      │ REST API
-                                      ▼
-                         ┌──────────────────────────┐
-                         │       FastAPI Backend     │
-                         │       Python Services     │
-                         └────────────┬─────────────┘
-                                      │
-              ┌───────────────────────┼───────────────────────┐
-              │                       │                       │
-              ▼                       ▼                       ▼
-      ┌───────────────┐       ┌───────────────┐       ┌───────────────┐
-      │ GIS & Mapping │       │ AI / ML Layer  │       │ IoT / Telemetry│
-      └───────────────┘       └───────────────┘       └───────────────┘
-              │                       │                       │
-              ▼                       ▼                       ▼
-        Roads / Districts       Prediction Engine       Fleet / Bridges
-        Corridors / Maps        Route Optimization       Infrastructure
-              │                       │                       │
-              └───────────────────────┼───────────────────────┘
-                                      ▼
-                         ┌──────────────────────────┐
-                         │ Decision Support & Alerts│
-                         │ Reports / Analytics / PWA│
-                         └──────────────────────────┘
+             DATA SOURCES
+                  │
+       ┌──────────┼──────────┐
+       │          │          │
+    Weather      GIS       Field
+       │          │         Reports
+       │          │          │
+       └──────────┼──────────┘
+                  │
+             Data Layer
+                  │
+        ┌─────────┴─────────┐
+        │                   │
+     AI / ML            Route Engine
+        │                   │
+        └─────────┬─────────┘
+                  │
+           Decision Layer
+                  │
+       ┌──────────┼──────────┐
+       │          │          │
+      GIS       Fleet      Alerts
+       │          │          │
+       └──────────┼──────────┘
+                  │
+          Command Center
+                  │
+        Action / Response
+                  │
+          Analytics / Audit
