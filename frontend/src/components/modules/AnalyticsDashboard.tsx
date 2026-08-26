@@ -186,7 +186,7 @@ export const AnalyticsDashboard: React.FC = () => {
                 <YAxis domain={[0, 50]} stroke="#64748b" fontSize={10} />
                 <Tooltip />
                 <Bar dataKey="delayRate" fill="#2563A8" radius={[4, 4, 0, 0]} name="Actual Delay %" />
-                <Bar dataKey="target" fill="#0F6B6B" radius={[4, 4, 0, 0]} name="SIH Target %" />
+                <Bar dataKey="target" fill="#0F6B6B" radius={[4, 4, 0, 0]} name="National Target %" />
               </BarChart>
             </ResponsiveContainer>
           </div>

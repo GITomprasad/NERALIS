@@ -1,12 +1,13 @@
 """
-Field Reporting & Mobile Sync Engine (SIH26002 - Module 6).
+Field Reporting & Mobile Sync Engine (Module 6).
 Handles geo-tagged field incident reports, YOLOv8 damage severity classification,
-checkpoint QR arrival scans, proof-of-delivery signatures, and reporter gamification points.
+outbox sync status with client_event_id, and human engineer verification.
 """
 
 from typing import Dict, List, Any
 import datetime
 import random
+from app.ml.damage_classifier import damage_vision_classifier
 
 class FieldReportingEngine:
     def __init__(self):
@@ -17,6 +18,7 @@ class FieldReportingEngine:
         return [
             {
                 "id": "REP-2026-0412",
+                "client_event_id": "CLIENT-SYNC-9901-AS",
                 "reporter_name": "Ranjan Hazarika",
                 "reporter_role": "PWD Junior Engineer (Kamrup)",
                 "state": "Assam",
@@ -27,14 +29,20 @@ class FieldReportingEngine:
                 "timestamp": "2026-08-26T07:45:00+05:30",
                 "incident_type": "Roadbed Erosion / Pavement Subsidence",
                 "damage_dimensions": {"crack_length_m": 4.5, "pothole_depth_cm": 24, "debris_volume_cum": 8},
-                "ai_severity_predicted": "MODERATE (Tier 2 Action)",
+                "ai_severity_predicted": "MODERATE (Tier 2 PWD Repair)",
+                "ai_confidence_pct": 94.2,
+                "ai_model_version": "NER-YOLOv8-DamageVision-v2.4-transfer",
                 "status": "VERIFIED_DISPATCHED",
                 "assigned_crew": "BRO Taskforce Unit 14",
                 "photo_url": "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80",
-                "points_awarded": 50
+                "points_awarded": 50,
+                "sync_status": "SYNCED",
+                "source": "SRC-FIELD-PWA",
+                "verification_status": "VERIFIED"
             },
             {
                 "id": "REP-2026-0413",
+                "client_event_id": "CLIENT-SYNC-9902-ML",
                 "reporter_name": "Khrawbok Lyngdoh",
                 "reporter_role": "SDRF First Responder",
                 "state": "Meghalaya",
@@ -43,13 +51,18 @@ class FieldReportingEngine:
                 "lat": 25.2810,
                 "lng": 91.7350,
                 "timestamp": "2026-08-26T08:30:00+05:30",
-                "incident_type": "Rockfall & Mud Spillage",
+                "incident_type": "Debris / Rockfall Deposit",
                 "damage_dimensions": {"crack_length_m": 12.0, "pothole_depth_cm": 0, "debris_volume_cum": 45},
-                "ai_severity_predicted": "SEVERE (Tier 3 Action)",
+                "ai_severity_predicted": "SEVERE (Tier 3 Immediate Action)",
+                "ai_confidence_pct": 96.8,
+                "ai_model_version": "NER-YOLOv8-DamageVision-v2.4-transfer",
                 "status": "UNDER_CLEARANCE",
                 "assigned_crew": "Meghalaya PWD Rapid Response",
                 "photo_url": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80",
-                "points_awarded": 75
+                "points_awarded": 75,
+                "sync_status": "SYNCED",
+                "source": "SRC-FIELD-PWA",
+                "verification_status": "VERIFIED"
             }
         ]
 
@@ -69,22 +82,26 @@ class FieldReportingEngine:
         return self.leaderboard
 
     def submit_report(self, payload: Dict[str, Any]) -> Dict[str, Any]:
-        # Simulated YOLOv8 CV classifier
         crack = float(payload.get("crack_length_m", 2.0))
         depth = float(payload.get("pothole_depth_cm", 10.0))
         debris = float(payload.get("debris_volume_cum", 5.0))
+        inc_type = payload.get("incident_type", "Road Damage")
 
-        severity = "MINOR"
-        pts = 30
-        if debris > 30 or depth > 20:
-            severity = "SEVERE (Tier 3 Action)"
-            pts = 75
-        elif debris > 10 or depth > 12 or crack > 5:
-            severity = "MODERATE (Tier 2 Action)"
-            pts = 50
+        # Run vision evaluator
+        eval_result = damage_vision_classifier.evaluate_damage_photo(
+            incident_type=inc_type,
+            crack_length_m=crack,
+            pothole_depth_cm=depth,
+            debris_volume_cum=debris,
+            photo_url=payload.get("photo_url")
+        )
+
+        canonical_id = f"REP-2026-{random.randint(1000, 9999)}"
+        client_event_id = payload.get("client_event_id", f"OFFLINE-EVT-{random.randint(10000, 99999)}")
 
         new_report = {
-            "id": f"REP-2026-{random.randint(1000, 9999)}",
+            "id": canonical_id,
+            "client_event_id": client_event_id,
             "reporter_name": payload.get("reporter_name", "Field Inspector"),
             "reporter_role": payload.get("reporter_role", "Junior Engineer PWD"),
             "state": payload.get("state", "Assam"),
@@ -93,14 +110,20 @@ class FieldReportingEngine:
             "lat": payload.get("lat", 26.1445),
             "lng": payload.get("lng", 91.7362),
             "timestamp": datetime.datetime.now().isoformat(),
-            "incident_type": payload.get("incident_type", "Road Damage"),
+            "incident_type": inc_type,
             "damage_dimensions": {"crack_length_m": crack, "pothole_depth_cm": depth, "debris_volume_cum": debris},
-            "ai_severity_predicted": severity,
+            "ai_severity_predicted": eval_result["ai_severity_predicted"],
+            "ai_confidence_pct": eval_result["confidence_pct"],
+            "ai_model_version": eval_result["model_version"],
             "status": "VERIFIED_QUEUED",
             "assigned_crew": "State PWD Rapid Action Division",
             "photo_url": payload.get("photo_url", "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80"),
-            "points_awarded": pts
+            "points_awarded": eval_result["gamification_points_awarded"],
+            "sync_status": "SYNCED",
+            "source": "SRC-FIELD-PWA",
+            "verification_status": "REPORTED"
         }
+
         self.reports.insert(0, new_report)
         return new_report
 

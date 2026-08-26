@@ -29,7 +29,7 @@ export const ParliamentReportModal: React.FC = () => {
     doc.setFontSize(14);
     doc.text('GOVERNMENT OF INDIA — MINISTRY OF DEVELOPMENT OF NER', 14, 11);
     doc.setFontSize(9);
-    doc.text('SMART INDIA HACKATHON 2026 | PROBLEM STATEMENT SIH26002', 14, 18);
+    doc.text('NATIONAL SMART LOGISTICS & ACCESSIBILITY INTELLIGENCE PLATFORM', 14, 18);
 
     doc.setTextColor(30, 58, 95);
     doc.setFontSize(16);
@@ -71,7 +71,7 @@ export const ParliamentReportModal: React.FC = () => {
     doc.text('• Estimated Annual Gross Economic Benefit: ₹ 960.00+ Crore / Year across 8 NER States', 14, finalY + 13);
     doc.text('• Projected ROI: 29.2x Return on Public Digital Infrastructure Investment by Year 3.', 14, finalY + 19);
 
-    doc.save('NERALIS_Parliament_Executive_Brief_SIH26002.pdf');
+    doc.save('NERALIS_Parliament_Executive_Brief.pdf');
     addToast('Parliament Brief Downloaded', 'Official formatted PDF exported successfully.', 'SUCCESS');
   };
 
@@ -104,7 +104,7 @@ export const ParliamentReportModal: React.FC = () => {
                 Official Government Status Report
               </span>
               <h3 className="text-base font-bold">
-                NERALIS Parliamentary & Legislative Brief (SIH26002)
+                NERALIS Parliamentary & Legislative Brief
               </h3>
             </div>
           </div>

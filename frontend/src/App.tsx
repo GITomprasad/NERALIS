@@ -8,6 +8,8 @@ import { InfoDrawer } from './components/layout/InfoDrawer';
 import { ToastContainer } from './components/common/ToastContainer';
 import { USSDPhoneModal } from './components/common/USSDPhoneModal';
 import { ParliamentReportModal } from './components/reports/ParliamentReportModal';
+import { DataProvenanceModal } from './components/common/DataProvenanceModal';
+import { MLModelMetricsModal } from './components/common/MLModelMetricsModal';
 
 // Module Components
 import { AccessibilityMonitor } from './components/modules/AccessibilityMonitor';
@@ -25,23 +27,23 @@ import type { ActiveModule } from './context/PlatformContext';
 const getModuleMeta = (mod: ActiveModule) => {
   switch (mod) {
     case 'ACCESSIBILITY':
-      return { title: 'North Eastern Region GIS Grid', short: 'Main GIS Map', icon: '🗺️' };
+      return { title: 'Command Center — Regional GIS Grid', short: 'Command Center' };
     case 'ROUTE':
-      return { title: 'Multi-Modal Intelligent Routing', short: 'Route Optimizer', icon: '🛣️' };
+      return { title: 'Multi-Modal Route Optimizer & Alternatives', short: 'Route Optimizer' };
     case 'FLEET':
-      return { title: 'Real-Time NavIC & Satellite Telemetry', short: 'Fleet Telemetry', icon: '🚛' };
+      return { title: 'Real-Time Fleet Telematics & NavIC Tracking', short: 'Fleet Telemetry' };
     case 'PREDICTION':
-      return { title: '6 to 72-Hour Disruption Forecasting', short: '72h Forecasting', icon: '⚡' };
+      return { title: '6 to 72-Hour Disruption Forecasting Engine', short: 'Disruption Forecast' };
     case 'ALERT':
-      return { title: 'Multilingual Broadcast & NDMA Integration', short: 'Alert Center', icon: '📢' };
+      return { title: 'Multilingual Broadcast & Emergency Alerts', short: 'Alert Broadcast' };
     case 'FIELD_APP':
-      return { title: 'PWA Field Inspector & SDRF Portal', short: 'Field Reporting', icon: '📱' };
+      return { title: 'PWA Field Inspector & Verification Portal', short: 'Field Reporting' };
     case 'ANALYTICS':
-      return { title: 'Centralised Logistics Command & Analytics', short: 'Command Analytics', icon: '📊' };
+      return { title: 'Logistics Command & Governance Analytics', short: 'Command Analytics' };
     case 'OFFLINE_RESILIENCE':
-      return { title: 'Offline-First & Multilingual Infrastructure', short: 'Offline Sync', icon: '💾' };
+      return { title: 'Offline-First Resilience & Multilingual Sync', short: 'Offline Sync' };
     default:
-      return { title: 'NERALIS Platform', short: 'Main Map', icon: '🗺️' };
+      return { title: 'NERALIS Platform', short: 'Command Center' };
   }
 };
 
@@ -114,7 +116,7 @@ const MainLayout: React.FC = () => {
                 <div className="flex items-center gap-2 text-xs font-bold">
                   <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-1 rounded-full flex items-center gap-1 text-[11px]">
                     <Sparkles className="w-3 h-3 text-blue-600" />
-                    <span>SIH26002 Production Module</span>
+                    <span>National Logistics Intelligence Grid</span>
                   </span>
                 </div>
               </div>
@@ -138,6 +140,8 @@ const MainLayout: React.FC = () => {
       {/* Global Modals & Toasts */}
       <USSDPhoneModal />
       <ParliamentReportModal />
+      <DataProvenanceModal />
+      <MLModelMetricsModal />
       <ToastContainer />
     </div>
   );

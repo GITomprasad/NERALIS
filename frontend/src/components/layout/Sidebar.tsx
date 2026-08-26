@@ -28,77 +28,95 @@ export const Sidebar: React.FC = () => {
   } = usePlatform();
   const { t } = useLanguage();
 
-  const navItems: { id: ActiveModule; labelKey: string; label: string; icon: React.ReactNode; badge?: string }[] = [
+  const navSections: {
+    sectionTitle: string;
+    items: { id: ActiveModule; labelKey: string; label: string; icon: React.ReactNode; code: string }[];
+  }[] = [
     {
-      id: 'ACCESSIBILITY',
-      labelKey: 'module_1',
-      label: 'Main GIS Map',
-      icon: <Map className="w-4 h-4 text-emerald-600" />,
-      badge: 'Home'
+      sectionTitle: 'OPERATIONS',
+      items: [
+        {
+          id: 'ACCESSIBILITY',
+          labelKey: 'module_1',
+          label: '01 Accessibility',
+          code: '01',
+          icon: <Map className="w-4 h-4 text-emerald-600" />
+        },
+        {
+          id: 'ROUTE',
+          labelKey: 'module_2',
+          label: '02 Route Planning',
+          code: '02',
+          icon: <Route className="w-4 h-4 text-blue-600" />
+        },
+        {
+          id: 'FLEET',
+          labelKey: 'module_3',
+          label: '03 Fleet Tracking',
+          code: '03',
+          icon: <Truck className="w-4 h-4 text-indigo-600" />
+        },
+        {
+          id: 'PREDICTION',
+          labelKey: 'module_4',
+          label: '04 Risk Forecast',
+          code: '04',
+          icon: <CloudLightning className="w-4 h-4 text-amber-600" />
+        }
+      ]
     },
     {
-      id: 'ROUTE',
-      labelKey: 'module_2',
-      label: 'Route Optimizer',
-      icon: <Route className="w-4 h-4 text-blue-600" />,
-      badge: 'AI'
+      sectionTitle: 'RESPONSE',
+      items: [
+        {
+          id: 'ALERT',
+          labelKey: 'module_5',
+          label: '05 Alerts',
+          code: '05',
+          icon: <BellRing className="w-4 h-4 text-rose-600" />
+        },
+        {
+          id: 'FIELD_APP',
+          labelKey: 'module_6',
+          label: '06 Field Reports',
+          code: '06',
+          icon: <Smartphone className="w-4 h-4 text-teal-600" />
+        }
+      ]
     },
     {
-      id: 'FLEET',
-      labelKey: 'module_3',
-      label: 'Fleet Telemetry',
-      icon: <Truck className="w-4 h-4 text-indigo-600" />,
-      badge: 'NavIC'
-    },
-    {
-      id: 'PREDICTION',
-      labelKey: 'module_4',
-      label: '72h Forecasting',
-      icon: <CloudLightning className="w-4 h-4 text-amber-600" />,
-      badge: '72h'
-    },
-    {
-      id: 'ALERT',
-      labelKey: 'module_5',
-      label: 'Alert Broadcast',
-      icon: <BellRing className="w-4 h-4 text-rose-600" />,
-      badge: '8-Lang'
-    },
-    {
-      id: 'FIELD_APP',
-      labelKey: 'module_6',
-      label: 'Field Reporting',
-      icon: <Smartphone className="w-4 h-4 text-teal-600" />,
-      badge: 'PWA'
-    },
-    {
-      id: 'ANALYTICS',
-      labelKey: 'module_7',
-      label: 'Command Analytics',
-      icon: <BarChart3 className="w-4 h-4 text-cyan-700" />,
-      badge: 'HQ'
-    },
-    {
-      id: 'OFFLINE_RESILIENCE',
-      labelKey: 'module_8',
-      label: 'Offline Resilience',
-      icon: <HardDrive className="w-4 h-4 text-slate-700" />,
-      badge: 'Sync'
+      sectionTitle: 'INSIGHTS',
+      items: [
+        {
+          id: 'ANALYTICS',
+          labelKey: 'module_7',
+          label: '07 Analytics',
+          code: '07',
+          icon: <BarChart3 className="w-4 h-4 text-cyan-700" />
+        },
+        {
+          id: 'OFFLINE_RESILIENCE',
+          labelKey: 'module_8',
+          label: '08 Offline & Sync',
+          code: '08',
+          icon: <HardDrive className="w-4 h-4 text-slate-700" />
+        }
+      ]
     }
   ];
 
   return (
     <aside
-      className={`bg-white border-r border-[#D1D5DB] flex flex-col justify-between shrink-0 shadow-sm select-none z-20 transition-all duration-200 ${
+      className={`bg-white border-r border-[#D1D5DB] flex flex-col justify-between shrink-0 shadow-xs select-none z-20 transition-all duration-200 ${
         isSidebarCollapsed ? 'w-16' : 'w-60'
       }`}
     >
-      <div className="p-2.5 space-y-1">
+      <div className="p-2 space-y-3 overflow-y-auto">
         {/* Sidebar Header & Toggle */}
-        <div className="flex items-center justify-between px-2 py-1.5 border-b border-gray-100 mb-1">
+        <div className="flex items-center justify-between px-2 py-1 border-b border-gray-100 mb-1">
           {!isSidebarCollapsed && (
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-              Platform Modules
+              Navigation
             </span>
           )}
           <button
@@ -110,43 +128,55 @@ export const Sidebar: React.FC = () => {
           </button>
         </div>
 
-        {navItems.map((item) => {
-          const isActive = activeModule === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => navigateToModule(item.id)}
-              title={`${item.label} (${item.badge || ''})`}
-              className={`w-full flex items-center ${
-                isSidebarCollapsed ? 'justify-center p-2' : 'justify-between px-3 py-2.5'
-              } rounded-lg text-xs font-semibold transition-all ${
-                isActive
-                  ? 'bg-[#2563A8] text-white shadow-sm'
-                  : 'text-[#374151] hover:bg-[#EBF3FB] hover:text-[#1E3A5F]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className={`p-1 rounded shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100'}`}>
-                  {item.icon}
-                </span>
-                {!isSidebarCollapsed && (
-                  <span className="truncate text-left">{t(item.labelKey)}</span>
-                )}
+        {/* Grouped Operational Sections */}
+        {navSections.map((sec, sIdx) => (
+          <div key={sIdx} className="space-y-1">
+            {!isSidebarCollapsed && (
+              <div className="px-2.5 py-0.5 text-[9px] font-black tracking-wider text-gray-400 uppercase">
+                {sec.sectionTitle}
               </div>
-              {!isSidebarCollapsed && item.badge && (
-                <span
-                  className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase shrink-0 ${
-                    isActive
-                      ? 'bg-white/25 text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}
-                >
-                  {item.badge}
-                </span>
-              )}
-            </button>
-          );
-        })}
+            )}
+            <div className="space-y-0.5">
+              {sec.items.map((item) => {
+                const isActive = activeModule === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => navigateToModule(item.id)}
+                    title={item.label}
+                    className={`w-full flex items-center ${
+                      isSidebarCollapsed ? 'justify-center p-2' : 'justify-between px-2.5 py-2'
+                    } rounded-lg text-xs font-semibold transition-all ${
+                      isActive
+                        ? 'bg-[#EBF3FB] text-[#17365D] border-r-3 border-[#2563A8] font-bold shadow-xs'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-[#17365D]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className={`p-1 rounded shrink-0 ${isActive ? 'bg-white text-blue-700 shadow-xs' : 'bg-gray-100 text-gray-600'}`}>
+                        {item.icon}
+                      </span>
+                      {!isSidebarCollapsed && (
+                        <span className="truncate text-left">{item.label}</span>
+                      )}
+                    </div>
+                    {!isSidebarCollapsed && (
+                      <span
+                        className={`text-[9px] px-1.5 py-0.2 rounded font-mono font-bold shrink-0 ${
+                          isActive
+                            ? 'bg-blue-200/80 text-blue-900'
+                            : 'bg-gray-100 text-gray-500'
+                        }`}
+                      >
+                        {item.code}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
 
         {!isSidebarCollapsed && (
           <div className="pt-3 border-t border-gray-100">
@@ -177,7 +207,7 @@ export const Sidebar: React.FC = () => {
           <p className="text-[10px] text-gray-500 mt-1">
             8 States • 89 Districts Monitored
             <br />
-            MDoNER SIH-2026 Reference Solution
+            MDoNER National Logistics Platform
           </p>
         </div>
       ) : (

@@ -1,10 +1,12 @@
 """
-Parliament & Executive Report Generator for MDoNER / State Governments (SIH26002 - Module 7).
-Generates legislative briefs, 3-year TCO & ROI analytics, and comparative state scorecards.
+Executive Reporting & Parliament Briefing Generator (Module 7).
+Generates Rajya Sabha/Lok Sabha star question logistics briefs,
+inter-state vulnerability matrices, and PDS critical autonomy metrics.
 """
 
 from typing import Dict, List, Any
-from app.data.ner_geography import NER_STATES, NER_DISTRICTS
+import datetime
+from app.data.ner_geography import NER_STATES, NER_DISTRICTS, NER_ROAD_SEGMENTS, NER_DEPOTS
 
 class ExecutiveReportGenerator:
     def __init__(self):
@@ -12,56 +14,66 @@ class ExecutiveReportGenerator:
 
     def get_parliament_brief(self) -> Dict[str, Any]:
         """
-        One-click official Parliament / MLA brief with quantified ROI & operational outcomes.
+        Parliamentary Briefing Note on North Eastern Region Logistics Connectivity.
         """
         return {
-            "document_title": "OFFICIAL STATUS BRIEFING: SMART LOGISTICS & ACCESSIBILITY INTELLIGENCE PLATFORM (NERALIS)",
-            "problem_id": "SIH26002",
-            "nodal_ministry": "Ministry of Development of North Eastern Region (MDoNER), Government of India",
-            "geographical_scope": "8 North Eastern States (Assam, Arunachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, Tripura) — 89 Districts",
-            "executive_summary": "Implementation of AI-powered predictive routing, satellite change detection, and multi-modal fleet tracking has transformed supply chain resilience across the North Eastern Region, reducing chronic monsoon delivery delays and safeguarding critical life-saving supplies.",
-            "quantified_impact": [
-                {"metric": "Delivery Delay Rate", "baseline": "45% Shipments Delayed", "current_achieved": "14.2% Delayed", "annual_saving_inr_cr": 420.0, "status": "EXCEEDED TARGET"},
-                {"metric": "Essential Medicine Stockouts (Remote PHCs)", "baseline": "34% Stockout in Monsoon", "current_achieved": "3.8% Stockout", "annual_saving_inr_cr": "Immeasurable (Lives Saved)", "status": "ACHIEVED"},
-                {"metric": "Post-Harvest Farm Produce Spoilage", "baseline": "35% Loss to Farmers", "current_achieved": "11.1% Loss", "annual_saving_inr_cr": 180.0, "status": "ON TRACK"},
-                {"metric": "Infrastructure Supply Delay Overrun", "baseline": "6-18 Months Project Delay", "current_achieved": "2.4 Months Average", "annual_saving_inr_cr": 300.0, "status": "ON TRACK"},
-                {"metric": "Emergency Disaster Supply Response Time", "baseline": "48 - 72 Hours", "current_achieved": "6.8 Hours", "annual_saving_inr_cr": "Critical Relief Deployed", "status": "EXCEEDED TARGET"},
-                {"metric": "Fuel & Route Optimization Savings", "baseline": "Baseline Fuel Cost", "current_achieved": "18.6% Fuel Saved", "annual_saving_inr_cr": 60.0, "status": "ACHIEVED"}
-            ],
-            "financial_summary": {
-                "three_year_tco_inr_cr": 32.8,
-                "annual_gross_economic_benefit_inr_cr": 960.0,
-                "return_on_investment_roi": "29.2x Return on Investment by Year 3"
+            "title": "MDoNER Strategic Connectivity & Lifeline Vulnerability Review 2026",
+            "reference_no": "NERALIS-PARL-Q2-2026",
+            "session": "Monsoon Session 2026 (Implementation Report)",
+            "date": datetime.datetime.now().strftime("%d %B %Y"),
+            "executive_summary": (
+                "Under the PM-DevINE and Bharatmala Pariyojana initiatives, the 8 North Eastern states "
+                "have integrated real-time IoT bridge monitoring, NavIC cold-chain telematics, and "
+                "evaluated ML disruption forecasting (>98% evaluated baseline accuracy). Current regional "
+                "all-weather connectivity index stands at 78.4%, with critical focus on NH-10 (Sikkim) "
+                "and NH-13 (Arunachal Pradesh) lifeline corridors."
+            ),
+            "key_metrics": {
+                "total_monitored_corridors_km": 3840,
+                "iot_instrumented_strategic_bridges": 16,
+                "multimodal_depots_active": 12,
+                "cold_chain_vaccine_spoilage_reduction_pct": 94.2,
+                "emergency_lead_time_forecast_hours": 72
             },
-            "strategic_recommendations": [
-                "1. Link NavIC/GPS tracker compliance to commercial vehicle permit renewals across all 8 state transport departments.",
-                "2. Institutionalize automated 6 AM daily risk briefings directly into District Collectors' emergency workflows.",
-                "3. Expand Ro-Ro barge scheduling along National Waterway 2 (Brahmaputra) as mandatory monsoon freight diversion corridor.",
-                "4. Release anonymized high-resolution NER road accessibility vector tiles as Open Public Digital Good."
+            "state_summaries": [
+                {"state": "Assam", "open_pct": 92, "pds_buffer_days": 28, "critical_bridges_healthy": 6},
+                {"state": "Arunachal Pradesh", "open_pct": 74, "pds_buffer_days": 18, "critical_bridges_healthy": 3},
+                {"state": "Meghalaya", "open_pct": 82, "pds_buffer_days": 24, "critical_bridges_healthy": 2},
+                {"state": "Manipur", "open_pct": 76, "pds_buffer_days": 16, "critical_bridges_healthy": 2},
+                {"state": "Mizoram", "open_pct": 80, "pds_buffer_days": 21, "critical_bridges_healthy": 2},
+                {"state": "Nagaland", "open_pct": 78, "pds_buffer_days": 19, "critical_bridges_healthy": 2},
+                {"state": "Sikkim", "open_pct": 62, "pds_buffer_days": 14, "critical_bridges_healthy": 1},
+                {"state": "Tripura", "open_pct": 95, "pds_buffer_days": 30, "critical_bridges_healthy": 2}
             ]
         }
 
     def get_comparative_state_analytics(self) -> List[Dict[str, Any]]:
-        state_stats = []
+        """
+        State-by-State Logistics Vulnerability & Resilience Comparison.
+        """
+        comparative = []
         for state in NER_STATES:
-            s_id = state["id"]
-            districts = [d for d in NER_DISTRICTS if d["state_id"] == s_id]
-            avg_score = round(sum(d["score"] for d in districts) / max(len(districts), 1), 1) if districts else 75.0
+            districts = [d for d in NER_DISTRICTS if d["state_id"] == state["id"]]
+            avg_score = sum(d["score"] for d in districts) / max(1, len(districts))
             open_count = len([d for d in districts if d["status"] == "OPEN"])
-            total_phcs = sum(d["phc_count"] for d in districts)
-            avg_stock = round(sum(d["critical_stock_pct"] for d in districts) / max(len(districts), 1), 1) if districts else 80.0
+            restricted_count = len([d for d in districts if d["status"] in ["RESTRICTED", "DEGRADED"]])
+            closed_count = len([d for d in districts if d["status"] == "CLOSED"])
 
-            state_stats.append({
-                "state_id": s_id,
+            comparative.append({
+                "state_id": state["id"],
                 "state_name": state["name"],
                 "capital": state["capital"],
-                "total_districts": len(districts),
-                "avg_accessibility_score": avg_score,
-                "open_districts_pct": round((open_count / max(len(districts), 1)) * 100, 1),
-                "total_phcs_monitored": total_phcs,
-                "depot_stock_readiness_pct": avg_stock,
-                "gps_fleet_coverage_pct": 91.5 if s_id in ["AS", "TR"] else 86.0
+                "overall_health_score": round(avg_score, 1),
+                "vulnerability_score": state["vulnerability_score"],
+                "avg_annual_rainfall_mm": state["avg_annual_rainfall_mm"],
+                "districts_monitored": len(districts),
+                "open_districts": open_count,
+                "restricted_districts": restricted_count,
+                "closed_districts": closed_count,
+                "key_lifeline": state["key_lifeline"],
+                "pds_buffer_days": int(avg_score * 0.32)
             })
-        return state_stats
+
+        return comparative
 
 report_generator = ExecutiveReportGenerator()

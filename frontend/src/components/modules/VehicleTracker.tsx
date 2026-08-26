@@ -37,16 +37,31 @@ export const VehicleTracker: React.FC = () => {
     setTimeout(() => setQrCodeScanned(false), 3000);
   };
 
+  const [fleetFilter, setFleetFilter] = useState<'ALL' | 'MOVING' | 'DELAYED' | 'AT_RISK' | 'OFFLINE'>('ALL');
+
+  const filteredVehicles = vehicles.filter((v) => {
+    if (fleetFilter === 'MOVING') return v.speed_kmh > 0;
+    if (fleetFilter === 'DELAYED') return v.status === 'RESTRICTED' || v.status.includes('DELAY');
+    if (fleetFilter === 'AT_RISK') return v.status === 'CRITICAL_FAST_TRACK';
+    if (fleetFilter === 'OFFLINE') return v.network_mode.includes('Offline');
+    return true;
+  });
+
   return (
     <div className="space-y-4">
-      {/* Top Header */}
+      {/* Top Header & Filter Strip */}
       <div className="bg-white p-4 rounded-xl border border-[#D1D5DB] flex flex-wrap items-center justify-between gap-3 shadow-xs">
         <div>
-          <h2 className="text-base font-black text-[#1E3A5F]">
-            {t('module_3')} — Real-Time NavIC & Satellite Telemetry
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-black text-[#17365D]">
+              {t('module_3')} — Real-Time NavIC & Satellite Telemetry
+            </h2>
+            <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-200">
+              NavIC Ping Accuracy: ±2.4m
+            </span>
+          </div>
           <p className="text-xs text-gray-500 mt-0.5">
-            End-to-end monitoring of essential medicine, food grain, and hazmat fleets with cold-chain safeguards
+            Fleet tracking of essential medicine, food grain, and hazmat with cold-chain telematics
           </p>
         </div>
 
@@ -60,9 +75,32 @@ export const VehicleTracker: React.FC = () => {
         </button>
       </div>
 
+      {/* Fleet Filter Bar (Section 9: All / Moving / Delayed / At Risk / Offline) */}
+      <div className="bg-white p-2.5 rounded-xl border border-[#D1D5DB] shadow-xs flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-1.5 font-bold">
+          <span className="text-gray-500 text-[11px] uppercase mr-1">Fleet Filters:</span>
+          {(['ALL', 'MOVING', 'DELAYED', 'AT_RISK', 'OFFLINE'] as const).map((filterKey) => (
+            <button
+              key={filterKey}
+              onClick={() => setFleetFilter(filterKey)}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                fleetFilter === filterKey
+                  ? 'bg-[#17365D] text-white shadow-xs'
+                  : 'bg-slate-100 text-gray-700 hover:bg-slate-200'
+              }`}
+            >
+              {filterKey === 'ALL' ? `All (${vehicles.length})` : filterKey.replace('_', ' ')}
+            </button>
+          ))}
+        </div>
+        <div className="text-[11px] text-gray-500 font-medium">
+          Showing {filteredVehicles.length} of {vehicles.length} tracked vehicles
+        </div>
+      </div>
+
       {/* Fleet Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {vehicles.map((veh) => {
+        {filteredVehicles.map((veh) => {
           const isSelected = selectedVehicle?.id === veh.id;
           return (
             <div
@@ -77,11 +115,11 @@ export const VehicleTracker: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center">
-                    <Truck className="w-4 h-4 text-[#1E3A5F]" />
+                    <Truck className="w-4 h-4 text-[#17365D]" />
                   </div>
                   <div>
-                    <span className="font-mono font-black text-xs text-[#1E3A5F]">{veh.plate_number}</span>
-                    <span className="text-[10px] text-gray-500 block">{veh.vehicle_type}</span>
+                    <span className="font-mono font-black text-xs text-[#17365D]">{veh.plate_number}</span>
+                    <span className="text-[10px] text-gray-500 block">{veh.id} • {veh.vehicle_type}</span>
                   </div>
                 </div>
                 <span
@@ -98,9 +136,9 @@ export const VehicleTracker: React.FC = () => {
               </div>
 
               <div className="mt-3 text-xs space-y-1">
-                <div className="font-semibold text-gray-800 truncate">{veh.cargo_type}</div>
+                <div className="font-semibold text-gray-800 truncate">{veh.cargo_type} ({veh.cargo_weight_tons} MT)</div>
                 <div className="text-[11px] text-gray-500">
-                  {veh.origin.split(' ')[0]} &rarr; {veh.destination.split(' ')[0]} • ETA: {veh.eta_destination}
+                  {veh.origin.split(' ')[0]} &rarr; {veh.destination.split(' ')[0]} • ETA: <strong>{veh.eta_destination}</strong>
                 </div>
               </div>
 
@@ -109,7 +147,7 @@ export const VehicleTracker: React.FC = () => {
                   Speed: <strong>{veh.speed_kmh} km/h</strong>
                 </span>
                 <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold text-gray-700">
-                  {veh.network_mode.split(' ')[0]}
+                  {veh.network_mode.split(' ')[0]} • ±2.4m
                 </span>
               </div>
             </div>

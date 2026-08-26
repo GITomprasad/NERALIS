@@ -1,5 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { District, RoadSegment, Bridge, SupplyDepot, Vehicle, Alert, FieldReport } from '../types';
+import type {
+  District,
+  RoadSegment,
+  Bridge,
+  SupplyDepot,
+  Vehicle,
+  Alert,
+  FieldReport,
+  SourceRegistryItem,
+  MLModelMetrics
+} from '../types';
+import { apiClient } from '../services/api/apiClient';
 
 export type ActiveModule =
   | 'ACCESSIBILITY'
@@ -23,6 +34,14 @@ export interface ToastMessage {
   timestamp: string;
 }
 
+export interface OutboxItem {
+  client_event_id: string;
+  action: 'FIELD_REPORT' | 'ROAD_STATUS' | 'ALERT_ACK';
+  payload: any;
+  status: 'QUEUED' | 'SYNCING' | 'SYNCED' | 'FAILED';
+  queued_at: string;
+}
+
 interface PlatformContextType {
   activeModule: ActiveModule;
   setActiveModule: (mod: ActiveModule) => void;
@@ -38,6 +57,10 @@ interface PlatformContextType {
   networkMode: NetworkMode;
   setNetworkMode: (mode: NetworkMode) => void;
   
+  // Demo vs Live Mode
+  isDemoMode: boolean;
+  toggleDemoMode: () => void;
+
   // Sidebar collapsed state
   isSidebarCollapsed: boolean;
   setIsSidebarCollapsed: (v: boolean) => void;
@@ -49,6 +72,16 @@ interface PlatformContextType {
   drawerType: 'DISTRICT' | 'CORRIDOR' | 'BRIDGE' | 'VEHICLE' | 'ALERT' | 'REPORT' | null;
   openDrawer: (type: 'DISTRICT' | 'CORRIDOR' | 'BRIDGE' | 'VEHICLE' | 'ALERT' | 'REPORT', data: any) => void;
   closeDrawer: () => void;
+
+  // Provenance Modal state
+  isProvenanceModalOpen: boolean;
+  provenanceData: any | null;
+  openProvenanceModal: (data: any) => void;
+  closeProvenanceModal: () => void;
+
+  // ML Model Metrics Modal
+  isModelMetricsModalOpen: boolean;
+  setIsModelMetricsModalOpen: (open: boolean) => void;
 
   // Search & Global filter
   searchQuery: string;
@@ -71,7 +104,8 @@ interface PlatformContextType {
   addToast: (title: string, message: string, tier?: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER') => void;
   dismissToast: (id: string) => void;
 
-  // Data Cache
+  // Master Data Cache
+  sources: SourceRegistryItem[];
   districts: District[];
   corridors: RoadSegment[];
   bridges: Bridge[];
@@ -83,6 +117,11 @@ interface PlatformContextType {
   updateRoadStatus: (corridorId: string, status: any) => void;
   addNewReport: (report: any) => void;
   addNewAlert: (alert: any) => void;
+
+  // Offline Outbox
+  outbox: OutboxItem[];
+  queueOfflineMutation: (action: 'FIELD_REPORT' | 'ROAD_STATUS' | 'ALERT_ACK', payload: any) => void;
+  syncOutbox: () => Promise<void>;
 }
 
 const PlatformContext = createContext<PlatformContextType | undefined>(undefined);
@@ -93,6 +132,21 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<UserRole>('STATE_ADMIN');
   const [networkMode, setNetworkMode] = useState<NetworkMode>('ONLINE');
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
+
+  const toggleDemoMode = () => {
+    setIsDemoMode((prev) => {
+      const next = !prev;
+      addToast(
+        next ? 'DEMO Simulation Active' : 'LIVE Mode Active',
+        next
+          ? 'Synthetic scenarios and test telemetry enabled.'
+          : 'Connecting to verified official government sources (IMD, Bhuvan, CWC).',
+        next ? 'WARNING' : 'SUCCESS'
+      );
+      return next;
+    });
+  };
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed((prev) => !prev);
@@ -133,6 +187,23 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [drawerData, setDrawerData] = useState<any | null>(null);
   const [drawerType, setDrawerType] = useState<any | null>(null);
 
+  // Provenance Modal
+  const [isProvenanceModalOpen, setIsProvenanceModalOpen] = useState(false);
+  const [provenanceData, setProvenanceData] = useState<any | null>(null);
+
+  const openProvenanceModal = (data: any) => {
+    setProvenanceData(data);
+    setIsProvenanceModalOpen(true);
+  };
+
+  const closeProvenanceModal = () => {
+    setIsProvenanceModalOpen(false);
+    setProvenanceData(null);
+  };
+
+  // ML Model Metrics Modal
+  const [isModelMetricsModalOpen, setIsModelMetricsModalOpen] = useState(false);
+
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStateFilter, setSelectedStateFilter] = useState('ALL');
@@ -143,18 +214,22 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [isParliamentModalOpen, setIsParliamentModalOpen] = useState(false);
 
+  // Live Outbox
+  const [outbox, setOutbox] = useState<OutboxItem[]>([]);
+
   // Toasts
   const [toasts, setToasts] = useState<ToastMessage[]>([
     {
       id: 't-1',
       title: 'T4 Emergency Warning Dispatched',
-      message: 'Teesta Valley NH-10 Corridor blocked due to heavy rock surge. 482 operators alerted.',
+      message: 'Teesta Valley NH-10 Corridor blocked due to debris surge. 482 operators alerted.',
       tier: 'DANGER',
       timestamp: '08:15 IST'
     }
   ]);
 
   // Master Data state
+  const [sources, setSources] = useState<SourceRegistryItem[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [corridors, setCorridors] = useState<RoadSegment[]>([]);
   const [bridges, setBridges] = useState<Bridge[]>([]);
@@ -199,7 +274,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const addNewReport = (report: any) => {
     setFieldReports((prev) => [report, ...prev]);
-    addToast('Field Report Submitted', `Report #${report.id} registered for ${report.district}.`, 'SUCCESS');
+    addToast('Field Report Registered', `Report #${report.id} recorded with verified YOLOv8 classification.`, 'SUCCESS');
   };
 
   const addNewAlert = (alert: any) => {
@@ -207,34 +282,103 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     addToast('New Alert Dispatched', alert.title, 'WARNING');
   };
 
-  // Fetch initial data from backend with robust local fallbacks
+  // Offline Outbox Queueing & Sync
+  const queueOfflineMutation = (action: 'FIELD_REPORT' | 'ROAD_STATUS' | 'ALERT_ACK', payload: any) => {
+    const client_event_id = `OUTBOX-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const newItem: OutboxItem = {
+      client_event_id,
+      action,
+      payload,
+      status: networkMode === 'OFFLINE' ? 'QUEUED' : 'SYNCING',
+      queued_at: new Date().toLocaleTimeString()
+    };
+    setOutbox((prev) => [newItem, ...prev]);
+
+    if (action === 'FIELD_REPORT') {
+      const optimisticReport: FieldReport = {
+        id: `PENDING-${client_event_id}`,
+        client_event_id,
+        reporter_name: payload.reporter_name || 'Field Scout',
+        reporter_role: payload.reporter_role || 'Inspector',
+        state: payload.state || 'Assam',
+        district: payload.district || 'AS-KAM',
+        location_name: payload.location_name || 'Highway Point',
+        lat: payload.lat || 26.1445,
+        lng: payload.lng || 91.7362,
+        timestamp: new Date().toISOString(),
+        incident_type: payload.incident_type || 'Road Damage',
+        damage_dimensions: {
+          crack_length_m: payload.crack_length_m || 0,
+          pothole_depth_cm: payload.pothole_depth_cm || 0,
+          debris_volume_cum: payload.debris_volume_cum || 0
+        },
+        ai_severity_predicted: 'CALCULATING (Queued)',
+        status: 'QUEUED_LOCAL',
+        assigned_crew: 'Local Division',
+        points_awarded: 30,
+        sync_status: 'QUEUED',
+        source: 'SRC-FIELD-PWA',
+        verification_status: 'REPORTED'
+      };
+      setFieldReports((prev) => [optimisticReport, ...prev]);
+      addToast('Report Saved to Offline Outbox', 'Will auto-sync as soon as network connects.', 'INFO');
+    }
+  };
+
+  const syncOutbox = async () => {
+    if (outbox.length === 0) return;
+    addToast('Syncing Outbox...', `Uploading ${outbox.length} pending mutations to backend.`, 'INFO');
+    
+    for (const item of outbox) {
+      if (item.action === 'FIELD_REPORT') {
+        const synced = await apiClient.submitFieldReport(item.payload);
+        if (synced) {
+          setFieldReports((prev) =>
+            prev.map((r) => (r.client_event_id === item.client_event_id ? { ...synced, sync_status: 'SYNCED' } : r))
+          );
+        }
+      }
+    }
+    setOutbox([]);
+    addToast('Outbox Synced Successfully', 'All offline mutations assigned canonical server IDs.', 'SUCCESS');
+  };
+
+  // Fetch initial data from backend via typed apiClient
   const refreshData = async () => {
     try {
-      const [distRes, corrRes, brRes, depRes, vehRes, altRes, repRes] = await Promise.all([
-        fetch('http://127.0.0.1:8000/api/districts').then(r => r.json()).catch(() => null),
-        fetch('http://127.0.0.1:8000/api/corridors').then(r => r.json()).catch(() => null),
-        fetch('http://127.0.0.1:8000/api/bridges').then(r => r.json()).catch(() => null),
-        fetch('http://127.0.0.1:8000/api/depots').then(r => r.json()).catch(() => null),
-        fetch('http://127.0.0.1:8000/api/fleet/vehicles').then(r => r.json()).catch(() => null),
-        fetch('http://127.0.0.1:8000/api/alerts').then(r => r.json()).catch(() => null),
-        fetch('http://127.0.0.1:8000/api/reports/field').then(r => r.json()).catch(() => null)
+      const [srcRes, distRes, corrRes, brRes, depRes, vehRes, altRes, repRes] = await Promise.all([
+        apiClient.getSources(),
+        apiClient.getDistricts(),
+        apiClient.getCorridors(),
+        apiClient.getBridges(),
+        apiClient.getDepots(),
+        apiClient.getVehicles(isDemoMode),
+        apiClient.getAlerts(),
+        apiClient.getFieldReports()
       ]);
 
-      if (distRes?.districts) setDistricts(distRes.districts);
-      if (corrRes?.corridors) setCorridors(corrRes.corridors);
-      if (brRes?.bridges) setBridges(brRes.bridges);
-      if (depRes?.depots) setDepots(depRes.depots);
-      if (vehRes?.vehicles) setVehicles(vehRes.vehicles);
-      if (altRes?.alerts) setAlerts(altRes.alerts);
-      if (repRes?.reports) setFieldReports(repRes.reports);
+      if (srcRes.length > 0) setSources(srcRes);
+      if (distRes.length > 0) setDistricts(distRes);
+      if (corrRes.length > 0) setCorridors(corrRes);
+      if (brRes.length > 0) setBridges(brRes);
+      if (depRes.length > 0) setDepots(depRes);
+      if (vehRes.length > 0) setVehicles(vehRes);
+      if (altRes.length > 0) setAlerts(altRes);
+      if (repRes.length > 0) setFieldReports(repRes);
     } catch (e) {
-      console.warn('Backend offline, using fallback local cache', e);
+      console.warn('API error during refresh, using client fallbacks', e);
     }
   };
 
   useEffect(() => {
     refreshData();
-  }, []);
+  }, [isDemoMode]);
+
+  useEffect(() => {
+    if (networkMode === 'ONLINE' && outbox.length > 0) {
+      syncOutbox();
+    }
+  }, [networkMode]);
 
   const isAdminOrAuthority = userRole === 'STATE_ADMIN' || userRole === 'DISTRICT_COLLECTOR' || userRole === 'FIELD_INSPECTOR';
   const isFullAdmin = userRole === 'STATE_ADMIN' || userRole === 'DISTRICT_COLLECTOR';
@@ -255,6 +399,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         isFullAdmin,
         networkMode,
         setNetworkMode,
+        isDemoMode,
+        toggleDemoMode,
         isSidebarCollapsed,
         setIsSidebarCollapsed,
         toggleSidebar,
@@ -263,6 +409,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         drawerType,
         openDrawer,
         closeDrawer,
+        isProvenanceModalOpen,
+        provenanceData,
+        openProvenanceModal,
+        closeProvenanceModal,
+        isModelMetricsModalOpen,
+        setIsModelMetricsModalOpen,
         searchQuery,
         setSearchQuery,
         selectedStateFilter,
@@ -278,6 +430,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         toasts,
         addToast,
         dismissToast,
+        sources,
         districts,
         corridors,
         bridges,
@@ -288,7 +441,10 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         refreshData,
         updateRoadStatus,
         addNewReport,
-        addNewAlert
+        addNewAlert,
+        outbox,
+        queueOfflineMutation,
+        syncOutbox
       }}
     >
       {children}

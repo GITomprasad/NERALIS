@@ -27,7 +27,6 @@ export default {
         regional: ['Noto Sans', 'sans-serif'],
       },
       spacing: {
-        '64': '64px',
         '240': '240px',
         '480': '480px',
       }

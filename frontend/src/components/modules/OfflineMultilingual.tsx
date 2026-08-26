@@ -130,7 +130,7 @@ export const OfflineMultilingual: React.FC = () => {
         </div>
       </div>
 
-      {/* Bandwidth Optimisation Techniques (SIH26002 Quantified Table) */}
+      {/* Bandwidth Optimisation Techniques (Quantified Benchmark Table) */}
       <div className="bg-white p-5 rounded-xl border border-[#D1D5DB] shadow-xs space-y-3 text-xs">
         <span className="font-bold text-[#1E3A5F] text-xs uppercase block">
           Bandwidth Optimisation Techniques & Savings Metrics

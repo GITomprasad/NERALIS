@@ -20,6 +20,8 @@ import {
   Sparkles
 } from 'lucide-react';
 
+import { ProvenanceBadge } from '../common/ProvenanceBadge';
+
 export const FieldReportingApp: React.FC = () => {
   const {
     fieldReports,
@@ -27,7 +29,9 @@ export const FieldReportingApp: React.FC = () => {
     networkMode,
     setIsARModalOpen,
     setIsSignatureModalOpen,
-    addToast
+    addToast,
+    queueOfflineMutation,
+    outbox
   } = usePlatform();
   const { t } = useLanguage();
 
@@ -61,8 +65,7 @@ export const FieldReportingApp: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newRep = {
-      id: `REP-2026-${Math.floor(Math.random() * 9000 + 1000)}`,
+    const payload = {
       reporter_name: reporterName,
       reporter_role: reporterRole,
       state: 'Assam',
@@ -70,21 +73,32 @@ export const FieldReportingApp: React.FC = () => {
       location_name: locationName,
       lat: 26.2410,
       lng: 91.6820,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' IST',
       incident_type: incidentType,
       damage_dimensions: {
         crack_length_m: crackSpan,
         pothole_depth_cm: potholeDepth,
         debris_volume_cum: debrisVol
-      },
-      ai_severity_predicted: debrisVol > 20 ? 'SEVERE (Tier 3 Action)' : 'MODERATE (Tier 2 Action)',
-      status: 'VERIFIED_QUEUED',
-      assigned_crew: 'State PWD Rapid Action Division',
-      points_awarded: 50
+      }
     };
 
-    addNewReport(newRep);
-    addToast('Report Logged Successfully', `Report #${newRep.id} stamped with GPS EXIF metadata. +50 Reporter Points awarded!`, 'SUCCESS');
+    if (networkMode === 'OFFLINE') {
+      queueOfflineMutation('FIELD_REPORT', payload);
+    } else {
+      const newRep = {
+        id: `REP-2026-${Math.floor(Math.random() * 9000 + 1000)}`,
+        ...payload,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' IST',
+        ai_severity_predicted: debrisVol > 20 ? 'SEVERE (Tier 3 Action)' : 'MODERATE (Tier 2 Action)',
+        status: 'VERIFIED_GROUND_TRUTH',
+        assigned_crew: 'State PWD Rapid Action Division',
+        points_awarded: 50,
+        source: 'SRC-FIELD-PWA',
+        verification_status: 'REPORTED' as const,
+        confidence: 96.5
+      };
+      addNewReport(newRep);
+      addToast('Report Logged Successfully', `Report #${newRep.id} stamped with GPS EXIF metadata. +50 Reporter Points awarded!`, 'SUCCESS');
+    }
   };
 
   return (
@@ -128,111 +142,126 @@ export const FieldReportingApp: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
-            {/* Reporter details */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block font-bold text-gray-700 mb-1">Field Official Name</label>
+            {/* Step 1: Location & GPS */}
+            <div className="space-y-1.5 p-3 bg-slate-50 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="font-bold text-[#17365D] uppercase flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-blue-600" /> Step 1: Location & Highway Milestone
+                </span>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">
+                  GPS Accuracy: ±3.1m
+                </span>
+              </div>
+              <div className="flex gap-2">
                 <input
                   type="text"
-                  value={reporterName}
-                  onChange={(e) => setReporterName(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#1E3A5F]"
+                  required
+                  value={locationName}
+                  onChange={(e) => setLocationName(e.target.value)}
+                  placeholder="e.g. NH-27 Changsari Culvert Km 14"
+                  className="flex-1 p-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold"
                 />
-              </div>
-              <div>
-                <label className="block font-bold text-gray-700 mb-1">Designation / Unit</label>
-                <input
-                  type="text"
-                  value={reporterRole}
-                  onChange={(e) => setReporterRole(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold"
-                />
-              </div>
-            </div>
-
-            {/* Location & Voice helper */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <label className="font-bold text-gray-700">Location / Highway Milestone</label>
                 <button
                   type="button"
                   onClick={handleVoiceRecord}
-                  className="text-blue-700 hover:text-blue-900 font-bold text-[11px] flex items-center gap-1"
+                  className="px-2.5 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg font-bold text-[11px] flex items-center gap-1 shrink-0"
+                  title="Voice-to-Text in 8 NER Languages"
                 >
                   <Mic className={`w-3.5 h-3.5 ${isListeningVoice ? 'text-red-500 animate-pulse' : ''}`} />
-                  <span>{isListeningVoice ? 'Listening...' : 'Voice-to-Text (8 Languages)'}</span>
+                  <span className="hidden sm:inline">{isListeningVoice ? 'Listening...' : 'Voice Input'}</span>
                 </button>
               </div>
-              <input
-                type="text"
-                required
-                value={locationName}
-                onChange={(e) => setLocationName(e.target.value)}
-                placeholder="e.g. NH-27 Changsari Culvert Km 14"
-                className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold"
-              />
             </div>
 
-            {/* Incident Type */}
-            <div>
-              <label className="block font-bold text-gray-700 mb-1">Hazard / Incident Classification</label>
+            {/* Step 2: Incident Classification */}
+            <div className="space-y-1.5 p-3 bg-slate-50 rounded-xl border border-gray-200">
+              <span className="font-bold text-[#17365D] text-[11px] uppercase block">
+                Step 2: Incident Classification
+              </span>
               <select
                 value={incidentType}
                 onChange={(e) => setIncidentType(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold"
+                className="w-full p-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold"
               >
                 <option value="Roadbed Erosion / Pavement Subsidence">Roadbed Erosion / Pavement Subsidence</option>
                 <option value="Active Rockslide / Debris Avalanche">Active Rockslide / Debris Avalanche</option>
                 <option value="Bridge Scour / Girder Damage">Bridge Scour / Girder Damage</option>
                 <option value="Waterlogging / Flash Flood Submersion">Waterlogging / Flash Flood Submersion</option>
+                <option value="Pothole Crater Cluster / Rough Pavement">Pothole Crater Cluster / Rough Pavement</option>
                 <option value="Fallen Tree / Powerline Obstruction">Fallen Tree / Powerline Obstruction</option>
               </select>
             </div>
 
-            {/* AR Dimension measurement launcher */}
-            <div className="p-3.5 bg-[#EBF3FB] rounded-xl border border-blue-200 space-y-2">
+            {/* Step 3: Evidence & Optional AR Measurement */}
+            <div className="p-3 bg-[#EBF3FB] rounded-xl border border-blue-200 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-[#1E3A5F] flex items-center gap-1.5">
-                  <Ruler className="w-4 h-4 text-blue-700" /> AR LiDAR Damage Dimension Measurement
+                <span className="font-bold text-[#17365D] text-[11px] uppercase flex items-center gap-1">
+                  <Ruler className="w-3.5 h-3.5 text-blue-700" /> Step 3: Evidence & Measurements (Optional AR)
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsARModalOpen(true)}
-                  className="btn-primary text-[11px] py-1 px-2.5"
+                  className="px-2.5 py-1 bg-[#17365D] hover:bg-[#2563A8] text-white rounded-lg text-[10px] font-bold shadow-xs transition-colors"
                 >
-                  Launch AR Camera
+                  Launch AR LiDAR
                 </button>
               </div>
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
                 <div className="bg-white p-2 rounded border">
-                  <span className="text-gray-500 block">Crack Span</span>
-                  <strong className="text-[#1E3A5F]">{crackSpan} m</strong>
+                  <span className="text-gray-500 block text-[10px]">Crack Span</span>
+                  <strong className="text-[#17365D]">{crackSpan} m</strong>
                 </div>
                 <div className="bg-white p-2 rounded border">
-                  <span className="text-gray-500 block">Pothole Depth</span>
+                  <span className="text-gray-500 block text-[10px]">Pothole Depth</span>
                   <strong className="text-amber-800">{potholeDepth} cm</strong>
                 </div>
                 <div className="bg-white p-2 rounded border">
-                  <span className="text-gray-500 block">Debris Volume</span>
+                  <span className="text-gray-500 block text-[10px]">Debris Volume</span>
                   <strong className="text-sky-800">{debrisVol} m³</strong>
                 </div>
               </div>
             </div>
 
-            {/* Digital Signature Pod Trigger */}
-            <div className="flex gap-2">
+            {/* Step 4: Reporter & Sign-off */}
+            <div className="grid grid-cols-2 gap-2.5 p-3 bg-slate-50 rounded-xl border border-gray-200">
+              <div>
+                <label className="block font-bold text-gray-700 text-[10px] uppercase mb-1">Step 4: Field Official</label>
+                <input
+                  type="text"
+                  value={reporterName}
+                  onChange={(e) => setReporterName(e.target.value)}
+                  className="w-full p-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold"
+                />
+              </div>
+              <div>
+                <label className="block font-bold text-gray-700 text-[10px] uppercase mb-1">Designation</label>
+                <input
+                  type="text"
+                  value={reporterRole}
+                  onChange={(e) => setReporterRole(e.target.value)}
+                  className="w-full p-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold"
+                />
+              </div>
+            </div>
+
+            {/* Step 5: Submit & Sync Status */}
+            <div className="pt-1 flex gap-2">
               <button
                 type="button"
                 onClick={() => setIsSignatureModalOpen(true)}
-                className="flex-1 btn-secondary text-xs py-2 justify-center"
+                className="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-gray-800 rounded-lg font-bold text-xs flex items-center gap-1.5 border border-gray-300 transition-colors"
+                title="Cryptographic Sign-off"
               >
-                <PenTool className="w-3.5 h-3.5 text-sky-700" /> Digital Proof of Delivery
+                <PenTool className="w-3.5 h-3.5 text-slate-600" />
+                <span className="hidden sm:inline">Sign-off</span>
               </button>
+
               <button
                 type="submit"
-                className="flex-1 btn-primary text-xs py-2 justify-center shadow-md"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all"
               >
-                <Send className="w-3.5 h-3.5" /> Submit Verified Report
+                <Send className="w-4 h-4" />
+                <span>{networkMode === 'OFFLINE' ? 'Queue Report Offline (IndexedDB)' : 'Step 5: Submit Ground Report'}</span>
               </button>
             </div>
           </form>

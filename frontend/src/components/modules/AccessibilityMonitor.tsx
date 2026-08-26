@@ -18,15 +18,28 @@ import {
   ChevronUp,
   ChevronDown,
   Compass,
-  ArrowLeft
+  ArrowLeft,
+  ShieldCheck,
+  Sparkles,
+  Truck,
+  TrendingUp,
+  Clock,
+  Info,
+  ShieldAlert,
+  ChevronRight
 } from 'lucide-react';
+import { ProvenanceBadge } from '../common/ProvenanceBadge';
 
 export const AccessibilityMonitor: React.FC = () => {
   const {
     districts,
     corridors,
     bridges,
+    alerts,
+    vehicles,
+    fieldReports,
     openDrawer,
+    openProvenanceModal,
     selectedStateFilter,
     setSelectedStateFilter,
     isSidebarCollapsed,
@@ -37,6 +50,7 @@ export const AccessibilityMonitor: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'MAP' | 'DISTRICTS' | 'BRIDGES' | 'SATELLITE'>('MAP');
   const [districtSearch, setDistrictSearch] = useState('');
   const [isCorridorDrawerOpen, setIsCorridorDrawerOpen] = useState(true);
+  const [isIntelPanelOpen, setIsIntelPanelOpen] = useState(true);
 
   const filteredDistricts = districts.filter((d) => {
     const matchesSearch =
@@ -141,6 +155,89 @@ export const AccessibilityMonitor: React.FC = () => {
                   </>
                 )}
               </button>
+            </div>
+          </div>
+
+          {/* Universal Legend (Floating Top Left / Below Controls) */}
+          <div className="absolute top-16 left-3 z-[1000] pointer-events-auto hidden md:block">
+            <div className="bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl border border-gray-300 shadow-md space-y-1 text-[10px]">
+              <div className="font-black text-[#1E3A5F] text-[10px] uppercase tracking-wider mb-1 flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-teal-600" /> Operational Legend
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="bg-emerald-50 text-emerald-800 border border-emerald-300 px-1.5 py-0.5 rounded font-bold">● OBSERVED</span>
+                <span className="bg-teal-50 text-teal-800 border border-teal-300 px-1.5 py-0.5 rounded font-bold">✓ VERIFIED</span>
+                <span className="bg-purple-50 text-purple-800 border border-purple-300 px-1.5 py-0.5 rounded font-bold">✦ PREDICTED</span>
+                <span className="bg-sky-50 text-sky-800 border border-sky-300 px-1.5 py-0.5 rounded font-bold">⌖ REPORTED</span>
+                <span className="bg-amber-50 text-amber-800 border border-amber-300 px-1.5 py-0.5 rounded font-bold">⚗ DEMO</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Intelligence Panel (Section 7: Critical Alerts + Next 24h Risk + Recommended Action) */}
+          <div className="absolute top-16 right-3 z-[1000] pointer-events-auto hidden lg:block w-80">
+            <div className="bg-white/95 backdrop-blur-md rounded-xl border border-gray-300 shadow-xl overflow-hidden transition-all duration-200">
+              {/* Panel Header */}
+              <div
+                onClick={() => setIsIntelPanelOpen(!isIntelPanelOpen)}
+                className="px-3.5 py-2 bg-[#1E3A5F] text-white flex items-center justify-between cursor-pointer text-xs font-bold"
+              >
+                <div className="flex items-center gap-1.5">
+                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Right Intelligence Stream</span>
+                </div>
+                <div className="flex items-center gap-1 text-[11px] text-sky-200">
+                  <span>{isIntelPanelOpen ? 'Collapse' : 'Expand'}</span>
+                  {isIntelPanelOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                </div>
+              </div>
+
+              {/* Panel Body */}
+              {isIntelPanelOpen && (
+                <div className="p-3 space-y-2.5 max-h-[420px] overflow-y-auto text-xs">
+                  {/* 1. Critical Disruption Alert */}
+                  <div className="bg-red-50/80 border border-red-200 rounded-lg p-2.5 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-red-800 uppercase flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3 text-red-600" /> Active Emergency Alert
+                      </span>
+                      <span className="text-[9px] bg-red-100 text-red-700 font-bold px-1.5 py-0.2 rounded">T4 CRITICAL</span>
+                    </div>
+                    <div className="font-black text-gray-900 text-xs mt-0.5">
+                      {alerts[0]?.title || 'NH-10 Teesta Corridor Blockade'}
+                    </div>
+                    <p className="text-[10px] text-gray-600 leading-snug">
+                      Debris slurry impassable at Km 42. Diversion to alternate hill bypass activated.
+                    </p>
+                  </div>
+
+                  {/* 2. Next 24h Risk Outlook */}
+                  <div className="bg-purple-50/70 border border-purple-200 rounded-lg p-2.5 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-purple-800 uppercase flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-purple-600" /> 24h AI Risk Forecast
+                      </span>
+                      <span className="text-[9px] text-purple-700 font-bold">98.4% Baseline</span>
+                    </div>
+                    <div className="text-[11px] font-bold text-gray-800">
+                      Sela Pass Sector (NH-13): 86% Landslide Probability
+                    </div>
+                    <div className="text-[10px] text-gray-500">
+                      IMD 72h Rain: 240mm • Soil Saturation: 92%
+                    </div>
+                  </div>
+
+                  {/* 3. Recommended Operator Action */}
+                  <div className="bg-emerald-50/70 border border-emerald-200 rounded-lg p-2.5 space-y-1">
+                    <span className="text-[10px] font-bold text-emerald-800 uppercase flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3 text-emerald-600" /> Operator Recommended Action
+                    </span>
+                    <p className="text-[11px] text-gray-700 font-medium leading-snug">
+                      Pre-position 4,000 vaccine units from Guwahati Central Depot to Tawang buffer before 05:00 AM.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -301,6 +398,7 @@ export const AccessibilityMonitor: React.FC = () => {
                       <th>Terrain Type</th>
                       <th>Accessibility Score</th>
                       <th>Current Status</th>
+                      <th>Provenance</th>
                       <th>Monsoon Risk</th>
                       <th>PHCs Stocked</th>
                       <th>Actions</th>
@@ -345,6 +443,9 @@ export const AccessibilityMonitor: React.FC = () => {
                           </span>
                         </td>
                         <td>
+                          <ProvenanceBadge status={d.verification_status || 'OBSERVED'} dataItem={d} />
+                        </td>
+                        <td>
                           <span
                             className={`font-bold text-xs ${
                               d.risk_level === 'CRITICAL'
@@ -363,12 +464,21 @@ export const AccessibilityMonitor: React.FC = () => {
                           </span>
                         </td>
                         <td>
-                          <button
-                            onClick={() => openDrawer('DISTRICT', d)}
-                            className="text-xs font-bold text-[#2563A8] hover:underline flex items-center gap-1"
-                          >
-                            <Eye className="w-3.5 h-3.5" /> Inspect
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => openDrawer('DISTRICT', d)}
+                              className="text-xs font-bold text-[#2563A8] hover:underline flex items-center gap-1"
+                            >
+                              <Eye className="w-3.5 h-3.5" /> Inspect
+                            </button>
+                            <button
+                              onClick={() => openProvenanceModal(d)}
+                              className="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1"
+                              title="Inspect Source & Telemetry Provenance"
+                            >
+                              <ShieldCheck className="w-3.5 h-3.5" /> Provenance
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

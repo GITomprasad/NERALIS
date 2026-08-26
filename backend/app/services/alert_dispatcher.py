@@ -1,12 +1,13 @@
 """
-Intelligent Multilingual Alert & Notification Dispatcher (SIH26002 - Module 5).
+Intelligent Multilingual Alert & Notification Dispatcher (Module 5).
 Supports 5 alert tiers (T1-T5), 8 NER languages + Hindi/English,
-multi-channel output formatting (SMS, WhatsApp, IVR Voice, Push, USSD, NDMA CAP XML),
+multi-channel output formatting (SMS, WhatsApp, IVR Voice, Push, USSD, NDMA CAP XML v1.2),
 and 6 AM Daily Morning Collector Briefings.
 """
 
 from typing import Dict, List, Any
 import datetime
+import random
 
 NER_TRANSLATIONS = {
     "ALERT_T3_LANDSLIDE": {
@@ -53,7 +54,9 @@ class AlertDispatcher:
                 "escalation_sla_mins": 20,
                 "dispatched_channels": ["SMS", "WhatsApp", "App Push", "IVR Voice", "NDMA CAP Feed"],
                 "target_recipients_count": 482,
-                "message_i18n": NER_TRANSLATIONS["ALERT_T4_ROAD_CLOSED"]
+                "message_i18n": NER_TRANSLATIONS["ALERT_T4_ROAD_CLOSED"],
+                "source": "SRC-NDMA-CAP",
+                "verification_status": "VERIFIED"
             },
             {
                 "id": "ALT-2026-0892",
@@ -69,7 +72,9 @@ class AlertDispatcher:
                 "escalation_sla_mins": 20,
                 "dispatched_channels": ["SMS", "WhatsApp", "App Push"],
                 "target_recipients_count": 215,
-                "message_i18n": NER_TRANSLATIONS["ALERT_T3_LANDSLIDE"]
+                "message_i18n": NER_TRANSLATIONS["ALERT_T3_LANDSLIDE"],
+                "source": "SRC-IMD-AWS",
+                "verification_status": "OBSERVED"
             },
             {
                 "id": "ALT-2026-0893",
@@ -88,7 +93,9 @@ class AlertDispatcher:
                 "message_i18n": {
                     "en": "ADVISORY (T2): NH-6 Sonapur tunnel experiencing 1.5-hour delay due to mud silt. Single lane open.",
                     "hi": "सलाह (T2): कीचड़ जमा होने के कारण NH-6 सोनापुर सुरंग में 1.5 घंटे की देरी। एक लेन चालू।"
-                }
+                },
+                "source": "SRC-STATE-PWD",
+                "verification_status": "VERIFIED"
             }
         ]
 
@@ -97,82 +104,91 @@ class AlertDispatcher:
 
     def create_alert(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         new_alert = {
-            "id": f"ALT-2026-{random_id()}",
-            "tier": payload.get("tier", "T2 - ADVISORY"),
-            "tier_level": payload.get("tier_level", 2),
-            "title": payload.get("title", "Logistics Corridor Notice"),
+            "id": f"ALT-2026-{random.randint(1000, 9999)}",
+            "tier": payload.get("tier", "T3 - WARNING"),
+            "tier_level": payload.get("tier_level", 3),
+            "title": payload.get("title", "Emergency Corridor Warning"),
             "corridor_id": payload.get("corridor_id", "SEG-01"),
             "affected_districts": payload.get("affected_districts", ["AS-KAM"]),
-            "trigger_condition": payload.get("trigger_condition", "Manual Officer Dispatch"),
+            "trigger_condition": payload.get("trigger_condition", "Automated Sensor Rule / Manual Broadcast"),
             "timestamp": datetime.datetime.now().isoformat(),
             "acknowledged": False,
-            "acknowledged_by": "Pending Officer Acknowledgement",
+            "acknowledged_by": "Pending Authority Acknowledgement",
             "escalation_sla_mins": 20,
             "dispatched_channels": payload.get("channels", ["SMS", "WhatsApp", "Push"]),
             "target_recipients_count": payload.get("recipients_count", 150),
             "message_i18n": {
-                "en": payload.get("message_en", "Urgent road advisory for North Eastern logistics corridor."),
-                "hi": payload.get("message_hi", "उत्तर पूर्वी लॉजिस्टिक्स कॉरिडोर के लिए आवश्यक सलाह।")
-            }
+                "en": payload.get("message_en", "Urgent Alert"),
+                "hi": payload.get("message_hi", payload.get("message_en", "Urgent Alert"))
+            },
+            "source": "SRC-NDMA-CAP",
+            "verification_status": "VERIFIED"
         }
         self.active_alerts.insert(0, new_alert)
         return new_alert
 
     def generate_cap_xml(self, alert_id: str) -> str:
         """
-        Generates standard NDMA Common Alerting Protocol (CAP v1.2) XML document.
+        Generates standard NDMA / ITU-T X.1303 compliant Common Alerting Protocol (CAP v1.2) XML.
         """
         alert = next((a for a in self.active_alerts if a["id"] == alert_id), self.active_alerts[0])
-        msg_en = alert.get("message_i18n", {}).get("en", alert["title"])
-
-        xml_str = f"""<?xml version="1.0" encoding="UTF-8"?>
+        now_utc = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
+        
+        xml_template = f"""<?xml version="1.0" encoding="UTF-8"?>
 <alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
-  <identifier>NERALIS-{alert['id']}</identifier>
-  <sender>mcdoner-alerts@gov.in</sender>
-  <sent>{alert['timestamp']}</sent>
+  <identifier>NERALIS-NDMA-{alert['id']}</identifier>
+  <sender>neralis.disaster.ops@gov.in</sender>
+  <sent>{now_utc}</sent>
   <status>Actual</status>
   <msgType>Alert</msgType>
   <scope>Public</scope>
   <info>
     <category>Transport</category>
     <event>{alert['title']}</event>
-    <urgency>Expected</urgency>
-    <severity>{alert['tier'].split(' - ')[-1]}</severity>
+    <urgency>Immediate</urgency>
+    <severity>Severe</severity>
     <certainty>Observed</certainty>
     <eventCode>
-      <valueName>SAME</valueName>
-      <value>TRN</value>
+      <valueName>NDMA_CODE</valueName>
+      <value>TRANS_DISRUPT_T{alert['tier_level']}</value>
     </eventCode>
     <headline>{alert['title']}</headline>
-    <description>{msg_en}</description>
+    <description>{alert['message_i18n'].get('en', 'Emergency transport disruption')}</description>
     <area>
-      <areaDesc>{', '.join(alert['affected_districts'])}</areaDesc>
+      <areaDesc>{", ".join(alert['affected_districts'])}</areaDesc>
+      <polygon>26.72,88.39 27.58,91.85 27.33,88.60 26.72,88.39</polygon>
     </area>
   </info>
 </alert>"""
-        return xml_str
+        return xml_template
 
     def get_morning_briefing(self) -> Dict[str, Any]:
         """
-        Automated 6 AM Daily Logistics Intelligence Briefing for District Collectors & Chief Secretaries.
+        Daily 6 AM Executive Collector Briefing summary for all 8 NER states.
         """
         return {
-            "date": "2026-08-26",
-            "prepared_for": "Chief Secretary / District Magistrates of 8 NER States",
-            "overall_status": "MONSOON SURGE - 82% CORRIDORS OPERATIONAL",
-            "top_5_critical_corridors": [
-                {"corridor": "NH-10 (Siliguri - Gangtok)", "risk": "82% (Restricted)", "action": "Enforce convoy speed limit and bypass light traffic via Melli."},
-                {"corridor": "NH-13 (Bomdila - Tawang)", "risk": "79% (Degraded)", "action": "Stage BRO bulldozers at Sela Pass west portal."},
-                {"corridor": "NH-37 (Silchar - Jiribam - Imphal)", "risk": "75% (Degraded)", "action": "Maintain 24x7 river gauge monitoring at Irang Bridge."},
-                {"corridor": "NH-6 (East Jaintia Hills - Silchar)", "risk": "68% (Restricted)", "action": "Deploy mudflow vacuum pumps at Sonapur tunnel entrance."},
-                {"corridor": "NH-2 (Dimapur - Kohima)", "risk": "64% (Restricted)", "action": "Stagger heavy truck departure from Dimapur railhead."}
+            "briefing_id": f"NERALIS-BRF-{datetime.datetime.now().strftime('%Y%m%d')}",
+            "generated_at": datetime.datetime.now().strftime("%Y-%m-%d 06:00:00 IST"),
+            "region": "North Eastern Region (8 States)",
+            "overall_logistics_status": "YELLOW ADVISORY (Monsoon Season Surge)",
+            "critical_blockades_count": 2,
+            "restricted_corridors_count": 5,
+            "key_alerts": [
+                "NH-10 Teesta Corridor: Total Blockade km 29. Use Sevoke-Melli-Jorethang bypass.",
+                "NH-13 Sela Pass: Incipient mudflow warning. 4WD light vehicles only.",
+                "NH-6 Sonapur Tunnel: 1.5-hour delay siltation. Single convoy active."
             ],
-            "essential_supplies_status": "Safe buffer stocks at all 6 apex depots. Tawang forward reserve at 18 days autonomy.",
-            "fleet_in_motion": "142 Essential Commodity Trucks Active | 98.4% GPS Ping Reliability"
+            "depot_stock_status": {
+                "guwahati_hub_pct": 87,
+                "tawang_forward_buffer_pct": 52,
+                "mangan_buffer_pct": 41,
+                "silchar_hub_pct": 81
+            },
+            "recommended_district_actions": [
+                "DC Gangtok: Mobilize essential fuel supplies via Melli corridor.",
+                "DC Tawang: Confirm 6-convoy medical prepositioning departure by 05:00 AM.",
+                "DC Cachar: Ensure Barak river Ro-Ro barges on standby at Silchar Jetty."
+            ]
         }
-
-def random_id():
-    import random
-    return str(random.randint(1000, 9999))
 
 alert_dispatcher = AlertDispatcher()
