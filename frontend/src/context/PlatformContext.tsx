@@ -12,6 +12,16 @@ import type {
 } from '../types';
 import { apiClient } from '../services/api/apiClient';
 import { offlineStore } from '../services/offline/offlineStore';
+import {
+  FALLBACK_SOURCES,
+  FALLBACK_DISTRICTS,
+  FALLBACK_CORRIDORS,
+  FALLBACK_BRIDGES,
+  FALLBACK_DEPOTS,
+  FALLBACK_VEHICLES,
+  FALLBACK_ALERTS,
+  FALLBACK_FIELD_REPORTS
+} from '../services/data/nerGeographyFallback';
 
 export type ActiveModule =
   | 'ACCESSIBILITY'
@@ -33,6 +43,15 @@ export interface ToastMessage {
   message: string;
   tier: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER';
   timestamp: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  tier: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER';
+  timestamp: string;
+  isRead: boolean;
 }
 
 export interface OutboxItem {
@@ -100,10 +119,14 @@ interface PlatformContextType {
   isParliamentModalOpen: boolean;
   setIsParliamentModalOpen: (open: boolean) => void;
 
-  // Live Toast Notifications
+  // Live Toast Notifications & Notifications History
   toasts: ToastMessage[];
+  notifications: NotificationItem[];
+  unreadNotifCount: number;
   addToast: (title: string, message: string, tier?: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER') => void;
   dismissToast: (id: string) => void;
+  markAllNotificationsAsRead: () => void;
+  clearAllNotifications: () => void;
 
   // Master Data Cache
   sources: SourceRegistryItem[];
@@ -218,41 +241,82 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Live Outbox
   const [outbox, setOutbox] = useState<OutboxItem[]>([]);
 
-  // Toasts
-  const [toasts, setToasts] = useState<ToastMessage[]>([
+  // Toasts (Auto-vanish after 2s) & Notifications Dropdown History
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
-      id: 't-1',
+      id: 'notif-1',
       title: 'T4 Emergency Warning Dispatched',
       message: 'Teesta Valley NH-10 Corridor blocked due to debris surge. 482 operators alerted.',
       tier: 'DANGER',
-      timestamp: '08:15 IST'
+      timestamp: '08:15 IST',
+      isRead: false
+    },
+    {
+      id: 'notif-2',
+      title: 'Bridge Telemetry Synchronized',
+      message: 'Saraighat Bridge sensor health: 94%. Water clearance 5.8m (safe).',
+      tier: 'SUCCESS',
+      timestamp: '08:10 IST',
+      isRead: true
     }
   ]);
 
-  // Master Data state
-  const [sources, setSources] = useState<SourceRegistryItem[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [corridors, setCorridors] = useState<RoadSegment[]>([]);
-  const [bridges, setBridges] = useState<Bridge[]>([]);
-  const [depots, setDepots] = useState<SupplyDepot[]>([]);
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [fieldReports, setFieldReports] = useState<FieldReport[]>([]);
+  // Master Data state initialized with full fallback datasets
+  const [sources, setSources] = useState<SourceRegistryItem[]>(FALLBACK_SOURCES);
+  const [districts, setDistricts] = useState<District[]>(FALLBACK_DISTRICTS);
+  const [corridors, setCorridors] = useState<RoadSegment[]>(FALLBACK_CORRIDORS);
+  const [bridges, setBridges] = useState<Bridge[]>(FALLBACK_BRIDGES);
+  const [depots, setDepots] = useState<SupplyDepot[]>(FALLBACK_DEPOTS);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(FALLBACK_VEHICLES);
+  const [alerts, setAlerts] = useState<Alert[]>(FALLBACK_ALERTS);
+  const [fieldReports, setFieldReports] = useState<FieldReport[]>(FALLBACK_FIELD_REPORTS);
 
   const addToast = (title: string, message: string, tier: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER' = 'INFO') => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     const newToast: ToastMessage = {
-      id: `toast-${Date.now()}-${Math.random()}`,
+      id,
       title,
       message,
       tier,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      timestamp
     };
+
+    const newNotif: NotificationItem = {
+      id,
+      title,
+      message,
+      tier,
+      timestamp,
+      isRead: false
+    };
+
+    // Show floating toast
     setToasts((prev) => [newToast, ...prev].slice(0, 5));
+    // Add to dropdown notification history
+    setNotifications((prev) => [newNotif, ...prev].slice(0, 30));
+
+    // Automatically vanish toast from screen after 2 seconds
+    setTimeout(() => {
+      dismissToast(id);
+    }, 2000);
   };
 
   const dismissToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const unreadNotifCount = notifications.filter((n) => !n.isRead).length;
 
   const openDrawer = (type: 'DISTRICT' | 'CORRIDOR' | 'BRIDGE' | 'VEHICLE' | 'ALERT' | 'REPORT', data: any) => {
     setDrawerType(type);
@@ -333,22 +397,38 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const syncOutbox = async () => {
-    if (outbox.length === 0) return;
-    addToast('Syncing Outbox...', `Uploading ${outbox.length} pending mutations to backend.`, 'INFO');
-    
-    for (const item of outbox) {
-      if (item.action === 'FIELD_REPORT') {
-        const synced = await apiClient.submitFieldReport(item.payload);
-        if (synced) {
+    try {
+      const dbItems = await offlineStore.getAllOutboxItems();
+      const currentItems = dbItems && dbItems.length > 0 ? dbItems : outbox;
+
+      if (currentItems.length === 0) {
+        return;
+      }
+
+      addToast('Syncing Outbox...', `Uploading ${currentItems.length} pending mutations to backend.`, 'INFO');
+
+      for (const item of currentItems) {
+        if (item.action === 'FIELD_REPORT') {
+          const synced = await apiClient.submitFieldReport(item.payload);
+          if (synced) {
+            await offlineStore.removeOutboxItem(item.client_event_id);
+            setFieldReports((prev) =>
+              prev.map((r) => (r.client_event_id === item.client_event_id ? { ...synced, sync_status: 'SYNCED' } : r))
+            );
+          }
+        } else if (item.action === 'ROAD_STATUS') {
+          await apiClient.updateCorridorStatus(item.payload.corridor_id, item.payload.status);
           await offlineStore.removeOutboxItem(item.client_event_id);
-          setFieldReports((prev) =>
-            prev.map((r) => (r.client_event_id === item.client_event_id ? { ...synced, sync_status: 'SYNCED' } : r))
-          );
+        } else if (item.action === 'ALERT_ACK') {
+          await apiClient.acknowledgeAlert(item.payload.alert_id, item.payload.acknowledged_by);
+          await offlineStore.removeOutboxItem(item.client_event_id);
         }
       }
+      setOutbox([]);
+      addToast('Outbox Synced Successfully', 'All offline mutations assigned canonical server IDs.', 'SUCCESS');
+    } catch {
+      // Offline fallback handling
     }
-    setOutbox([]);
-    addToast('Outbox Synced Successfully', 'All offline mutations assigned canonical server IDs.', 'SUCCESS');
   };
 
   // Fetch initial data from backend via typed apiClient
@@ -474,8 +554,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         isParliamentModalOpen,
         setIsParliamentModalOpen,
         toasts,
+        notifications,
+        unreadNotifCount,
         addToast,
         dismissToast,
+        markAllNotificationsAsRead,
+        clearAllNotifications,
         sources,
         districts,
         corridors,

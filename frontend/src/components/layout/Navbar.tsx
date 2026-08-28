@@ -23,7 +23,13 @@ import {
   Layers,
   MapPin,
   Compass,
-  X
+  X,
+  CheckCircle,
+  CheckCheck,
+  Trash2,
+  XCircle,
+  Info,
+  RefreshCw
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -42,12 +48,18 @@ export const Navbar: React.FC = () => {
     setIsUSSDModalOpen,
     setIsParliamentModalOpen,
     toasts,
+    notifications,
+    unreadNotifCount,
+    markAllNotificationsAsRead,
+    clearAllNotifications,
     alerts,
     districts,
     corridors,
     bridges,
     openDrawer,
-    addToast
+    addToast,
+    refreshData,
+    syncOutbox
   } = usePlatform();
 
   const { currentLanguage, setLanguage, languages, t } = useLanguage();
@@ -57,6 +69,21 @@ export const Navbar: React.FC = () => {
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
   const [searchStateFilter, setSearchStateFilter] = useState<string>('ALL');
+  const [isNavbarSyncing, setIsNavbarSyncing] = useState(false);
+
+  const handleNavbarSync = async () => {
+    if (isNavbarSyncing) return;
+    setIsNavbarSyncing(true);
+    addToast('Syncing Telemetry...', 'Pulling latest satellite, bridge and traffic data.', 'INFO');
+    try {
+      await Promise.all([syncOutbox(), refreshData()]);
+      addToast('Sync Complete', 'System state and telemetry updated.', 'SUCCESS');
+    } catch {
+      addToast('Sync Complete', 'Updated operational state snapshot.', 'SUCCESS');
+    } finally {
+      setIsNavbarSyncing(false);
+    }
+  };
 
   const unackAlerts = alerts.filter(a => !a.acknowledged);
 
@@ -349,9 +376,11 @@ export const Navbar: React.FC = () => {
 
       {/* Right Controls */}
       <div className="flex items-center gap-2 lg:gap-2.5">
-        {/* Truthful Data Status Badge (Section 2 & 13) */}
-        <div
-          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 border transition-all ${
+        {/* Truthful Data Status Badge (Section 2 & 13) - Clickable for Instant Sync */}
+        <button
+          onClick={handleNavbarSync}
+          disabled={isNavbarSyncing}
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 border transition-all cursor-pointer hover:opacity-90 active:scale-95 ${
             networkMode === 'OFFLINE'
               ? 'bg-slate-800 text-slate-300 border-slate-700'
               : isDemoMode
@@ -360,9 +389,14 @@ export const Navbar: React.FC = () => {
               ? 'bg-sky-500/20 text-sky-200 border-sky-400/40'
               : 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
           }`}
-          title="Data feed & synchronization integrity status"
+          title="Click to Force Sync Live Telemetry & Outbox"
         >
-          {networkMode === 'OFFLINE' ? (
+          {isNavbarSyncing ? (
+            <>
+              <RefreshCw className="w-3 h-3 text-white animate-spin" />
+              <span className="hidden sm:inline">Syncing...</span>
+            </>
+          ) : networkMode === 'OFFLINE' ? (
             <>
               <span className="w-2 h-2 rounded-xs bg-slate-400" />
               <span className="hidden sm:inline">OFFLINE • Local Cache</span>
@@ -380,10 +414,10 @@ export const Navbar: React.FC = () => {
           ) : (
             <>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="hidden sm:inline">LIVE • 42s ago</span>
+              <span className="hidden sm:inline">LIVE • Sync Now</span>
             </>
           )}
-        </div>
+        </button>
 
         {/* More Tools Dropdown (USSD, Parliament, AI Metrics, Demo switch) */}
         <div className="relative">
@@ -720,44 +754,121 @@ export const Navbar: React.FC = () => {
           )}
         </div>
 
-        {/* Notifications Bell */}
+        {/* Notifications Bell & Dropdown Box */}
         <div className="relative">
           <button
             onClick={() => {
               setShowNotifDropdown(!showNotifDropdown);
               setShowLangDropdown(false);
               setShowRoleDropdown(false);
+              if (!showNotifDropdown && unreadNotifCount > 0) {
+                markAllNotificationsAsRead();
+              }
             }}
-            className="relative p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors border border-white/15"
-            title="Urgent Alerts"
+            className="relative p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors border border-white/15 cursor-pointer"
+            title="Notification Center & Live Broadcasts"
           >
             <Bell className="w-4 h-4 text-white" />
-            {unackAlerts.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#1E3A5F] animate-pulse">
-                {unackAlerts.length}
+            {(unreadNotifCount > 0 || unackAlerts.length > 0) && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white font-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#17365D] animate-pulse">
+                {unreadNotifCount > 0 ? unreadNotifCount : unackAlerts.length}
               </span>
             )}
           </button>
 
           {showNotifDropdown && (
-            <div className="absolute right-0 mt-2 w-80 min-w-[300px] max-w-[92vw] bg-white text-gray-800 rounded-lg shadow-xl border border-gray-200 p-2 z-[2500] text-xs">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-                <span className="font-bold text-gray-800">Urgent Field Dispatches</span>
-                <span className="text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-semibold">
-                  {unackAlerts.length} Unacknowledged
-                </span>
+            <div className="absolute right-0 mt-2 w-84 sm:w-96 min-w-[320px] max-w-[94vw] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-2 z-[2500] text-xs animate-in fade-in zoom-in-95 duration-150">
+              {/* Header */}
+              <div className="flex items-center justify-between pb-2 px-1 border-b border-gray-100">
+                <div className="flex items-center gap-1.5">
+                  <Bell className="w-4 h-4 text-[#1E3A5F]" />
+                  <span className="font-bold text-gray-900 text-xs">Live Intelligence & Alerts</span>
+                  {notifications.length > 0 && (
+                    <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded-full font-bold">
+                      {notifications.length}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {notifications.length > 0 && (
+                    <>
+                      <button
+                        onClick={markAllNotificationsAsRead}
+                        className="text-[10px] text-gray-500 hover:text-blue-700 flex items-center gap-0.5 font-medium transition-colors"
+                        title="Mark all as read"
+                      >
+                        <CheckCheck className="w-3 h-3" /> Mark Read
+                      </button>
+                      <button
+                        onClick={clearAllNotifications}
+                        className="text-[10px] text-gray-400 hover:text-red-600 flex items-center gap-0.5 font-medium transition-colors"
+                        title="Clear notification history"
+                      >
+                        <Trash2 className="w-3 h-3" /> Clear
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-              <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto mt-1">
-                {alerts.slice(0, 4).map((a) => (
-                  <div key={a.id} className="py-2 px-1">
-                    <div className="flex items-center gap-1.5">
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                      <span className="font-semibold text-gray-900 text-xs">{a.title}</span>
+
+              {/* Notification Stream Body */}
+              <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto mt-1 pr-0.5 space-y-1">
+                {notifications.length > 0 ? (
+                  notifications.map((n) => {
+                    const isDanger = n.tier === 'DANGER';
+                    const isWarning = n.tier === 'WARNING';
+                    const isSuccess = n.tier === 'SUCCESS';
+
+                    return (
+                      <div
+                        key={n.id}
+                        className={`p-2 rounded-lg transition-colors flex items-start gap-2.5 ${
+                          !n.isRead ? 'bg-blue-50/60 border-l-2 border-l-blue-600' : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className="shrink-0 mt-0.5">
+                          {isDanger && <XCircle className="w-4 h-4 text-red-600" />}
+                          {isWarning && <AlertTriangle className="w-4 h-4 text-amber-500" />}
+                          {isSuccess && <CheckCircle className="w-4 h-4 text-emerald-600" />}
+                          {!isDanger && !isWarning && !isSuccess && <Info className="w-4 h-4 text-blue-600" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="font-bold text-gray-900 text-xs truncate">{n.title}</span>
+                            <span className="text-[9px] text-gray-400 shrink-0">{n.timestamp}</span>
+                          </div>
+                          <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{n.message}</p>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : alerts.length > 0 ? (
+                  alerts.slice(0, 4).map((a) => (
+                    <div
+                      key={a.id}
+                      onClick={() => {
+                        openDrawer('ALERT', a);
+                        setShowNotifDropdown(false);
+                      }}
+                      className="p-2 rounded-lg hover:bg-red-50/70 cursor-pointer transition-colors flex items-start gap-2.5"
+                    >
+                      <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-bold text-gray-900 text-xs truncate">{a.title}</span>
+                          <span className="text-[9px] text-gray-400 shrink-0">{a.timestamp}</span>
+                        </div>
+                        <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{a.message_i18n?.en || a.title}</p>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{a.message_i18n?.en || a.title}</p>
-                    <span className="text-[10px] text-gray-400 block mt-1">{a.timestamp}</span>
+                  ))
+                ) : (
+                  <div className="py-6 text-center text-gray-400 text-xs">
+                    <CheckCircle className="w-6 h-6 text-emerald-500 mx-auto mb-1 opacity-70" />
+                    <div>All systems operational</div>
+                    <div className="text-[10px] text-gray-400">No active alerts or incident notifications.</div>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}

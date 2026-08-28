@@ -52,7 +52,29 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
   highlightRoute,
   className = ''
 }) => {
-  const { districts, corridors, bridges, depots, vehicles, openDrawer, isSidebarCollapsed, openProvenanceModal } = usePlatform();
+  const {
+    districts,
+    corridors,
+    bridges,
+    depots,
+    vehicles,
+    openDrawer,
+    isSidebarCollapsed,
+    openProvenanceModal,
+    selectedStateFilter
+  } = usePlatform();
+
+  const visibleDistricts = districts.filter(d => selectedStateFilter === 'ALL' || d.state_id === selectedStateFilter);
+  const visibleCorridors = corridors.filter(c => {
+    if (selectedStateFilter === 'ALL') return true;
+    const fromId = c.from_district || '';
+    const toId = c.to_district || '';
+    return fromId.startsWith(selectedStateFilter) || toId.startsWith(selectedStateFilter);
+  });
+  const visibleBridges = bridges.filter(b => {
+    if (selectedStateFilter === 'ALL') return true;
+    return b.id?.startsWith(`BR-${selectedStateFilter}`) || b.location?.toLowerCase().includes(selectedStateFilter.toLowerCase());
+  });
 
   // Layer Visibility Controls
   const [showRoads, setShowRoads] = useState(true);
@@ -96,7 +118,7 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
 
         {/* 1. Road Segments Polylines */}
         {showRoads &&
-          corridors.map((seg) => {
+          visibleCorridors.map((seg) => {
             const color = getStatusColor(seg.status);
             const isClosed = seg.status === 'CLOSED';
             const isOpen = seg.status === 'OPEN';
@@ -165,7 +187,7 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
 
         {/* 2. District Headquarter Markers */}
         {showDistricts &&
-          districts.map((d) => (
+          visibleDistricts.map((d) => (
             <CircleMarker
               key={d.id}
               center={[d.lat, d.lng]}
@@ -211,7 +233,7 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
 
         {/* 3. Strategic Bridge IoT Sensors */}
         {showBridges &&
-          bridges.map((br) => (
+          visibleBridges.map((br) => (
             <Marker
               key={br.id}
               position={[br.lat, br.lng]}

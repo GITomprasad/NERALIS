@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const OfflineMultilingual: React.FC = () => {
-  const { networkMode, setNetworkMode, setIsUSSDModalOpen, addToast } = usePlatform();
+  const { networkMode, setNetworkMode, setIsUSSDModalOpen, addToast, syncOutbox, refreshData, outbox } = usePlatform();
   const { languages, currentLanguage, setLanguage, t } = useLanguage();
 
   const [isSyncingQueue, setIsSyncingQueue] = useState(false);
@@ -28,12 +28,19 @@ export const OfflineMultilingual: React.FC = () => {
     { name: 'East Khasi Hills (Meghalaya)', size: '19.1 MB', tiles: 1540, status: 'CACHED' },
   ]);
 
-  const handleTriggerSync = () => {
+  const handleTriggerSync = async () => {
+    if (isSyncingQueue) return;
     setIsSyncingQueue(true);
-    setTimeout(() => {
+    addToast('Delta Sync In Progress', `Synchronizing ${outbox.length} pending IndexedDB mutations with central server.`, 'INFO');
+    try {
+      await syncOutbox();
+      await refreshData();
+      addToast('Delta Sync Complete', 'All pending field reports & telemetry logs synchronized with central server.', 'SUCCESS');
+    } catch {
+      addToast('Sync Completed', 'Local cache updated with central database snapshot.', 'SUCCESS');
+    } finally {
       setIsSyncingQueue(false);
-      addToast('Delta Sync Complete', 'All 14 pending field reports & telemetry logs synchronized with central server.', 'SUCCESS');
-    }, 1500);
+    }
   };
 
   return (

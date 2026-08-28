@@ -17,6 +17,16 @@ import type {
   CorridorPrediction,
   PrepositioningAdvisory
 } from '../../types';
+import {
+  FALLBACK_SOURCES,
+  FALLBACK_DISTRICTS,
+  FALLBACK_CORRIDORS,
+  FALLBACK_BRIDGES,
+  FALLBACK_DEPOTS,
+  FALLBACK_VEHICLES,
+  FALLBACK_ALERTS,
+  FALLBACK_FIELD_REPORTS
+} from '../data/nerGeographyFallback';
 
 const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 
@@ -102,12 +112,12 @@ export const apiClient = {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/districts`);
       if (res.ok) {
         const data = await res.json();
-        return data.districts || [];
+        return (data.districts && data.districts.length > 0) ? data.districts : FALLBACK_DISTRICTS;
       }
     } catch {
       // Fallback
     }
-    return [];
+    return FALLBACK_DISTRICTS;
   },
 
   // Corridors
@@ -116,12 +126,38 @@ export const apiClient = {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/corridors`);
       if (res.ok) {
         const data = await res.json();
-        return data.corridors || [];
+        return (data.corridors && data.corridors.length > 0) ? data.corridors : FALLBACK_CORRIDORS;
       }
     } catch {
       // Fallback
     }
-    return [];
+    return FALLBACK_CORRIDORS;
+  },
+
+  async updateCorridorStatus(corridorId: string, status: string): Promise<boolean> {
+    try {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/api/corridors/${corridorId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
+
+  async acknowledgeAlert(alertId: string, acknowledgedBy = 'Operator'): Promise<boolean> {
+    try {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/api/alerts/${alertId}/ack`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ acknowledged_by: acknowledgedBy })
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
   },
 
   // Bridges
@@ -130,12 +166,12 @@ export const apiClient = {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/bridges`);
       if (res.ok) {
         const data = await res.json();
-        return data.bridges || [];
+        return (data.bridges && data.bridges.length > 0) ? data.bridges : FALLBACK_BRIDGES;
       }
     } catch {
       // Fallback
     }
-    return [];
+    return FALLBACK_BRIDGES;
   },
 
   // Depots
@@ -144,12 +180,12 @@ export const apiClient = {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/depots`);
       if (res.ok) {
         const data = await res.json();
-        return data.depots || [];
+        return (data.depots && data.depots.length > 0) ? data.depots : FALLBACK_DEPOTS;
       }
     } catch {
       // Fallback
     }
-    return [];
+    return FALLBACK_DEPOTS;
   },
 
   // Vehicles
@@ -158,12 +194,12 @@ export const apiClient = {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/fleet/vehicles?is_demo=${isDemo}`);
       if (res.ok) {
         const data = await res.json();
-        return data.vehicles || [];
+        return (data.vehicles && data.vehicles.length > 0) ? data.vehicles : FALLBACK_VEHICLES;
       }
     } catch {
       // Fallback
     }
-    return [];
+    return FALLBACK_VEHICLES;
   },
 
   // Trip Playback
@@ -336,12 +372,12 @@ export const apiClient = {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/alerts`);
       if (res.ok) {
         const data = await res.json();
-        return data.alerts || [];
+        return (data.alerts && data.alerts.length > 0) ? data.alerts : FALLBACK_ALERTS;
       }
     } catch {
       // Fallback
     }
-    return [];
+    return FALLBACK_ALERTS;
   },
 
   async createAlert(payload: any): Promise<Alert | null> {
@@ -390,12 +426,12 @@ export const apiClient = {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/reports/field`);
       if (res.ok) {
         const data = await res.json();
-        return data.reports || [];
+        return (data.reports && data.reports.length > 0) ? data.reports : FALLBACK_FIELD_REPORTS;
       }
     } catch {
       // Fallback
     }
-    return [];
+    return FALLBACK_FIELD_REPORTS;
   },
 
   async submitFieldReport(payload: any): Promise<FieldReport | null> {

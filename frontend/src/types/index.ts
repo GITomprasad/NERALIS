@@ -83,6 +83,9 @@ export interface Bridge {
   cctv_status: string;
   status: string;
   load_capacity_tons: number;
+  sensor_last_ping?: string;
+  sensor_status?: string;
+  scour_depth_m?: number;
   source?: string;
   observed_at?: string;
   verification_status?: VerificationStatus;
@@ -125,6 +128,7 @@ export interface Vehicle {
   network_mode: string;
   cold_chain?: {
     sensor_id: string;
+    profile?: string;
     current_temp_c: number;
     target_min_c: number;
     target_max_c: number;
@@ -132,6 +136,7 @@ export interface Vehicle {
     door_locked: boolean;
     temp_history: number[];
   } | null;
+  cold_chain_profile?: string;
   fuel_monitor: {
     tank_level_pct: number;
     consumption_rate_lph: number;
@@ -160,6 +165,7 @@ export interface Alert {
   escalation_sla_mins: number;
   dispatched_channels: string[];
   target_recipients_count: number;
+  dispatch_status?: string;
   message_i18n: Record<string, string>;
   source?: string;
   verification_status?: VerificationStatus;
