@@ -72,6 +72,17 @@ interface PlatformContextType {
   previousModule: ActiveModule | null;
   userRole: UserRole;
   setUserRole: (role: UserRole) => void;
+  currentUser: any | null;
+  isAuthModalOpen: boolean;
+  authModalMode: 'SIGNIN' | 'SIGNUP';
+  openAuthModal: (mode?: 'SIGNIN' | 'SIGNUP') => void;
+  closeAuthModal: () => void;
+  login: (email: string, password: string) => Promise<boolean>;
+  loginWithGoogle: (payload?: { email?: string; name?: string; role?: UserRole }) => Promise<boolean>;
+  signup: (payload: any) => Promise<boolean>;
+  logout: () => void;
+  quickSwitchRole: (role: UserRole) => void;
+  demoAccounts: any[];
   isAdminOrAuthority: boolean;
   isFullAdmin: boolean;
   networkMode: NetworkMode;
@@ -157,6 +168,128 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [userRole, setUserRole] = useState<UserRole>('STATE_ADMIN');
   const [networkMode, setNetworkMode] = useState<NetworkMode>('ONLINE');
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
+
+  // Authentication State
+  const [currentUser, setCurrentUser] = useState<any | null>(() => {
+    try {
+      const saved = localStorage.getItem('neralis_user_session');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'SIGNIN' | 'SIGNUP'>('SIGNIN');
+  const [demoAccounts, setDemoAccounts] = useState<any[]>([]);
+
+  // Sync userRole with currentUser on mount
+  useEffect(() => {
+    if (currentUser?.frontend_role) {
+      setUserRole(currentUser.frontend_role as UserRole);
+    }
+  }, [currentUser]);
+
+  // Load demo accounts
+  useEffect(() => {
+    apiClient.getDemoAccounts().then((accs) => {
+      if (accs && accs.length > 0) setDemoAccounts(accs);
+    });
+  }, []);
+
+  const openAuthModal = (mode: 'SIGNIN' | 'SIGNUP' = 'SIGNIN') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const res = await apiClient.signIn(email, password);
+      if (res?.success && res.user) {
+        setCurrentUser(res.user);
+        setUserRole(res.user.frontend_role as UserRole);
+        localStorage.setItem('neralis_user_session', JSON.stringify(res.user));
+        addToast('Authentication Verified', `Logged in as ${res.user.name} (${res.user.frontend_role}).`, 'SUCCESS');
+        setIsAuthModalOpen(false);
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      addToast('Authentication Failed', err.message || 'Invalid credentials', 'DANGER');
+      return false;
+    }
+  };
+
+  const loginWithGoogle = async (payload?: { email?: string; name?: string; role?: UserRole }): Promise<boolean> => {
+    try {
+      const googleData = {
+        email: payload?.email || 'officer.google@gmail.com',
+        name: payload?.name || 'Google Verified Officer',
+        role: payload?.role || 'CITIZEN'
+      };
+      const res = await apiClient.signInWithGoogle(googleData);
+      if (res?.success && res.user) {
+        setCurrentUser(res.user);
+        setUserRole(res.user.frontend_role as UserRole);
+        localStorage.setItem('neralis_user_session', JSON.stringify(res.user));
+        addToast('Google Sign-In Successful', `Welcome, ${res.user.name}!`, 'SUCCESS');
+        setIsAuthModalOpen(false);
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      addToast('Google Sign-In Failed', err.message || 'Unable to connect to Google SSO', 'DANGER');
+      return false;
+    }
+  };
+
+  const signup = async (payload: any): Promise<boolean> => {
+    try {
+      const res = await apiClient.signUp(payload);
+      if (res?.success && res.user) {
+        setCurrentUser(res.user);
+        setUserRole(res.user.frontend_role as UserRole);
+        localStorage.setItem('neralis_user_session', JSON.stringify(res.user));
+        addToast('Registration Successful', `Welcome to NERALIS, ${res.user.name}!`, 'SUCCESS');
+        setIsAuthModalOpen(false);
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      addToast('Registration Error', err.message || 'Could not register user', 'DANGER');
+      return false;
+    }
+  };
+
+  const logout = () => {
+    apiClient.logout().catch(() => {});
+    setCurrentUser(null);
+    setUserRole('CITIZEN');
+    localStorage.removeItem('neralis_user_session');
+    addToast('Session Ended', 'You have been signed out successfully.', 'INFO');
+  };
+
+  const quickSwitchRole = (role: UserRole) => {
+    setUserRole(role);
+    const demo = demoAccounts.find((d) => d.role_key === role);
+    if (demo) {
+      const demoUser = {
+        id: `USR-${role}`,
+        name: demo.name,
+        email: demo.email,
+        role: role,
+        frontend_role: role,
+        organization: demo.description
+      };
+      setCurrentUser(demoUser);
+      localStorage.setItem('neralis_user_session', JSON.stringify(demoUser));
+    }
+    addToast('Governance Role Switched', `Active governance permission: ${role}`, 'INFO');
+  };
 
   const toggleDemoMode = () => {
     setIsDemoMode((prev) => {
@@ -521,6 +654,17 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         previousModule,
         userRole,
         setUserRole,
+        currentUser,
+        isAuthModalOpen,
+        authModalMode,
+        openAuthModal,
+        closeAuthModal,
+        login,
+        loginWithGoogle,
+        signup,
+        logout,
+        quickSwitchRole,
+        demoAccounts,
         isAdminOrAuthority,
         isFullAdmin,
         networkMode,

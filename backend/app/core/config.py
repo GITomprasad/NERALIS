@@ -24,6 +24,7 @@ class Settings:
     ]
 
     # Security & Role Authorization
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "neralis-super-secure-secret-key-2026")
     API_KEY_HEADER: str = "X-API-Key"
     ROLE_HEADER: str = "X-Role"
     DEFAULT_API_KEY: str = os.getenv("NERALIS_API_KEY", "neralis-sec-key-2026-auth")

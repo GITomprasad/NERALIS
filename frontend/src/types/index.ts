@@ -271,3 +271,37 @@ export interface PrepositioningAdvisory {
     confidence: number;
   };
 }
+
+export type GovernanceRole = 'CITIZEN' | 'STATE_ADMIN' | 'DISTRICT_COLLECTOR' | 'LOGISTICS_OPERATOR' | 'FIELD_INSPECTOR';
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  frontend_role: GovernanceRole;
+  state?: string;
+  district?: string;
+  organization?: string;
+  phone?: string;
+  token?: string;
+  created_at?: string;
+}
+
+export interface DemoAccount {
+  role_key: GovernanceRole;
+  label: string;
+  badge: string;
+  email: string;
+  password?: string;
+  name: string;
+  description: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  token: string;
+  user: UserProfile;
+}
+

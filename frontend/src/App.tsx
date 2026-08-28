@@ -10,6 +10,7 @@ import { USSDPhoneModal } from './components/common/USSDPhoneModal';
 import { ParliamentReportModal } from './components/reports/ParliamentReportModal';
 import { DataProvenanceModal } from './components/common/DataProvenanceModal';
 import { MLModelMetricsModal } from './components/common/MLModelMetricsModal';
+import { AuthModal } from './components/common/AuthModal';
 
 // Module Components
 import { AccessibilityMonitor } from './components/modules/AccessibilityMonitor';
@@ -147,6 +148,7 @@ const MainLayout: React.FC = () => {
       <ParliamentReportModal />
       <DataProvenanceModal />
       <MLModelMetricsModal />
+      <AuthModal />
       <ToastContainer />
     </div>
   );

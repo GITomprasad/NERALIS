@@ -86,9 +86,75 @@ def init_and_seed_db():
                 db.add(FieldReportModel(**r))
             db.commit()
 
+        # 10. Seed Default Governance Accounts for all 5 Roles
+        from app.db.models import UserModel
+        from app.core.security import hash_password
+        if db.query(UserModel).count() == 0:
+            default_users = [
+                {
+                    "id": "USR-CITIZEN-001",
+                    "name": "Dr. Ramesh Sarma",
+                    "email": "citizen@neralis.gov.in",
+                    "hashed_password": hash_password("citizen123", salt="salt_ner_citizen"),
+                    "role": "PUBLIC_VIEWER",
+                    "state": "Assam",
+                    "district": "Kamrup Metropolitan",
+                    "organization": "Public Logistics Observer / Citizen",
+                    "phone": "+91 94350 12345"
+                },
+                {
+                    "id": "USR-ADMIN-001",
+                    "name": "Shri J. K. Lyngdoh (IAS)",
+                    "email": "admin@mdoner.gov.in",
+                    "hashed_password": hash_password("admin123", salt="salt_ner_admin"),
+                    "role": "ADMIN",
+                    "state": "Delhi / NER HQ",
+                    "district": "MDoNER Central Command",
+                    "organization": "Ministry of Development of North Eastern Region (MDoNER)",
+                    "phone": "+91 11 2306 1234"
+                },
+                {
+                    "id": "USR-COLLECTOR-001",
+                    "name": "Ms. Ananya Barman (IAS)",
+                    "email": "collector.kamrup@assam.gov.in",
+                    "hashed_password": hash_password("collector123", salt="salt_ner_collector"),
+                    "role": "DISTRICT_COLLECTOR",
+                    "state": "Assam",
+                    "district": "Kamrup Metropolitan",
+                    "organization": "District Disaster Management Authority (DDMA)",
+                    "phone": "+91 98640 23456"
+                },
+                {
+                    "id": "USR-FLEET-001",
+                    "name": "Vikram Sonowal",
+                    "email": "fleet.lead@nerlogistics.in",
+                    "hashed_password": hash_password("fleet123", salt="salt_ner_fleet"),
+                    "role": "TRANSPORT_OPERATOR",
+                    "state": "Assam",
+                    "district": "Guwahati Hub",
+                    "organization": "NER State Transport & Food Logistics Grid",
+                    "phone": "+91 97060 34567"
+                },
+                {
+                    "id": "USR-FIELD-001",
+                    "name": "Er. Tashi Wangchuk",
+                    "email": "inspector.pwd@meghalaya.gov.in",
+                    "hashed_password": hash_password("field123", salt="salt_ner_field"),
+                    "role": "PWD_ENGINEER",
+                    "state": "Arunachal Pradesh",
+                    "district": "Tawang",
+                    "organization": "Public Works Department (PWD) / SDRF Field Inspector",
+                    "phone": "+91 94360 45678"
+                }
+            ]
+            for u in default_users:
+                db.add(UserModel(**u))
+            db.commit()
+
     finally:
         db.close()
 
 if __name__ == "__main__":
     init_and_seed_db()
     print("Database initialized and seeded successfully!")
+

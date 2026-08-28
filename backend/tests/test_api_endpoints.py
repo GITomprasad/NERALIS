@@ -110,6 +110,65 @@ class TestApiEndpoints(unittest.TestCase):
 
         lead_res = self.client.get("/api/reports/leaderboard")
         self.assertEqual(lead_res.status_code, 200)
+        self.assertIn("leaderboard", lead_res.json())
+
+    def test_auth_signup_and_signin(self):
+        # 1. Demo accounts endpoint
+        demo_res = self.client.get("/api/auth/demo-accounts")
+        self.assertEqual(demo_res.status_code, 200)
+        self.assertEqual(len(demo_res.json()["accounts"]), 5)
+
+        # 2. Sign in with seeded admin account
+        signin_res = self.client.post("/api/auth/signin", json={
+            "email": "admin@mdoner.gov.in",
+            "password": "admin123"
+        })
+        self.assertEqual(signin_res.status_code, 200)
+        self.assertTrue(signin_res.json()["success"])
+        self.assertEqual(signin_res.json()["user"]["role"], "ADMIN")
+        self.assertEqual(signin_res.json()["user"]["frontend_role"], "STATE_ADMIN")
+
+        # 3. Sign up a new user
+        import uuid
+        unique_email = f"test.inspector.{uuid.uuid4().hex[:8]}@arunachal.gov.in"
+        signup_res = self.client.post("/api/auth/signup", json={
+            "name": "Er. Pemba Dorjee",
+            "email": unique_email,
+            "password": "password123",
+            "role": "FIELD_INSPECTOR",
+            "state": "Arunachal Pradesh",
+            "district": "West Kameng",
+            "organization": "PWD Arunachal Pradesh",
+            "phone": "+91 94361 99999"
+        })
+        self.assertEqual(signup_res.status_code, 201)
+        self.assertTrue(signup_res.json()["success"])
+        self.assertEqual(signup_res.json()["user"]["frontend_role"], "FIELD_INSPECTOR")
+
+        # 4. Sign in with newly registered user
+        new_signin = self.client.post("/api/auth/signin", json={
+            "email": unique_email,
+            "password": "password123"
+        })
+        self.assertEqual(new_signin.status_code, 200)
+        self.assertEqual(new_signin.json()["user"]["email"], unique_email)
+
+        # 5. Invalid credentials rejection
+        bad_signin = self.client.post("/api/auth/signin", json={
+            "email": unique_email,
+            "password": "wrongpassword"
+        })
+        self.assertEqual(bad_signin.status_code, 401)
+
+        # 6. Google SSO Authentication
+        google_res = self.client.post("/api/auth/google", json={
+            "name": "Dr. Google Officer",
+            "email": f"google.user.{uuid.uuid4().hex[:8]}@gmail.com",
+            "role": "CITIZEN"
+        })
+        self.assertEqual(google_res.status_code, 200)
+        self.assertTrue(google_res.json()["success"])
+        self.assertEqual(google_res.json()["user"]["organization"], "Google Verified Account")
 
     def test_executive_and_parliament_reports(self):
         parl_res = self.client.get("/api/reports/parliament")

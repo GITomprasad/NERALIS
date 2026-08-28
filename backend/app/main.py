@@ -20,6 +20,7 @@ from app.api.fleet import router as fleet_router
 from app.api.predictions import router as predictions_router
 from app.api.alerts import router as alerts_router
 from app.api.reports import router as reports_router
+from app.api.auth import router as auth_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -72,3 +73,4 @@ app.include_router(fleet_router, prefix=settings.API_V1_PREFIX)
 app.include_router(predictions_router, prefix=settings.API_V1_PREFIX)
 app.include_router(alerts_router, prefix=settings.API_V1_PREFIX)
 app.include_router(reports_router, prefix=settings.API_V1_PREFIX)
+app.include_router(auth_router, prefix=settings.API_V1_PREFIX)

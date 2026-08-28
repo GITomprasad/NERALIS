@@ -262,3 +262,20 @@ class AuditLogModel(Base):
     payload_summary = Column(JSON, default=dict)
     outcome = Column(String(50), default="SUCCESS")
     latency_ms = Column(Float, nullable=True)
+
+
+class UserModel(Base):
+    __tablename__ = "users"
+
+    id = Column(String(50), primary_key=True)
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(200), nullable=False)
+    role = Column(String(50), default="PUBLIC_VIEWER", nullable=False)
+    state = Column(String(100), nullable=True)
+    district = Column(String(100), nullable=True)
+    organization = Column(String(200), nullable=True)
+    phone = Column(String(30), nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
