@@ -40,64 +40,64 @@ export const KPIBar: React.FC = () => {
   };
 
   return (
-    <div className="bg-white border-b border-[#D1D5DB] px-4 py-2 flex flex-wrap items-center justify-between gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] z-10">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 lg:gap-2.5 w-full xl:w-auto flex-1">
+    <div className="bg-white border-b border-[#D1D5DB] px-3 sm:px-4 py-1.5 sm:py-2 flex flex-wrap items-center justify-between gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)] z-10">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 sm:gap-2 lg:gap-2.5 w-full xl:w-auto flex-1 min-w-0">
         {/* Chip 1: Accessibility (Teal) */}
-        <div className="bg-[#F0FDF4] border border-emerald-200 rounded-lg px-3 py-1.5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-            <CheckCircle2 className="w-4 h-4 text-[#0F6B6B]" />
+        <div className="bg-[#F0FDF4] border border-emerald-200 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0F6B6B]" />
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider">
+            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-emerald-800 tracking-wider truncate">
               Accessibility
             </div>
-            <div className="text-xs font-black text-gray-900 leading-tight">
-              {openPct}% accessible <span className="text-[10px] font-normal text-emerald-700">• {openCorridors}/{totalCorridors} roads</span>
+            <div className="text-xs font-black text-gray-900 leading-tight truncate">
+              {openPct}% <span className="text-[10px] font-normal text-emerald-700 hidden sm:inline">• {openCorridors}/{totalCorridors} roads</span>
             </div>
           </div>
         </div>
 
         {/* Chip 2: High Risk Corridors (Amber) */}
-        <div className="bg-[#FFFBEB] border border-amber-200 rounded-lg px-3 py-1.5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-            <TrendingUp className="w-4 h-4 text-[#B85C00]" />
+        <div className="bg-[#FFFBEB] border border-amber-200 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+            <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B85C00]" />
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] uppercase font-bold text-amber-800 tracking-wider">
+            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-amber-800 tracking-wider truncate">
               High Risk
             </div>
-            <div className="text-xs font-black text-gray-900 leading-tight">
-              0{highRiskCorridors} corridors <span className="text-[10px] font-normal text-amber-700">• +2 today</span>
+            <div className="text-xs font-black text-gray-900 leading-tight truncate">
+              0{highRiskCorridors} <span className="text-[10px] font-normal text-amber-700 hidden sm:inline">corridors • +2</span>
             </div>
           </div>
         </div>
 
         {/* Chip 3: Active Vehicles (Blue) */}
-        <div className="bg-[#EFF6FF] border border-blue-200 rounded-lg px-3 py-1.5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-            <Truck className="w-4 h-4 text-[#2563A8]" />
+        <div className="bg-[#EFF6FF] border border-blue-200 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+            <Truck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2563A8]" />
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] uppercase font-bold text-[#17365D] tracking-wider">
-              Active Vehicles
+            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-[#17365D] tracking-wider truncate">
+              Vehicles
             </div>
-            <div className="text-xs font-black text-gray-900 leading-tight">
-              {activeVehiclesCount} <span className="text-[10px] font-normal text-blue-700">• 98% reporting</span>
+            <div className="text-xs font-black text-gray-900 leading-tight truncate">
+              {activeVehiclesCount} <span className="text-[10px] font-normal text-blue-700 hidden sm:inline">• 98% reporting</span>
             </div>
           </div>
         </div>
 
         {/* Chip 4: Active Alerts (Red) */}
-        <div className="bg-[#FEF2F2] border border-red-200 rounded-lg px-3 py-1.5 flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-            <AlertTriangle className="w-4 h-4 text-[#9B1B1B]" />
+        <div className="bg-[#FEF2F2] border border-red-200 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+            <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#9B1B1B]" />
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] uppercase font-bold text-red-800 tracking-wider">
-              Active Alerts
+            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-red-800 tracking-wider truncate">
+              Alerts
             </div>
-            <div className="text-xs font-black text-gray-900 leading-tight">
-              0{activeAlertsCount} critical <span className="text-[10px] font-normal text-red-700">• 0{totalAlertsCount} total</span>
+            <div className="text-xs font-black text-gray-900 leading-tight truncate">
+              0{activeAlertsCount} <span className="text-[10px] font-normal text-red-700 hidden sm:inline">critical • 0{totalAlertsCount}</span>
             </div>
           </div>
         </div>
@@ -105,19 +105,19 @@ export const KPIBar: React.FC = () => {
         {/* Chip 5: Data Freshness (Live Dot - Clickable to Sync) */}
         <div
           onClick={handleSync}
-          className="bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 cursor-pointer rounded-lg px-3 py-1.5 flex items-center gap-2.5 col-span-2 sm:col-span-1 transition-all"
+          className="bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 cursor-pointer rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 col-span-2 sm:col-span-1 transition-all min-w-0"
           title="Click to Refresh Data & Sync Telemetry"
         >
-          <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
-            <RefreshCw className={`w-4 h-4 text-slate-700 ${isSyncing ? 'animate-spin text-blue-600' : ''}`} />
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
+            <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700 ${isSyncing ? 'animate-spin text-blue-600' : ''}`} />
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">
-              Data Freshness
+            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-600 tracking-wider truncate">
+              Freshness
             </div>
-            <div className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+            <div className="text-xs font-bold text-gray-900 flex items-center gap-1.5 truncate">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{isSyncing ? 'Syncing...' : 'Live • Now'}</span>
+              <span>{isSyncing ? 'Syncing...' : 'Live'}</span>
             </div>
           </div>
         </div>
@@ -127,7 +127,7 @@ export const KPIBar: React.FC = () => {
       <button
         onClick={handleSync}
         disabled={isSyncing}
-        className={`px-3 py-2 rounded-lg transition-all border flex items-center gap-2 text-xs font-bold cursor-pointer ${
+        className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all border flex items-center gap-1.5 text-xs font-bold cursor-pointer hidden xl:flex ${
           isSyncing
             ? 'bg-blue-100 text-blue-800 border-blue-300'
             : 'text-gray-700 hover:text-[#1E3A5F] hover:bg-[#EBF3FB] border-gray-300 bg-gray-50/80 shadow-xs'

@@ -64,60 +64,61 @@ export const AccessibilityMonitor: React.FC = () => {
     <div className="w-full h-full flex flex-col relative">
       {/* TAB 1: FULL-COVERAGE LIVE GIS MAP */}
       {activeTab === 'MAP' && (
-        <div className="relative w-full flex-1 h-[calc(100vh-112px)] min-h-[580px] overflow-hidden bg-slate-900">
+        <div className="relative w-full flex-1 h-[calc(100vh-108px)] sm:h-[calc(100vh-112px)] min-h-[400px] sm:min-h-[580px] overflow-hidden bg-slate-900">
           {/* Main Map Edge-to-Edge */}
           <NerGisMap height="100%" className="h-full w-full" />
 
           {/* Floating Top Glassmorphism HUD Controls */}
-          <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-wrap items-center justify-between gap-2.5 pointer-events-none">
+          <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 z-[1000] flex flex-wrap items-center justify-between gap-1.5 sm:gap-2.5 pointer-events-none">
             {/* Left Title & Status Indicator */}
-            <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-gray-300 shadow-md flex items-center gap-3">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+            <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-gray-300 shadow-md flex items-center gap-2 sm:gap-3">
+              <div className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-emerald-500 animate-ping" />
               <div>
                 <div className="flex items-center gap-1.5 font-black text-xs text-[#1E3A5F]">
-                  <span>NER GIS Grid Command Center</span>
+                  <span className="hidden sm:inline">NER GIS Grid Command Center</span>
+                  <span className="sm:hidden">NER Grid</span>
                   <span className="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.2 rounded font-bold">
                     89 Districts Live
                   </span>
                 </div>
-                <div className="text-[10px] text-gray-500 hidden sm:block">
+                <div className="text-[10px] text-gray-500 hidden md:block">
                   Live satellite telemetry, bridge sensors & corridor hazards
                 </div>
               </div>
             </div>
 
             {/* Center Tab Switcher */}
-            <div className="pointer-events-auto bg-white/95 backdrop-blur-md p-1 rounded-xl border border-gray-300 shadow-md flex items-center gap-1 text-xs font-bold">
+            <div className="pointer-events-auto bg-white/95 backdrop-blur-md p-1 rounded-xl border border-gray-300 shadow-md flex items-center gap-1 text-xs font-bold overflow-x-auto max-w-[95vw] sm:max-w-none">
               <button
                 onClick={() => setActiveTab('MAP')}
-                className="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 bg-[#1E3A5F] text-white shadow-xs"
+                className="px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 bg-[#1E3A5F] text-white shadow-xs whitespace-nowrap"
               >
                 🗺️ <span className="hidden sm:inline">GIS</span> Map
               </button>
               <button
                 onClick={() => setActiveTab('DISTRICTS')}
-                className="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-gray-700 hover:bg-gray-100"
+                className="px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
               >
-                📍 89 Districts
+                📍 <span className="hidden sm:inline">89 </span>Districts
               </button>
               <button
                 onClick={() => setActiveTab('BRIDGES')}
-                className="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-gray-700 hover:bg-gray-100"
+                className="px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
               >
-                🌉 Bridge IoT ({bridges.length})
+                🌉 Bridges <span className="hidden sm:inline">({bridges.length})</span>
               </button>
               <button
                 onClick={() => setActiveTab('SATELLITE')}
-                className="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-gray-700 hover:bg-gray-100"
+                className="px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
               >
                 🛰️ Sentinel-2
               </button>
             </div>
 
             {/* Right: State Filter & Fullscreen Toggle */}
-            <div className="pointer-events-auto flex items-center gap-2">
+            <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2">
               {/* State Filter Dropdown */}
-              <div className="bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-gray-300 shadow-md flex items-center gap-1.5 text-xs font-bold">
+              <div className="bg-white/95 backdrop-blur-md px-2 sm:px-2.5 py-1.5 rounded-xl border border-gray-300 shadow-md flex items-center gap-1 sm:gap-1.5 text-xs font-bold">
                 <Filter className="w-3.5 h-3.5 text-blue-700" />
                 <span className="text-gray-500 text-[10px] hidden md:inline">State:</span>
                 <select
@@ -125,7 +126,7 @@ export const AccessibilityMonitor: React.FC = () => {
                   onChange={(e) => setSelectedStateFilter(e.target.value)}
                   className="bg-transparent text-gray-800 text-xs font-bold focus:outline-none cursor-pointer"
                 >
-                  <option value="ALL">All 8 States</option>
+                  <option value="ALL">All States</option>
                   <option value="AS">Assam (AS)</option>
                   <option value="AR">Arunachal (AR)</option>
                   <option value="MN">Manipur (MN)</option>
@@ -140,7 +141,7 @@ export const AccessibilityMonitor: React.FC = () => {
               {/* Sidebar Collapse / Full Screen Toggle */}
               <button
                 onClick={toggleSidebar}
-                className="bg-white/95 backdrop-blur-md p-2 rounded-xl border border-gray-300 shadow-md text-gray-700 hover:text-[#1E3A5F] hover:bg-white transition-all text-xs font-bold flex items-center gap-1"
+                className="bg-white/95 backdrop-blur-md p-1.5 sm:p-2 rounded-xl border border-gray-300 shadow-md text-gray-700 hover:text-[#1E3A5F] hover:bg-white transition-all text-xs font-bold flex items-center gap-1 hidden lg:flex"
                 title={isSidebarCollapsed ? 'Expand Sidebar Navigation' : 'Maximize Map Canvas'}
               >
                 {isSidebarCollapsed ? (
@@ -390,8 +391,8 @@ export const AccessibilityMonitor: React.FC = () => {
                 </div>
               </div>
 
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <table className="w-full text-left table-official">
+              <div className="border border-gray-200 rounded-lg overflow-x-auto">
+                <table className="w-full text-left table-official min-w-[700px]">
                   <thead>
                     <tr>
                       <th>District / State</th>

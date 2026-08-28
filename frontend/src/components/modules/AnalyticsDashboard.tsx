@@ -243,8 +243,8 @@ export const AnalyticsDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <table className="w-full text-left table-official">
+        <div className="border border-gray-200 rounded-lg overflow-x-auto">
+          <table className="w-full text-left table-official min-w-[600px]">
             <thead>
               <tr>
                 <th>Corridor ID</th>

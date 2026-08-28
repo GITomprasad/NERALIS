@@ -143,8 +143,8 @@ export const OfflineMultilingual: React.FC = () => {
           Bandwidth Optimisation Techniques & Savings Metrics
         </span>
 
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <table className="w-full text-left table-official">
+        <div className="border border-gray-200 rounded-lg overflow-x-auto">
+          <table className="w-full text-left table-official min-w-[550px]">
             <thead>
               <tr>
                 <th>Technique</th>

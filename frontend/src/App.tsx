@@ -48,22 +48,34 @@ const getModuleMeta = (mod: ActiveModule) => {
 };
 
 const MainLayout: React.FC = () => {
-  const { activeModule, goBack, goToLanding, previousModule } = usePlatform();
+  const { activeModule, goBack, goToLanding, previousModule, isSidebarCollapsed, setIsSidebarCollapsed } = usePlatform();
   const currentMeta = getModuleMeta(activeModule);
   const prevMeta = previousModule ? getModuleMeta(previousModule) : null;
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       {/* Top Navbar */}
-      <Navbar />
+      <Navbar onMobileMenuToggle={() => setMobileMenuOpen((v) => !v)} />
 
       {/* KPI Status Chips Bar */}
       <KPIBar />
 
       {/* Main Body with Sidebar + Content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Mobile Sidebar Overlay Backdrop */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-[3000] lg:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Left Navigation Sidebar */}
-        <Sidebar />
+        <Sidebar
+          mobileOpen={mobileMenuOpen}
+          onMobileClose={() => setMobileMenuOpen(false)}
+        />
 
         {/* Dynamic Center Module Canvas */}
         {activeModule === 'ACCESSIBILITY' ? (
@@ -73,19 +85,19 @@ const MainLayout: React.FC = () => {
           </main>
         ) : (
           /* Secondary Module Container with Universal Back Navigation Bar */
-          <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-[#F8FAFC]">
-            <div className="max-w-7xl mx-auto space-y-4">
+          <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 bg-[#F8FAFC]">
+            <div className="max-w-7xl mx-auto space-y-3 sm:space-y-4">
               {/* Universal Navigation Header Bar */}
-              <div className="bg-white border border-[#D1D5DB] rounded-xl p-3 shadow-xs flex flex-wrap items-center justify-between gap-3">
+              <div className="bg-white border border-[#D1D5DB] rounded-xl p-2.5 sm:p-3 shadow-xs flex flex-wrap items-center justify-between gap-2">
                 {/* Back Button and Breadcrumb Trail */}
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={goBack}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1E3A5F] hover:bg-[#2563A8] text-white rounded-lg text-xs font-bold shadow-xs transition-all hover:scale-102"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#1E3A5F] hover:bg-[#2563A8] text-white rounded-lg text-xs font-bold shadow-xs transition-all"
                     title={`Back to ${prevMeta ? prevMeta.short : 'Main GIS Map'}`}
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Back {prevMeta ? `(${prevMeta.short})` : 'to Map'}</span>
+                    <span className="hidden xs:inline">Back</span>
                   </button>
 
                   <button
@@ -94,29 +106,22 @@ const MainLayout: React.FC = () => {
                     title="Return to Landing Page (Main GIS Map)"
                   >
                     <Home className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="hidden sm:inline">Landing Map</span>
+                    <span className="hidden sm:inline">Map</span>
                   </button>
 
-                  <div className="h-4 w-px bg-gray-300 hidden md:block" />
-
-                  {/* Breadcrumb path */}
                   <div className="hidden md:flex items-center gap-1 text-xs text-gray-500">
-                    <span
-                      onClick={goToLanding}
-                      className="hover:text-blue-700 cursor-pointer font-medium"
-                    >
-                      Home (GIS Grid)
-                    </span>
+                    <div className="h-4 w-px bg-gray-300 mx-1" />
+                    <span onClick={goToLanding} className="hover:text-blue-700 cursor-pointer font-medium">Home</span>
                     <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                    <span className="font-bold text-[#1E3A5F]">{currentMeta.title}</span>
+                    <span className="font-bold text-[#1E3A5F] truncate max-w-[200px]">{currentMeta.short}</span>
                   </div>
                 </div>
 
-                {/* Right Status Badge */}
                 <div className="flex items-center gap-2 text-xs font-bold">
-                  <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-1 rounded-full flex items-center gap-1 text-[11px]">
+                  <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-1 rounded-full flex items-center gap-1 text-[10px]">
                     <Sparkles className="w-3 h-3 text-blue-600" />
-                    <span>National Logistics Intelligence Grid</span>
+                    <span className="hidden sm:inline">NER Logistics Grid</span>
+                    <span className="sm:hidden">NERALIS</span>
                   </span>
                 </div>
               </div>

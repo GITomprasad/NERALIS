@@ -32,7 +32,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-export const Navbar: React.FC = () => {
+export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobileMenuToggle }) => {
   const {
     activeModule,
     goToLanding,
@@ -118,26 +118,37 @@ export const Navbar: React.FC = () => {
     : [];
 
   return (
-    <header className="h-16 bg-[#17365D] text-white px-4 lg:px-6 flex items-center justify-between shadow-xs z-[5000] sticky top-0 border-b border-[#2563A8]/30">
+    <header className="h-16 bg-[#17365D] text-white px-3 sm:px-4 lg:px-6 flex items-center justify-between shadow-xs z-[5000] sticky top-0 border-b border-[#2563A8]/30">
       {/* Left: Branding & Emblem */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 lg:gap-3">
+        {/* Mobile Hamburger Menu */}
+        <button
+          onClick={onMobileMenuToggle}
+          className="lg:hidden p-1.5 sm:p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/15 cursor-pointer"
+          title="Open Navigation Menu"
+        >
+          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
         {/* GoI Emblem representation */}
-        <div className="flex items-center gap-2.5 cursor-pointer" onClick={goToLanding} title="Go to Main GIS Map Landing Page">
-          <div className="w-10 h-10 rounded-full bg-white/10 p-1 flex items-center justify-center border border-white/20">
-            <svg viewBox="0 0 100 100" className="w-7 h-7 fill-amber-400">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={goToLanding} title="Go to Main GIS Map Landing Page">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 p-1 flex items-center justify-center border border-white/20">
+            <svg viewBox="0 0 100 100" className="w-6 h-6 sm:w-7 sm:h-7 fill-amber-400">
               <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="4" />
               <circle cx="50" cy="50" r="16" fill="currentColor" />
               <path d="M50 8 L50 92 M8 50 L92 50 M20 20 L80 80 M20 80 L80 20" stroke="currentColor" strokeWidth="2.5" />
             </svg>
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-black tracking-wider text-base lg:text-lg text-white">NERALIS</span>
-              <span className="bg-amber-500/20 text-amber-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-400/40">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-black tracking-wider text-sm sm:text-base lg:text-lg text-white">NERALIS</span>
+              <span className="bg-amber-500/20 text-amber-300 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-400/40 hidden xs:inline">
                 Govt of India
               </span>
             </div>
-            <p className="text-[11px] text-sky-200 hidden sm:block leading-tight font-medium">
+            <p className="text-[11px] text-sky-200 hidden md:block leading-tight font-medium">
               Ministry of Development of North Eastern Region (MDoNER)
             </p>
           </div>
@@ -147,11 +158,12 @@ export const Navbar: React.FC = () => {
         {activeModule !== 'ACCESSIBILITY' && (
           <button
             onClick={goToLanding}
-            className="ml-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-xs transition-all hover:scale-102"
+            className="ml-1 sm:ml-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-2 sm:px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-xs transition-all hover:scale-102"
             title="Back to Landing Page (Main GIS Map)"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-slate-900" />
-            <span className="font-extrabold">← Back to Map</span>
+            <span className="font-extrabold hidden sm:inline">← Back to Map</span>
+            <span className="font-extrabold sm:hidden">Map</span>
           </button>
         )}
       </div>
