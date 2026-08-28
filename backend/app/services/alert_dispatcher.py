@@ -2,7 +2,7 @@
 Intelligent Multilingual Alert & Notification Dispatcher (Module 5).
 Supports 5 alert tiers (T1-T5), 8 NER languages + Hindi/English,
 multi-channel output formatting (SMS, WhatsApp, IVR Voice, Push, USSD, NDMA CAP XML v1.2),
-and 6 AM Daily Morning Collector Briefings.
+separate dispatch triggering, and 6 AM Daily Morning Collector Briefings.
 """
 
 from typing import Dict, List, Any
@@ -54,6 +54,7 @@ class AlertDispatcher:
                 "escalation_sla_mins": 20,
                 "dispatched_channels": ["SMS", "WhatsApp", "App Push", "IVR Voice", "NDMA CAP Feed"],
                 "target_recipients_count": 482,
+                "dispatch_status": "DISPATCHED",
                 "message_i18n": NER_TRANSLATIONS["ALERT_T4_ROAD_CLOSED"],
                 "source": "SRC-NDMA-CAP",
                 "verification_status": "VERIFIED"
@@ -72,6 +73,7 @@ class AlertDispatcher:
                 "escalation_sla_mins": 20,
                 "dispatched_channels": ["SMS", "WhatsApp", "App Push"],
                 "target_recipients_count": 215,
+                "dispatch_status": "DISPATCHED",
                 "message_i18n": NER_TRANSLATIONS["ALERT_T3_LANDSLIDE"],
                 "source": "SRC-IMD-AWS",
                 "verification_status": "OBSERVED"
@@ -90,6 +92,7 @@ class AlertDispatcher:
                 "escalation_sla_mins": 60,
                 "dispatched_channels": ["SMS", "App Push"],
                 "target_recipients_count": 640,
+                "dispatch_status": "DISPATCHED",
                 "message_i18n": {
                     "en": "ADVISORY (T2): NH-6 Sonapur tunnel experiencing 1.5-hour delay due to mud silt. Single lane open.",
                     "hi": "सलाह (T2): कीचड़ जमा होने के कारण NH-6 सोनापुर सुरंग में 1.5 घंटे की देरी। एक लेन चालू।"
@@ -117,6 +120,7 @@ class AlertDispatcher:
             "escalation_sla_mins": 20,
             "dispatched_channels": payload.get("channels", ["SMS", "WhatsApp", "Push"]),
             "target_recipients_count": payload.get("recipients_count", 150),
+            "dispatch_status": "QUEUED",
             "message_i18n": {
                 "en": payload.get("message_en", "Urgent Alert"),
                 "hi": payload.get("message_hi", payload.get("message_en", "Urgent Alert"))
@@ -126,6 +130,25 @@ class AlertDispatcher:
         }
         self.active_alerts.insert(0, new_alert)
         return new_alert
+
+    def dispatch_alert(self, alert_id: str, channels: List[str] = None) -> Dict[str, Any]:
+        """
+        Triggers or retries dispatching an existing alert across chosen communication channels.
+        """
+        for a in self.active_alerts:
+            if a["id"] == alert_id:
+                if channels:
+                    a["dispatched_channels"] = channels
+                a["dispatch_status"] = "DISPATCHED"
+                a["dispatched_at"] = datetime.datetime.now().isoformat()
+                return {
+                    "status": "SUCCESS",
+                    "alert_id": alert_id,
+                    "channels_dispatched": a["dispatched_channels"],
+                    "recipients_reached": a["target_recipients_count"],
+                    "timestamp": a["dispatched_at"]
+                }
+        return {"status": "NOT_FOUND", "alert_id": alert_id}
 
     def generate_cap_xml(self, alert_id: str) -> str:
         """

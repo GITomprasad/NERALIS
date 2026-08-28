@@ -1,6 +1,6 @@
 """
 AI-Powered Multi-Modal Route Optimization Engine for North Eastern Region (Module 2).
-Implements Modified Dijkstra / A* multi-criteria pathfinding, dynamic risk-penalty heuristics,
+Implements Modified Dijkstra / A* multi-criteria pathfinding, dynamic bridge & hazard penalties,
 cargo-specific routing constraints, and 3 distinct alternative itineraries:
 1. Primary Optimal Weather-Safe Route
 2. Weather-Resilient Alternative Corridor
@@ -10,15 +10,18 @@ cargo-specific routing constraints, and 3 distinct alternative itineraries:
 from typing import Dict, List, Any, Optional
 import networkx as nx
 import math
-from app.data.ner_geography import NER_DISTRICTS, NER_ROAD_SEGMENTS, NER_DEPOTS, NER_BRIDGES
+from app.data.states import NER_DISTRICTS
+from app.data.infrastructure import NER_ROAD_SEGMENTS, NER_DEPOTS, NER_BRIDGES
 
 class RouteOptimizationEngine:
     def __init__(self):
         self.graph = nx.Graph()
+        self.bridge_lookup = {b["id"]: b for b in NER_BRIDGES}
         self._build_graph()
 
     def _build_graph(self):
         self.graph.clear()
+        self.bridge_lookup = {b["id"]: b for b in NER_BRIDGES}
         # Add district nodes
         for d in NER_DISTRICTS:
             self.graph.add_node(d["id"], **d)
@@ -35,6 +38,28 @@ class RouteOptimizationEngine:
             # Calculate base travel time in hours
             base_time_hrs = seg["distance_km"] / max(seg["avg_speed_kmh"], 10)
 
+            # Check live bridge health & flood clearance on this segment
+            bridge_penalty = 1.0
+            bridge_warnings = []
+            for b_name in seg.get("bridges_on_route", []):
+                # Extract bridge ID from "BR-01 (Saraighat)"
+                b_id = b_name.split()[0] if b_name else ""
+                b_data = self.bridge_lookup.get(b_id)
+                if b_data:
+                    # Check flood margin
+                    if b_data.get("current_water_level_m", 0) >= b_data.get("flood_danger_level_m", 100):
+                        bridge_penalty *= 50.0
+                        bridge_warnings.append(f"FLOOD WARNING: {b_data['name']} river level exceeded danger mark!")
+                    elif b_data.get("water_clearance_m", 10) < 1.0:
+                        bridge_penalty *= 20.0
+                        bridge_warnings.append(f"SUBMERGENCE RISK: {b_data['name']} water clearance under 1.0m!")
+                    elif b_data.get("structural_health_pct", 100) < 55:
+                        bridge_penalty *= 15.0
+                        bridge_warnings.append(f"STRUCTURAL HEALTH CRITICAL: {b_data['name']} ({b_data['structural_health_pct']}%)")
+                    elif "CRITICAL" in b_data.get("status", ""):
+                        bridge_penalty *= 10.0
+                        bridge_warnings.append(f"BRIDGE STATUS: {b_data['status']}")
+
             # Hazard and status penalty multiplier
             status = seg["status"]
             status_multiplier = 1.0
@@ -48,7 +73,7 @@ class RouteOptimizationEngine:
                 status_multiplier = 100.0  # Massive penalty for pathfinder to bypass
 
             risk_multiplier = 1.0 + (seg["risk_score"] / 100.0) * 1.5
-            effective_weight = base_time_hrs * status_multiplier * risk_multiplier
+            effective_weight = base_time_hrs * status_multiplier * risk_multiplier * bridge_penalty
 
             self.graph.add_edge(
                 u, v,
@@ -61,6 +86,7 @@ class RouteOptimizationEngine:
                 risk_score=seg["risk_score"],
                 hazard_type=seg["hazard_type"],
                 bridges_on_route=seg["bridges_on_route"],
+                bridge_warnings=bridge_warnings,
                 clearance_height_m=seg["clearance_height_m"],
                 weight_limit_tons=seg["weight_limit_tons"],
                 effective_weight=effective_weight,
@@ -81,6 +107,7 @@ class RouteOptimizationEngine:
         """
         Computes optimal primary route, resilient alternative, and multimodal itinerary.
         """
+        self._build_graph()
         # Fallback to defaults if nodes don't exist
         if origin_id not in self.graph:
             origin_id = "AS-KAM"
@@ -102,10 +129,18 @@ class RouteOptimizationEngine:
         # Create working subgraph for Dijkstra
         H = self.graph.copy()
         
-        # Hard check for weight limits
+        # Hard check for vehicle weight vs road weight limits and bridge load capacities
         for u, v, data in list(H.edges(data=True)):
+            # Road segment weight limit
             if data.get("weight_limit_tons", 40) < vehicle_weight_tons:
-                H[u][v]["effective_weight"] *= 4.0
+                H[u][v]["effective_weight"] *= 10.0
+            
+            # Bridge load capacity check
+            for b_name in data.get("bridges_on_route", []):
+                b_id = b_name.split()[0] if b_name else ""
+                b_data = self.bridge_lookup.get(b_id)
+                if b_data and b_data.get("load_capacity_tons", 40) < vehicle_weight_tons:
+                    H[u][v]["effective_weight"] *= 25.0
 
         try:
             primary_path = nx.shortest_path(H, source=origin_id, target=destination_id, weight="effective_weight")
@@ -209,7 +244,8 @@ class RouteOptimizationEngine:
                     "duration_hrs": round(dur, 2),
                     "status": status,
                     "risk_score": risk,
-                    "hazard_type": data.get("hazard_type")
+                    "hazard_type": data.get("hazard_type"),
+                    "bridge_warnings": data.get("bridge_warnings", [])
                 })
             else:
                 total_distance += 120.0

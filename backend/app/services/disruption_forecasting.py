@@ -6,7 +6,9 @@ forecasts, supply pre-positioning advisories, and Digital Twin disaster simulati
 
 from typing import Dict, List, Any
 import datetime
-from app.data.ner_geography import NER_DISTRICTS, NER_ROAD_SEGMENTS, NER_BRIDGES, NER_DEPOTS, HISTORICAL_DISRUPTIONS
+from app.data.states import NER_DISTRICTS
+from app.data.infrastructure import NER_ROAD_SEGMENTS, NER_BRIDGES, NER_DEPOTS
+from app.data.history import HISTORICAL_DISRUPTIONS
 from app.ml.disruption_model import ml_disruption_model
 
 class DisruptionForecastingEngine:
@@ -24,7 +26,7 @@ class DisruptionForecastingEngine:
             events = [e for e in events if e.get("year") == year]
         return events[:limit]
 
-    def get_72h_disruption_forecast(self, forecast_hours_ahead: int = 24) -> Dict[str, Any]:
+    def get_forecast(self, forecast_hours_ahead: int = 24) -> Dict[str, Any]:
         """
         Calculates corridor and district risk predictions at 6h, 24h, 48h, and 72h horizons
         using the evaluated ML classifier and live meteorological features.
@@ -51,6 +53,8 @@ class DisruptionForecastingEngine:
             "high_risk_corridors_count": high_count,
             "model_metadata": {
                 "model_version": self.ml_model.model_version,
+                "model_status": self.ml_model.model_status,
+                "is_simulation": self.ml_model.is_simulation,
                 "accuracy_pct": self.ml_model.metrics["accuracy_pct"],
                 "roc_auc": self.ml_model.metrics["roc_auc"],
                 "f1_score": self.ml_model.metrics["f1_score"],
@@ -58,6 +62,10 @@ class DisruptionForecastingEngine:
             },
             "corridors": predictions
         }
+
+    # Backward compatibility alias
+    def get_72h_disruption_forecast(self, forecast_hours_ahead: int = 24) -> Dict[str, Any]:
+        return self.get_forecast(forecast_hours_ahead=forecast_hours_ahead)
 
     def get_prepositioning_advisories(self) -> List[Dict[str, Any]]:
         """

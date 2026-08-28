@@ -11,7 +11,9 @@ from typing import Dict, List, Any, Tuple
 import math
 import random
 import datetime
-from app.data.ner_geography import HISTORICAL_DISRUPTIONS, NER_ROAD_SEGMENTS, NER_DISTRICTS
+from app.data.states import NER_DISTRICTS
+from app.data.infrastructure import NER_ROAD_SEGMENTS
+from app.data.history import HISTORICAL_DISRUPTIONS
 
 class EvaluatedDisruptionMLModel:
     """
@@ -21,6 +23,9 @@ class EvaluatedDisruptionMLModel:
     def __init__(self):
         self.model_version = "NERALIS-DisruptionNet-GBDT-v3.4"
         self.algorithm = "Calibrated Gradient Boosted Ensemble + Logistic Sigmoid"
+        self.model_status = "evaluated_baseline_simulation"
+        self.is_simulation = True
+        self.provenance_type = "BENCHMARK_EVALUATION"
         self.feature_names = [
             "rainfall_72h_accum_mm",
             "rainfall_24h_peak_intensity_mmh",
@@ -53,6 +58,9 @@ class EvaluatedDisruptionMLModel:
         return {
             "model_version": self.model_version,
             "algorithm": self.algorithm,
+            "model_status": self.model_status,
+            "is_simulation": self.is_simulation,
+            "provenance_type": self.provenance_type,
             "training_samples_count": 960,
             "test_samples_count": 240,
             "validation_method": "Temporal Split (2021-2024 Train -> 2025-2026 Test) + Spatial Block (8 States)",
@@ -194,6 +202,8 @@ class EvaluatedDisruptionMLModel:
             "recommended_action": recommended_action,
             "ai_confidence_pct": confidence_pct,
             "model_version": self.model_version,
+            "model_status": self.model_status,
+            "is_simulation": self.is_simulation,
             "observed_at": datetime.datetime.now().isoformat(),
             "verification_status": "PREDICTED",
             "weather_input": {

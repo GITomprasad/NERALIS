@@ -11,6 +11,7 @@ import type {
   MLModelMetrics
 } from '../types';
 import { apiClient } from '../services/api/apiClient';
+import { offlineStore } from '../services/offline/offlineStore';
 
 export type ActiveModule =
   | 'ACCESSIBILITY'
@@ -283,16 +284,22 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   // Offline Outbox Queueing & Sync
-  const queueOfflineMutation = (action: 'FIELD_REPORT' | 'ROAD_STATUS' | 'ALERT_ACK', payload: any) => {
+  const queueOfflineMutation = async (action: 'FIELD_REPORT' | 'ROAD_STATUS' | 'ALERT_ACK', payload: any) => {
     const client_event_id = `OUTBOX-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const newItem: OutboxItem = {
       client_event_id,
       action,
-      payload,
+      payload: { ...payload, client_event_id },
       status: networkMode === 'OFFLINE' ? 'QUEUED' : 'SYNCING',
       queued_at: new Date().toLocaleTimeString()
     };
     setOutbox((prev) => [newItem, ...prev]);
+
+    // Save to durable IndexedDB
+    await offlineStore.saveOutboxItem({
+      ...newItem,
+      retry_count: 0
+    });
 
     if (action === 'FIELD_REPORT') {
       const optimisticReport: FieldReport = {
@@ -312,7 +319,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           pothole_depth_cm: payload.pothole_depth_cm || 0,
           debris_volume_cum: payload.debris_volume_cum || 0
         },
-        ai_severity_predicted: 'CALCULATING (Queued)',
+        ai_severity_predicted: 'CALCULATING (Queued in IndexedDB)',
         status: 'QUEUED_LOCAL',
         assigned_crew: 'Local Division',
         points_awarded: 30,
@@ -321,7 +328,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         verification_status: 'REPORTED'
       };
       setFieldReports((prev) => [optimisticReport, ...prev]);
-      addToast('Report Saved to Offline Outbox', 'Will auto-sync as soon as network connects.', 'INFO');
+      addToast('Report Saved to IndexedDB Outbox', 'Durable offline storage active. Will auto-sync on reconnect.', 'INFO');
     }
   };
 
@@ -333,6 +340,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (item.action === 'FIELD_REPORT') {
         const synced = await apiClient.submitFieldReport(item.payload);
         if (synced) {
+          await offlineStore.removeOutboxItem(item.client_event_id);
           setFieldReports((prev) =>
             prev.map((r) => (r.client_event_id === item.client_event_id ? { ...synced, sync_status: 'SYNCED' } : r))
           );
@@ -357,20 +365,58 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         apiClient.getFieldReports()
       ]);
 
-      if (srcRes.length > 0) setSources(srcRes);
-      if (distRes.length > 0) setDistricts(distRes);
-      if (corrRes.length > 0) setCorridors(corrRes);
-      if (brRes.length > 0) setBridges(brRes);
-      if (depRes.length > 0) setDepots(depRes);
-      if (vehRes.length > 0) setVehicles(vehRes);
-      if (altRes.length > 0) setAlerts(altRes);
-      if (repRes.length > 0) setFieldReports(repRes);
+      if (srcRes.length > 0) {
+        setSources(srcRes);
+        offlineStore.cacheReferenceData('sources', srcRes);
+      }
+      if (distRes.length > 0) {
+        setDistricts(distRes);
+        offlineStore.cacheReferenceData('districts', distRes);
+      }
+      if (corrRes.length > 0) {
+        setCorridors(corrRes);
+        offlineStore.cacheReferenceData('corridors', corrRes);
+      }
+      if (brRes.length > 0) {
+        setBridges(brRes);
+        offlineStore.cacheReferenceData('bridges', brRes);
+      }
+      if (depRes.length > 0) {
+        setDepots(depRes);
+        offlineStore.cacheReferenceData('depots', depRes);
+      }
+      if (vehRes.length > 0) {
+        setVehicles(vehRes);
+        offlineStore.cacheReferenceData('vehicles', vehRes);
+      }
+      if (altRes.length > 0) {
+        setAlerts(altRes);
+        offlineStore.cacheReferenceData('alerts', altRes);
+      }
+      if (repRes.length > 0) {
+        setFieldReports(repRes);
+        offlineStore.cacheReferenceData('reports', repRes);
+      }
     } catch (e) {
-      console.warn('API error during refresh, using client fallbacks', e);
+      console.warn('API error during refresh, loading from IndexedDB cache', e);
+      const cachedDistricts = await offlineStore.getCachedReferenceData<District[]>('districts');
+      if (cachedDistricts) setDistricts(cachedDistricts);
     }
   };
 
   useEffect(() => {
+    // Load existing IndexedDB outbox items on startup
+    offlineStore.getAllOutboxItems().then((items) => {
+      if (items && items.length > 0) {
+        setOutbox(items.map((i) => ({
+          client_event_id: i.client_event_id,
+          action: i.action,
+          payload: i.payload,
+          status: i.status,
+          queued_at: i.queued_at
+        })));
+      }
+    });
     refreshData();
   }, [isDemoMode]);
 

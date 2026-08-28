@@ -13,6 +13,8 @@ import random
 class RoadDamageVisionClassifier:
     def __init__(self):
         self.model_version = "NER-YOLOv8-DamageVision-v2.4-transfer"
+        self.model_status = "evaluated_vision_simulation"
+        self.is_simulation = True
         self.classes = [
             "Pothole",
             "Longitudinal / Transverse Crack",
@@ -62,6 +64,9 @@ class RoadDamageVisionClassifier:
 
         return {
             "model_version": self.model_version,
+            "model_status": self.model_status,
+            "inference_mode": "transfer_simulation",
+            "is_simulation": self.is_simulation,
             "inference_time_ms": random.randint(18, 42),
             "primary_damage_class": primary_class,
             "confidence_pct": round(confidence_pct, 1),
