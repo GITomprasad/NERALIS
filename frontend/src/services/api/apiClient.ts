@@ -576,10 +576,13 @@ export const apiClient = {
   },
 
   async signInWithGoogle(payload: {
-    email: string;
-    name: string;
+    credential?: string;
+    email?: string;
+    name?: string;
     photo_url?: string;
+    google_id?: string;
     role?: string;
+    is_sandbox?: boolean;
   }): Promise<any> {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/auth/google`, {
@@ -590,24 +593,29 @@ export const apiClient = {
       if (res.ok) {
         return await res.json();
       }
-    } catch {
-      // Fallback local google sign-in
-    }
-    return {
-      success: true,
-      message: `Signed in with Google as ${payload.name}.`,
-      token: `google-oauth-token-${Date.now()}`,
-      user: {
-        id: `USR-GOOGLE-${Date.now().toString(36).toUpperCase()}`,
-        name: payload.name,
-        email: payload.email,
-        role: payload.role || 'PUBLIC_VIEWER',
-        frontend_role: (payload.role as any) || 'CITIZEN',
-        organization: 'Google SSO Account',
-        state: 'Assam',
-        district: 'Kamrup Metropolitan'
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || 'Google ID-token authentication failed.');
+    } catch (e: any) {
+      if (payload.is_sandbox) {
+        // Fallback for offline demo accounts
+        return {
+          success: true,
+          message: `Signed in with sandbox account as ${payload.name || 'Demo Officer'}.`,
+          token: `sandbox-token-${Date.now()}`,
+          user: {
+            id: `USR-SANDBOX-${Date.now().toString(36).toUpperCase()}`,
+            name: payload.name || 'Sandbox User',
+            email: payload.email || 'sandbox.officer@neralis.gov.in',
+            role: payload.role || 'PUBLIC_VIEWER',
+            frontend_role: (payload.role as any) || 'CITIZEN',
+            organization: 'NER Sandbox Session',
+            state: 'Assam',
+            district: 'Kamrup Metropolitan'
+          }
+        };
       }
-    };
+      throw e;
+    }
   },
 
   async getDemoAccounts(): Promise<any[]> {

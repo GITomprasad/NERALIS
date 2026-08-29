@@ -78,7 +78,15 @@ interface PlatformContextType {
   openAuthModal: (mode?: 'SIGNIN' | 'SIGNUP') => void;
   closeAuthModal: () => void;
   login: (email: string, password: string) => Promise<boolean>;
-  loginWithGoogle: (payload?: { email?: string; name?: string; role?: UserRole }) => Promise<boolean>;
+  loginWithGoogle: (payload?: {
+    email?: string;
+    name?: string;
+    role?: UserRole;
+    photo_url?: string;
+    google_id?: string;
+    credential?: string;
+    is_sandbox?: boolean;
+  }) => Promise<boolean>;
   signup: (payload: any) => Promise<boolean>;
   logout: () => void;
   quickSwitchRole: (role: UserRole) => void;
@@ -224,25 +232,38 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const loginWithGoogle = async (payload?: { email?: string; name?: string; role?: UserRole }): Promise<boolean> => {
+  const loginWithGoogle = async (payload?: {
+    email?: string;
+    name?: string;
+    role?: UserRole;
+    photo_url?: string;
+    google_id?: string;
+    credential?: string;
+    is_sandbox?: boolean;
+  }): Promise<boolean> => {
     try {
       const googleData = {
-        email: payload?.email || 'officer.google@gmail.com',
-        name: payload?.name || 'Google Verified Officer',
-        role: payload?.role || 'CITIZEN'
+        email: payload?.email,
+        name: payload?.name,
+        role: payload?.role || 'CITIZEN',
+        photo_url: payload?.photo_url,
+        google_id: payload?.google_id,
+        credential: payload?.credential,
+        is_sandbox: payload?.is_sandbox
       };
       const res = await apiClient.signInWithGoogle(googleData);
       if (res?.success && res.user) {
         setCurrentUser(res.user);
         setUserRole(res.user.frontend_role as UserRole);
         localStorage.setItem('neralis_user_session', JSON.stringify(res.user));
-        addToast('Google Sign-In Successful', `Welcome, ${res.user.name}!`, 'SUCCESS');
+        const toastTitle = payload?.is_sandbox ? 'Sandbox Session Active' : 'Google Sign-In Verified';
+        addToast(toastTitle, `Welcome to NERALIS, ${res.user.name}!`, 'SUCCESS');
         setIsAuthModalOpen(false);
         return true;
       }
       return false;
     } catch (err: any) {
-      addToast('Google Sign-In Failed', err.message || 'Unable to connect to Google SSO', 'DANGER');
+      addToast('Google Sign-In Failed', err.message || 'Unable to authenticate with Google', 'DANGER');
       return false;
     }
   };

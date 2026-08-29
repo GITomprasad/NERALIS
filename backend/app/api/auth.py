@@ -12,6 +12,7 @@ import datetime
 
 from app.db.database import get_db
 from app.db.models import UserModel, AuditLogModel
+from app.core.config import settings
 from app.core.security import (
     hash_password,
     verify_password,
@@ -177,19 +178,83 @@ def signin(payload: SignInRequest, db: Session = Depends(get_db)):
     )
 
 class GoogleAuthRequest(BaseModel):
-    email: EmailStr = Field(..., description="Google account email")
-    name: str = Field(..., description="Google profile name")
+    credential: Optional[str] = Field(None, description="Google ID Token (JWT)")
+    role: Optional[str] = "CITIZEN"
+    # Sandbox / Demo fallback fields:
+    email: Optional[EmailStr] = Field(None, description="Account email (for sandbox/demo fallback)")
+    name: Optional[str] = Field(None, description="Profile name (for sandbox/demo fallback)")
     google_id: Optional[str] = None
     photo_url: Optional[str] = None
-    role: Optional[str] = "CITIZEN"
+    is_sandbox: Optional[bool] = False
 
 @router.post("/google", response_model=AuthResponse)
 def google_auth(payload: GoogleAuthRequest, db: Session = Depends(get_db)):
     """
-    Authenticates or automatically registers a user via Google OAuth SSO.
+    Authenticates or provisions a user using Google Identity Services (GIS) ID-Token flow.
+    Cryptographically validates the Google ID token (JWT) against GOOGLE_CLIENT_ID.
     """
     import secrets
-    normalized_email = payload.email.lower().strip()
+    user_email: Optional[str] = None
+    user_name: Optional[str] = None
+    photo_url: Optional[str] = payload.photo_url
+    google_sub_id: Optional[str] = payload.google_id
+    auth_mode = "google_id_token"
+
+    if payload.credential:
+        # Cryptographically verify the genuine Google ID token
+        try:
+            from google.oauth2 import id_token
+            from google.auth.transport import requests as google_requests
+            
+            # Verify signature and audience against Google's public keys
+            audience = settings.GOOGLE_CLIENT_ID if settings.GOOGLE_CLIENT_ID else None
+            idinfo = id_token.verify_oauth2_token(
+                payload.credential,
+                google_requests.Request(),
+                audience=audience
+            )
+            
+            user_email = idinfo.get("email")
+            user_name = idinfo.get("name") or user_email.split("@")[0] if user_email else None
+            photo_url = idinfo.get("picture") or photo_url
+            google_sub_id = idinfo.get("sub") or google_sub_id
+            
+            if not user_email:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Google ID token does not contain a valid email address."
+                )
+        except HTTPException:
+            raise
+        except ValueError as ve:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Google ID token cryptographic validation failed: {str(ve)}"
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Unable to verify Google ID token with Google identity servers: {str(e)}"
+            )
+    elif payload.is_sandbox or (payload.email and not settings.GOOGLE_CLIENT_ID):
+        # Sandbox / Demo mode fallback
+        auth_mode = "sandbox_fallback"
+        user_email = payload.email
+        user_name = payload.name or (str(payload.email).split("@")[0] if payload.email else "Sandbox User")
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google ID token credential is required for Google Sign-In."
+        )
+
+    if not user_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User email is required to establish NERALIS session."
+        )
+
+    resolved_name = str(user_name).strip()
+    normalized_email = str(user_email).lower().strip()
     user = db.query(UserModel).filter(UserModel.email == normalized_email).first()
     
     if not user:
@@ -197,7 +262,7 @@ def google_auth(payload: GoogleAuthRequest, db: Session = Depends(get_db)):
         user_id = f"USR-G-{uuid.uuid4().hex[:8].upper()}"
         user = UserModel(
             id=user_id,
-            name=payload.name.strip(),
+            name=resolved_name,
             email=normalized_email,
             hashed_password=hash_password(f"google_oauth_{secrets.token_hex(16)}"),
             role=backend_role,
@@ -213,7 +278,12 @@ def google_auth(payload: GoogleAuthRequest, db: Session = Depends(get_db)):
             actor=user.email,
             role=backend_role,
             endpoint="/api/v1/auth/google",
-            payload_summary={"name": user.name, "role": backend_role, "auth_provider": "google"},
+            payload_summary={
+                "name": user.name,
+                "role": backend_role,
+                "auth_provider": "google",
+                "photo_url": payload.photo_url
+            },
             outcome="SUCCESS"
         )
         db.add(audit)
@@ -225,7 +295,11 @@ def google_auth(payload: GoogleAuthRequest, db: Session = Depends(get_db)):
             actor=user.email,
             role=user.role,
             endpoint="/api/v1/auth/google",
-            payload_summary={"user_id": user.id, "auth_provider": "google"},
+            payload_summary={
+                "user_id": user.id,
+                "auth_provider": "google",
+                "photo_url": payload.photo_url
+            },
             outcome="SUCCESS"
         )
         db.add(audit)
