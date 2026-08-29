@@ -74,3 +74,15 @@ app.include_router(predictions_router, prefix=settings.API_V1_PREFIX)
 app.include_router(alerts_router, prefix=settings.API_V1_PREFIX)
 app.include_router(reports_router, prefix=settings.API_V1_PREFIX)
 app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
+
+
+@app.get("/")
+def root():
+    return {
+        "name": "NERALIS",
+        "status": "online",
+        "message": "NERALIS AI & GIS Smart Logistics Platform API",
+        "docs": "/docs",
+        "health": "/api/health"
+    }
+
