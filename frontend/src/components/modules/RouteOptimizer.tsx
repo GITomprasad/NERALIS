@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePlatform } from '../../context/PlatformContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { apiClient } from '../../services/api/apiClient';
@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Flame,
   ArrowRight,
+  ArrowLeftRight,
   TrendingDown
 } from 'lucide-react';
 
@@ -36,28 +37,52 @@ export const RouteOptimizer: React.FC = () => {
   const [routeResult, setRouteResult] = useState<any>(null);
   const [selectedRouteIndex, setSelectedRouteIndex] = useState(0); // 0 = Primary, 1 = Resilient, 2 = Multimodal
 
-  const handleComputeRoute = async () => {
+  const handleComputeRoute = async (customOrigin?: string, customDestination?: string) => {
+    const orig = typeof customOrigin === 'string' ? customOrigin : origin;
+    const dest = typeof customDestination === 'string' ? customDestination : destination;
     setIsCalculating(true);
-    const data = await apiClient.optimizeRoute({
-      origin,
-      destination,
-      cargo_type: cargoType,
-      vehicle_weight_tons: vehicleWeight,
-      departure_hour: departureHour,
-      include_intermodal: includeIntermodal
-    });
+    try {
+      const data = await apiClient.optimizeRoute({
+        origin: orig,
+        destination: dest,
+        cargo_type: cargoType,
+        vehicle_weight_tons: vehicleWeight,
+        departure_hour: departureHour,
+        include_intermodal: includeIntermodal
+      });
 
-    if (data) {
-      setRouteResult(data);
-      addToast('Route Optimization Complete', `Primary path and alternatives computed with verified bridge clearances.`, 'SUCCESS');
+      if (data) {
+        setRouteResult(data);
+        addToast('Route Optimization Complete', `Primary path and alternatives computed with verified bridge clearances.`, 'SUCCESS');
+      } else {
+        addToast('Optimization Failed', 'Unable to compute route between the selected nodes.', 'DANGER');
+      }
+    } catch {
+      addToast('Optimization Error', 'An error occurred while calculating the route.', 'DANGER');
+    } finally {
+      setIsCalculating(false);
     }
-    setIsCalculating(false);
+  };
+
+  // Auto-calculate on initial load
+  useEffect(() => {
+    if (!routeResult) {
+      handleComputeRoute('AS-KAM', 'AR-TAW');
+    }
+  }, []);
+
+  const handleSwapNodes = () => {
+    const nextOrigin = destination;
+    const nextDestination = origin;
+    setOrigin(nextOrigin);
+    setDestination(nextDestination);
+    handleComputeRoute(nextOrigin, nextDestination);
   };
 
   const activeDisplayRoute = routeResult
     ? selectedRouteIndex === 0
       ? routeResult.primary_route
-      : routeResult.alternatives[selectedRouteIndex - 1]
+      : (routeResult.alternatives && routeResult.alternatives[selectedRouteIndex - 1]) || routeResult.primary_route
     : null;
 
   return (
@@ -89,35 +114,47 @@ export const RouteOptimizer: React.FC = () => {
             </h3>
 
             {/* Origin & Destination */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block font-bold text-gray-700 mb-1">Origin Node</label>
-                <select
-                  value={origin}
-                  onChange={(e) => setOrigin(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#1E3A5F]"
-                >
-                  {districts.map((d) => (
-                    <option key={`orig-${d.id}`} value={d.id}>
-                      {d.name} ({d.state})
-                    </option>
-                  ))}
-                </select>
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 relative">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Origin Node</label>
+                  <select
+                    value={origin}
+                    onChange={(e) => setOrigin(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#1E3A5F]"
+                  >
+                    {districts.map((d) => (
+                      <option key={`orig-${d.id}`} value={d.id}>
+                        {d.name} ({d.state})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Destination Node</label>
+                  <select
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#1E3A5F]"
+                  >
+                    {districts.map((d) => (
+                      <option key={`dest-${d.id}`} value={d.id}>
+                        {d.name} ({d.state})
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-gray-700 mb-1">Destination Node</label>
-                <select
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#1E3A5F]"
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleSwapNodes}
+                  className="text-[11px] font-bold text-blue-700 hover:text-blue-900 flex items-center gap-1 hover:underline cursor-pointer"
                 >
-                  {districts.map((d) => (
-                    <option key={`dest-${d.id}`} value={d.id}>
-                      {d.name} ({d.state})
-                    </option>
-                  ))}
-                </select>
+                  <ArrowLeftRight className="w-3 h-3" /> Swap Origin & Destination
+                </button>
               </div>
             </div>
 
@@ -204,7 +241,7 @@ export const RouteOptimizer: React.FC = () => {
 
             {/* Compute Button */}
             <button
-              onClick={handleComputeRoute}
+              onClick={() => handleComputeRoute()}
               disabled={isCalculating}
               className="w-full bg-[#1E3A5F] hover:bg-[#152a45] text-white font-bold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all"
             >

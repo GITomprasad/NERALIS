@@ -6,7 +6,8 @@ inter-state vulnerability matrices, and PDS critical autonomy metrics.
 
 from typing import Dict, List, Any
 import datetime
-from app.data.ner_geography import NER_STATES, NER_DISTRICTS, NER_ROAD_SEGMENTS, NER_DEPOTS
+from app.data.states import NER_STATES, NER_DISTRICTS
+from app.data.infrastructure import NER_ROAD_SEGMENTS, NER_DEPOTS
 
 class ExecutiveReportGenerator:
     def __init__(self):

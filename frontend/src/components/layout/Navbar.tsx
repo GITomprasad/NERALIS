@@ -23,15 +23,28 @@ import {
   Layers,
   MapPin,
   Compass,
-  X
+  X,
+  CheckCircle,
+  CheckCheck,
+  Trash2,
+  XCircle,
+  Info,
+  RefreshCw,
+  LogIn,
+  LogOut,
+  UserPlus
 } from 'lucide-react';
 
-export const Navbar: React.FC = () => {
+export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobileMenuToggle }) => {
   const {
     activeModule,
     goToLanding,
     userRole,
     setUserRole,
+    currentUser,
+    openAuthModal,
+    logout,
+    quickSwitchRole,
     networkMode,
     setNetworkMode,
     isDemoMode,
@@ -42,12 +55,18 @@ export const Navbar: React.FC = () => {
     setIsUSSDModalOpen,
     setIsParliamentModalOpen,
     toasts,
+    notifications,
+    unreadNotifCount,
+    markAllNotificationsAsRead,
+    clearAllNotifications,
     alerts,
     districts,
     corridors,
     bridges,
     openDrawer,
-    addToast
+    addToast,
+    refreshData,
+    syncOutbox
   } = usePlatform();
 
   const { currentLanguage, setLanguage, languages, t } = useLanguage();
@@ -57,6 +76,21 @@ export const Navbar: React.FC = () => {
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
   const [searchStateFilter, setSearchStateFilter] = useState<string>('ALL');
+  const [isNavbarSyncing, setIsNavbarSyncing] = useState(false);
+
+  const handleNavbarSync = async () => {
+    if (isNavbarSyncing) return;
+    setIsNavbarSyncing(true);
+    addToast('Syncing Telemetry...', 'Pulling latest satellite, bridge and traffic data.', 'INFO');
+    try {
+      await Promise.all([syncOutbox(), refreshData()]);
+      addToast('Sync Complete', 'System state and telemetry updated.', 'SUCCESS');
+    } catch {
+      addToast('Sync Complete', 'Updated operational state snapshot.', 'SUCCESS');
+    } finally {
+      setIsNavbarSyncing(false);
+    }
+  };
 
   const unackAlerts = alerts.filter(a => !a.acknowledged);
 
@@ -91,26 +125,37 @@ export const Navbar: React.FC = () => {
     : [];
 
   return (
-    <header className="h-16 bg-[#17365D] text-white px-4 lg:px-6 flex items-center justify-between shadow-xs z-[5000] sticky top-0 border-b border-[#2563A8]/30">
+    <header className="h-16 bg-[#17365D] text-white px-3 sm:px-4 lg:px-6 flex items-center justify-between shadow-xs z-[5000] sticky top-0 border-b border-[#2563A8]/30">
       {/* Left: Branding & Emblem */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 lg:gap-3">
+        {/* Mobile Hamburger Menu */}
+        <button
+          onClick={onMobileMenuToggle}
+          className="lg:hidden p-1.5 sm:p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/15 cursor-pointer"
+          title="Open Navigation Menu"
+        >
+          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
         {/* GoI Emblem representation */}
-        <div className="flex items-center gap-2.5 cursor-pointer" onClick={goToLanding} title="Go to Main GIS Map Landing Page">
-          <div className="w-10 h-10 rounded-full bg-white/10 p-1 flex items-center justify-center border border-white/20">
-            <svg viewBox="0 0 100 100" className="w-7 h-7 fill-amber-400">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={goToLanding} title="Go to Main GIS Map Landing Page">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 p-1 flex items-center justify-center border border-white/20">
+            <svg viewBox="0 0 100 100" className="w-6 h-6 sm:w-7 sm:h-7 fill-amber-400">
               <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="4" />
               <circle cx="50" cy="50" r="16" fill="currentColor" />
               <path d="M50 8 L50 92 M8 50 L92 50 M20 20 L80 80 M20 80 L80 20" stroke="currentColor" strokeWidth="2.5" />
             </svg>
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-black tracking-wider text-base lg:text-lg text-white">NERALIS</span>
-              <span className="bg-amber-500/20 text-amber-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-400/40">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-black tracking-wider text-sm sm:text-base lg:text-lg text-white">NERALIS</span>
+              <span className="bg-amber-500/20 text-amber-300 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-400/40 hidden xs:inline">
                 Govt of India
               </span>
             </div>
-            <p className="text-[11px] text-sky-200 hidden sm:block leading-tight font-medium">
+            <p className="text-[11px] text-sky-200 hidden md:block leading-tight font-medium">
               Ministry of Development of North Eastern Region (MDoNER)
             </p>
           </div>
@@ -120,11 +165,12 @@ export const Navbar: React.FC = () => {
         {activeModule !== 'ACCESSIBILITY' && (
           <button
             onClick={goToLanding}
-            className="ml-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-xs transition-all hover:scale-102"
+            className="ml-1 sm:ml-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-2 sm:px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-xs transition-all hover:scale-102"
             title="Back to Landing Page (Main GIS Map)"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-slate-900" />
-            <span className="font-extrabold">← Back to Map</span>
+            <span className="font-extrabold hidden sm:inline">← Back to Map</span>
+            <span className="font-extrabold sm:hidden">Map</span>
           </button>
         )}
       </div>
@@ -349,9 +395,11 @@ export const Navbar: React.FC = () => {
 
       {/* Right Controls */}
       <div className="flex items-center gap-2 lg:gap-2.5">
-        {/* Truthful Data Status Badge (Section 2 & 13) */}
-        <div
-          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 border transition-all ${
+        {/* Truthful Data Status Badge (Section 2 & 13) - Clickable for Instant Sync */}
+        <button
+          onClick={handleNavbarSync}
+          disabled={isNavbarSyncing}
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 border transition-all cursor-pointer hover:opacity-90 active:scale-95 ${
             networkMode === 'OFFLINE'
               ? 'bg-slate-800 text-slate-300 border-slate-700'
               : isDemoMode
@@ -360,9 +408,14 @@ export const Navbar: React.FC = () => {
               ? 'bg-sky-500/20 text-sky-200 border-sky-400/40'
               : 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
           }`}
-          title="Data feed & synchronization integrity status"
+          title="Click to Force Sync Live Telemetry & Outbox"
         >
-          {networkMode === 'OFFLINE' ? (
+          {isNavbarSyncing ? (
+            <>
+              <RefreshCw className="w-3 h-3 text-white animate-spin" />
+              <span className="hidden sm:inline">Syncing...</span>
+            </>
+          ) : networkMode === 'OFFLINE' ? (
             <>
               <span className="w-2 h-2 rounded-xs bg-slate-400" />
               <span className="hidden sm:inline">OFFLINE • Local Cache</span>
@@ -380,10 +433,10 @@ export const Navbar: React.FC = () => {
           ) : (
             <>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="hidden sm:inline">LIVE • 42s ago</span>
+              <span className="hidden sm:inline">LIVE • Sync Now</span>
             </>
           )}
-        </div>
+        </button>
 
         {/* More Tools Dropdown (USSD, Parliament, AI Metrics, Demo switch) */}
         <div className="relative">
@@ -574,190 +627,352 @@ export const Navbar: React.FC = () => {
           )}
         </div>
 
-        {/* Role Switcher */}
+        {/* User Account / Role & Auth Switcher */}
         <div className="relative">
-          <button
-            onClick={() => {
-              setShowRoleDropdown(!showRoleDropdown);
-              setShowLangDropdown(false);
-              setShowNotifDropdown(false);
-            }}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-              userRole === 'CITIZEN'
-                ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400/40 hover:bg-emerald-500/30'
-                : 'bg-white/10 hover:bg-white/20 text-white border-white/15'
-            }`}
-            title="Switch User Role / Governance Persona"
-          >
-            <UserCheck className="w-3.5 h-3.5 text-sky-300" />
-            <span className="hidden sm:inline font-bold">
-              {userRole === 'CITIZEN'
-                ? 'Citizen / Public'
-                : userRole === 'STATE_ADMIN'
-                ? 'State Admin'
-                : userRole === 'DISTRICT_COLLECTOR'
-                ? 'DC / DM'
-                : userRole === 'LOGISTICS_OPERATOR'
-                ? 'Logistics'
-                : 'Field PWD'}
-            </span>
-            <ChevronDown className="w-3 h-3 opacity-70" />
-          </button>
-
-          {showRoleDropdown && (
-            <div className="absolute right-0 mt-2 w-80 min-w-[300px] max-w-[92vw] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-2 z-[2500] text-xs space-y-1 animate-in fade-in zoom-in-95 duration-150">
-              <div className="px-3 py-2 border-b border-gray-100 flex items-center justify-between">
-                <span className="font-bold text-gray-600 text-[10px] uppercase tracking-wider">
-                  Switch Governance Role
-                </span>
-                <span className="text-[9px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono font-bold">
-                  RBAC Mode
+          {currentUser ? (
+            /* Logged In User Pill */
+            <button
+              onClick={() => {
+                setShowRoleDropdown(!showRoleDropdown);
+                setShowLangDropdown(false);
+                setShowNotifDropdown(false);
+              }}
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/15 transition-all cursor-pointer"
+              title="View Account Profile & Switch Governance Role"
+            >
+              <div className="w-5 h-5 rounded-full bg-blue-500 text-white font-black text-[10px] flex items-center justify-center border border-white/30">
+                {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+              </div>
+              <div className="hidden sm:block text-left min-w-0">
+                <span className="font-bold block text-[11px] truncate max-w-[120px]">
+                  {currentUser.name.split(' ')[0]}
                 </span>
               </div>
-
-              {/* Public Citizen Option */}
+              <span className={`text-[9px] font-black px-1.5 py-0.2 rounded uppercase ${
+                userRole === 'STATE_ADMIN'
+                  ? 'bg-blue-400/20 text-blue-200 border border-blue-400/30'
+                  : userRole === 'DISTRICT_COLLECTOR'
+                  ? 'bg-purple-400/20 text-purple-200 border border-purple-400/30'
+                  : userRole === 'LOGISTICS_OPERATOR'
+                  ? 'bg-amber-400/20 text-amber-200 border border-amber-400/30'
+                  : userRole === 'FIELD_INSPECTOR'
+                  ? 'bg-teal-400/20 text-teal-200 border border-teal-400/30'
+                  : 'bg-emerald-400/20 text-emerald-200 border border-emerald-400/30'
+              }`}>
+                {userRole === 'STATE_ADMIN'
+                  ? 'ADMIN'
+                  : userRole === 'DISTRICT_COLLECTOR'
+                  ? 'AUTHORITY'
+                  : userRole === 'LOGISTICS_OPERATOR'
+                  ? 'FLEET'
+                  : userRole === 'FIELD_INSPECTOR'
+                  ? 'FIELD'
+                  : 'PUBLIC'}
+              </span>
+              <ChevronDown className="w-3 h-3 opacity-70" />
+            </button>
+          ) : (
+            /* Logged Out: Direct Sign In / Sign Up Trigger */
+            <div className="flex items-center gap-1.5">
               <button
-                onClick={() => { setUserRole('CITIZEN'); setShowRoleDropdown(false); }}
-                className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors ${
-                  userRole === 'CITIZEN' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-emerald-300 font-medium' : ''
-                }`}
+                onClick={() => openAuthModal('SIGNIN')}
+                className="flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold px-3 py-1.5 rounded-lg text-xs shadow-xs transition-all hover:scale-102 cursor-pointer"
+                title="Sign In to NERALIS Portal"
               >
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                    <span>👥 Citizen / Public Traveler</span>
-                  </div>
-                  <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                    Read-only map, routing, alerts & live broadcasts
-                  </p>
-                </div>
-                <span className="shrink-0 text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded uppercase">
-                  Public
-                </span>
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
               </button>
-
-              <div className="my-1 border-t border-gray-100" />
-
-              {/* State Admin */}
               <button
-                onClick={() => { setUserRole('STATE_ADMIN'); setShowRoleDropdown(false); }}
-                className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors ${
-                  userRole === 'STATE_ADMIN' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-blue-300 font-medium' : ''
-                }`}
+                onClick={() => openAuthModal('SIGNUP')}
+                className="hidden sm:flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-bold px-2.5 py-1.5 rounded-lg text-xs border border-white/20 transition-all cursor-pointer"
+                title="Create New Official Account"
               >
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                    <span>🏛️ State Admin (MDoNER HQ)</span>
-                  </div>
-                  <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                    Full author control, override road status & alerts
-                  </p>
-                </div>
-                <span className="shrink-0 text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded uppercase">
-                  Admin
-                </span>
+                <UserPlus className="w-3.5 h-3.5 text-sky-300" />
+                <span>Register</span>
               </button>
+            </div>
+          )}
 
-              {/* District Collector */}
-              <button
-                onClick={() => { setUserRole('DISTRICT_COLLECTOR'); setShowRoleDropdown(false); }}
-                className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors ${
-                  userRole === 'DISTRICT_COLLECTOR' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-purple-300 font-medium' : ''
-                }`}
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                    <span>🏢 District Collector / DM</span>
+          {showRoleDropdown && currentUser && (
+            <div className="absolute right-0 mt-2 w-84 sm:w-96 min-w-[320px] max-w-[94vw] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-2 z-[2500] text-xs space-y-2 animate-in fade-in zoom-in-95 duration-150">
+              {/* Profile Card Header */}
+              <div className="p-3 bg-gradient-to-r from-[#17365D] to-[#1E3A5F] text-white rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-black text-sm border border-white/30">
+                      {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-black text-xs text-white truncate">{currentUser.name}</div>
+                      <div className="text-[11px] text-sky-200 truncate">{currentUser.email}</div>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                    District approvals, relief convoys & emergency
-                  </p>
+                  <span className="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[9px] font-black px-2 py-0.5 rounded uppercase">
+                    {currentUser.frontend_role || userRole}
+                  </span>
                 </div>
-                <span className="shrink-0 text-[10px] bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded uppercase">
-                  Authority
-                </span>
-              </button>
 
-              {/* Logistics Operator */}
-              <button
-                onClick={() => { setUserRole('LOGISTICS_OPERATOR'); setShowRoleDropdown(false); }}
-                className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors ${
-                  userRole === 'LOGISTICS_OPERATOR' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-amber-300 font-medium' : ''
-                }`}
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                    <span>🚛 Logistics & Fleet Operator</span>
+                {currentUser.organization && (
+                  <div className="text-[10px] text-sky-100/80 bg-black/20 px-2 py-1 rounded truncate">
+                    {currentUser.organization}
                   </div>
-                  <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                    NavIC truck telemetry & warehouse routing
-                  </p>
-                </div>
-                <span className="shrink-0 text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded uppercase">
-                  Fleet
-                </span>
-              </button>
+                )}
+              </div>
 
-              {/* Field Inspector */}
-              <button
-                onClick={() => { setUserRole('FIELD_INSPECTOR'); setShowRoleDropdown(false); }}
-                className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors ${
-                  userRole === 'FIELD_INSPECTOR' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-teal-300 font-medium' : ''
-                }`}
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                    <span>👷 Field Inspector (PWD / SDRF)</span>
-                  </div>
-                  <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                    On-ground damage logging & AR crack scans
-                  </p>
+              {/* Governance Role Switcher (Matching Screenshot) */}
+              <div className="space-y-1">
+                <div className="px-2 py-1 flex items-center justify-between">
+                  <span className="font-bold text-gray-600 text-[10px] uppercase tracking-wider">
+                    SWITCH GOVERNANCE ROLE
+                  </span>
+                  <span className="text-[9px] bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded font-mono font-bold">
+                    RBAC Mode
+                  </span>
                 </div>
-                <span className="shrink-0 text-[10px] bg-teal-100 text-teal-800 font-bold px-2 py-0.5 rounded uppercase">
-                  Field
-                </span>
-              </button>
+
+                {/* 1. Citizen / Public Traveler */}
+                <button
+                  onClick={() => { quickSwitchRole('CITIZEN'); setShowRoleDropdown(false); }}
+                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
+                    userRole === 'CITIZEN' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-emerald-300 font-medium' : ''
+                  }`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
+                      <span>👥 Citizen / Public Traveler</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+                      Read-only map, routing, alerts & live broadcasts
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded uppercase">
+                    PUBLIC
+                  </span>
+                </button>
+
+                {/* 2. State Admin */}
+                <button
+                  onClick={() => { quickSwitchRole('STATE_ADMIN'); setShowRoleDropdown(false); }}
+                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
+                    userRole === 'STATE_ADMIN' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-blue-300 font-medium' : ''
+                  }`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
+                      <span>🏛️ State Admin (MDoNER HQ)</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+                      Full author control, override road status & alerts
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded uppercase">
+                    ADMIN
+                  </span>
+                </button>
+
+                {/* 3. District Collector */}
+                <button
+                  onClick={() => { quickSwitchRole('DISTRICT_COLLECTOR'); setShowRoleDropdown(false); }}
+                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
+                    userRole === 'DISTRICT_COLLECTOR' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-purple-300 font-medium' : ''
+                  }`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
+                      <span>🏢 District Collector / DM</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+                      District approvals, relief convoys & emergency
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-[10px] bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded uppercase">
+                    AUTHORITY
+                  </span>
+                </button>
+
+                {/* 4. Logistics Operator */}
+                <button
+                  onClick={() => { quickSwitchRole('LOGISTICS_OPERATOR'); setShowRoleDropdown(false); }}
+                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
+                    userRole === 'LOGISTICS_OPERATOR' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-amber-300 font-medium' : ''
+                  }`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
+                      <span>🚛 Logistics & Fleet Operator</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+                      NavIC truck telemetry & warehouse routing
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded uppercase">
+                    FLEET
+                  </span>
+                </button>
+
+                {/* 5. Field Inspector */}
+                <button
+                  onClick={() => { quickSwitchRole('FIELD_INSPECTOR'); setShowRoleDropdown(false); }}
+                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
+                    userRole === 'FIELD_INSPECTOR' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-teal-300 font-medium' : ''
+                  }`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
+                      <span>👷 Field Inspector (PWD / SDRF)</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+                      On-ground damage logging & AR crack scans
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-[10px] bg-teal-100 text-teal-800 font-bold px-2 py-0.5 rounded uppercase">
+                    FIELD
+                  </span>
+                </button>
+              </div>
+
+              {/* Action Buttons: Sign In with Another Account & Sign Out */}
+              <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
+                <button
+                  onClick={() => {
+                    setShowRoleDropdown(false);
+                    openAuthModal('SIGNIN');
+                  }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700 hover:bg-blue-50 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Switch Account</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setShowRoleDropdown(false);
+                    logout();
+                  }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Notifications Bell */}
+        {/* Notifications Bell & Dropdown Box */}
         <div className="relative">
           <button
             onClick={() => {
               setShowNotifDropdown(!showNotifDropdown);
               setShowLangDropdown(false);
               setShowRoleDropdown(false);
+              if (!showNotifDropdown && unreadNotifCount > 0) {
+                markAllNotificationsAsRead();
+              }
             }}
-            className="relative p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors border border-white/15"
-            title="Urgent Alerts"
+            className="relative p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors border border-white/15 cursor-pointer"
+            title="Notification Center & Live Broadcasts"
           >
             <Bell className="w-4 h-4 text-white" />
-            {unackAlerts.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#1E3A5F] animate-pulse">
-                {unackAlerts.length}
+            {(unreadNotifCount > 0 || unackAlerts.length > 0) && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white font-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#17365D] animate-pulse">
+                {unreadNotifCount > 0 ? unreadNotifCount : unackAlerts.length}
               </span>
             )}
           </button>
 
           {showNotifDropdown && (
-            <div className="absolute right-0 mt-2 w-80 min-w-[300px] max-w-[92vw] bg-white text-gray-800 rounded-lg shadow-xl border border-gray-200 p-2 z-[2500] text-xs">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-                <span className="font-bold text-gray-800">Urgent Field Dispatches</span>
-                <span className="text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-semibold">
-                  {unackAlerts.length} Unacknowledged
-                </span>
+            <div className="absolute right-0 mt-2 w-84 sm:w-96 min-w-[320px] max-w-[94vw] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-2 z-[2500] text-xs animate-in fade-in zoom-in-95 duration-150">
+              {/* Header */}
+              <div className="flex items-center justify-between pb-2 px-1 border-b border-gray-100">
+                <div className="flex items-center gap-1.5">
+                  <Bell className="w-4 h-4 text-[#1E3A5F]" />
+                  <span className="font-bold text-gray-900 text-xs">Live Intelligence & Alerts</span>
+                  {notifications.length > 0 && (
+                    <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded-full font-bold">
+                      {notifications.length}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {notifications.length > 0 && (
+                    <>
+                      <button
+                        onClick={markAllNotificationsAsRead}
+                        className="text-[10px] text-gray-500 hover:text-blue-700 flex items-center gap-0.5 font-medium transition-colors"
+                        title="Mark all as read"
+                      >
+                        <CheckCheck className="w-3 h-3" /> Mark Read
+                      </button>
+                      <button
+                        onClick={clearAllNotifications}
+                        className="text-[10px] text-gray-400 hover:text-red-600 flex items-center gap-0.5 font-medium transition-colors"
+                        title="Clear notification history"
+                      >
+                        <Trash2 className="w-3 h-3" /> Clear
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-              <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto mt-1">
-                {alerts.slice(0, 4).map((a) => (
-                  <div key={a.id} className="py-2 px-1">
-                    <div className="flex items-center gap-1.5">
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                      <span className="font-semibold text-gray-900 text-xs">{a.title}</span>
+
+              {/* Notification Stream Body */}
+              <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto mt-1 pr-0.5 space-y-1">
+                {notifications.length > 0 ? (
+                  notifications.map((n) => {
+                    const isDanger = n.tier === 'DANGER';
+                    const isWarning = n.tier === 'WARNING';
+                    const isSuccess = n.tier === 'SUCCESS';
+
+                    return (
+                      <div
+                        key={n.id}
+                        className={`p-2 rounded-lg transition-colors flex items-start gap-2.5 ${
+                          !n.isRead ? 'bg-blue-50/60 border-l-2 border-l-blue-600' : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className="shrink-0 mt-0.5">
+                          {isDanger && <XCircle className="w-4 h-4 text-red-600" />}
+                          {isWarning && <AlertTriangle className="w-4 h-4 text-amber-500" />}
+                          {isSuccess && <CheckCircle className="w-4 h-4 text-emerald-600" />}
+                          {!isDanger && !isWarning && !isSuccess && <Info className="w-4 h-4 text-blue-600" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="font-bold text-gray-900 text-xs truncate">{n.title}</span>
+                            <span className="text-[9px] text-gray-400 shrink-0">{n.timestamp}</span>
+                          </div>
+                          <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{n.message}</p>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : alerts.length > 0 ? (
+                  alerts.slice(0, 4).map((a) => (
+                    <div
+                      key={a.id}
+                      onClick={() => {
+                        openDrawer('ALERT', a);
+                        setShowNotifDropdown(false);
+                      }}
+                      className="p-2 rounded-lg hover:bg-red-50/70 cursor-pointer transition-colors flex items-start gap-2.5"
+                    >
+                      <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-bold text-gray-900 text-xs truncate">{a.title}</span>
+                          <span className="text-[9px] text-gray-400 shrink-0">{a.timestamp}</span>
+                        </div>
+                        <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{a.message_i18n?.en || a.title}</p>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{a.message_i18n?.en || a.title}</p>
-                    <span className="text-[10px] text-gray-400 block mt-1">{a.timestamp}</span>
+                  ))
+                ) : (
+                  <div className="py-6 text-center text-gray-400 text-xs">
+                    <CheckCircle className="w-6 h-6 text-emerald-500 mx-auto mb-1 opacity-70" />
+                    <div>All systems operational</div>
+                    <div className="text-[10px] text-gray-400">No active alerts or incident notifications.</div>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}

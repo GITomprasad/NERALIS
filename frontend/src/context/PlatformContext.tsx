@@ -95,7 +95,7 @@ interface PlatformContextType {
   isFullAdmin: boolean;
   networkMode: NetworkMode;
   setNetworkMode: (mode: NetworkMode) => void;
-
+  
   // Demo vs Live Mode
   isDemoMode: boolean;
   toggleDemoMode: () => void;
@@ -104,7 +104,7 @@ interface PlatformContextType {
   isSidebarCollapsed: boolean;
   setIsSidebarCollapsed: (v: boolean) => void;
   toggleSidebar: () => void;
-
+  
   // Drawer state
   isDrawerOpen: boolean;
   drawerData: any | null;
@@ -287,7 +287,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const logout = () => {
-    apiClient.logout().catch(() => { });
+    apiClient.logout().catch(() => {});
     setCurrentUser(null);
     setUserRole('CITIZEN');
     localStorage.removeItem('neralis_user_session');
@@ -588,7 +588,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Fetch initial data from backend via typed apiClient
   const refreshData = async () => {
     try {
-      const results = await Promise.allSettled([
+      const [srcRes, distRes, corrRes, brRes, depRes, vehRes, altRes, repRes] = await Promise.all([
         apiClient.getSources(),
         apiClient.getDistricts(),
         apiClient.getCorridors(),
@@ -599,14 +599,38 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         apiClient.getFieldReports()
       ]);
 
-      if (srcRes.length > 0) setSources(srcRes);
-      if (distRes.length > 0) setDistricts(distRes);
-      if (corrRes.length > 0) setCorridors(corrRes);
-      if (brRes.length > 0) setBridges(brRes);
-      if (depRes.length > 0) setDepots(depRes);
-      if (vehRes.length > 0) setVehicles(vehRes);
-      if (altRes.length > 0) setAlerts(altRes);
-      if (repRes.length > 0) setFieldReports(repRes);
+      if (srcRes.length > 0) {
+        setSources(srcRes);
+        offlineStore.cacheReferenceData('sources', srcRes);
+      }
+      if (distRes.length > 0) {
+        setDistricts(distRes);
+        offlineStore.cacheReferenceData('districts', distRes);
+      }
+      if (corrRes.length > 0) {
+        setCorridors(corrRes);
+        offlineStore.cacheReferenceData('corridors', corrRes);
+      }
+      if (brRes.length > 0) {
+        setBridges(brRes);
+        offlineStore.cacheReferenceData('bridges', brRes);
+      }
+      if (depRes.length > 0) {
+        setDepots(depRes);
+        offlineStore.cacheReferenceData('depots', depRes);
+      }
+      if (vehRes.length > 0) {
+        setVehicles(vehRes);
+        offlineStore.cacheReferenceData('vehicles', vehRes);
+      }
+      if (altRes.length > 0) {
+        setAlerts(altRes);
+        offlineStore.cacheReferenceData('alerts', altRes);
+      }
+      if (repRes.length > 0) {
+        setFieldReports(repRes);
+        offlineStore.cacheReferenceData('reports', repRes);
+      }
     } catch (e) {
       console.warn('API error during refresh, loading from IndexedDB cache', e);
       const cachedDistricts = await offlineStore.getCachedReferenceData<District[]>('districts');

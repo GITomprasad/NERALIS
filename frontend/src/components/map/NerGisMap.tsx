@@ -16,6 +16,41 @@ const MapResizer: React.FC<{ isSidebarCollapsed?: boolean }> = ({ isSidebarColla
   return null;
 };
 
+const RouteBoundsFitter: React.FC<{ highlightRoute?: any }> = ({ highlightRoute }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (!highlightRoute) return;
+    const coords: [number, number][] = [];
+    if (Array.isArray(highlightRoute.coordinates)) {
+      highlightRoute.coordinates.forEach((c: any) => {
+        if (Array.isArray(c) && c.length >= 2 && typeof c[0] === 'number' && typeof c[1] === 'number') {
+          coords.push([c[0], c[1]]);
+        }
+      });
+    }
+    if (coords.length === 0 && Array.isArray(highlightRoute.segments)) {
+      highlightRoute.segments.forEach((seg: any) => {
+        if (Array.isArray(seg.coordinates)) {
+          seg.coordinates.forEach((c: any) => {
+            if (Array.isArray(c) && c.length >= 2 && typeof c[0] === 'number' && typeof c[1] === 'number') {
+              coords.push([c[0], c[1]]);
+            }
+          });
+        }
+      });
+    }
+    if (coords.length > 0) {
+      try {
+        const bounds = L.latLngBounds(coords);
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 10, animate: true });
+      } catch {
+        // Safe fallback
+      }
+    }
+  }, [highlightRoute, map]);
+  return null;
+};
+
 // Fix standard Leaflet default icon issues in React
 const createCustomIcon = (color: string, label: string) => {
   return L.divIcon({
@@ -52,7 +87,29 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
   highlightRoute,
   className = ''
 }) => {
-  const { districts, corridors, bridges, depots, vehicles, openDrawer, isSidebarCollapsed, openProvenanceModal } = usePlatform();
+  const {
+    districts,
+    corridors,
+    bridges,
+    depots,
+    vehicles,
+    openDrawer,
+    isSidebarCollapsed,
+    openProvenanceModal,
+    selectedStateFilter
+  } = usePlatform();
+
+  const visibleDistricts = districts.filter(d => selectedStateFilter === 'ALL' || d.state_id === selectedStateFilter);
+  const visibleCorridors = corridors.filter(c => {
+    if (selectedStateFilter === 'ALL') return true;
+    const fromId = c.from_district || '';
+    const toId = c.to_district || '';
+    return fromId.startsWith(selectedStateFilter) || toId.startsWith(selectedStateFilter);
+  });
+  const visibleBridges = bridges.filter(b => {
+    if (selectedStateFilter === 'ALL') return true;
+    return b.id?.startsWith(`BR-${selectedStateFilter}`) || b.location?.toLowerCase().includes(selectedStateFilter.toLowerCase());
+  });
 
   // Layer Visibility Controls
   const [showRoads, setShowRoads] = useState(true);
@@ -89,6 +146,7 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
         className="w-full h-full"
       >
         <MapResizer isSidebarCollapsed={isSidebarCollapsed} />
+        <RouteBoundsFitter highlightRoute={highlightRoute} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | ISRO Bhuvan GIS'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -96,7 +154,7 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
 
         {/* 1. Road Segments Polylines */}
         {showRoads &&
-          corridors.map((seg) => {
+          visibleCorridors.map((seg) => {
             const color = getStatusColor(seg.status);
             const isClosed = seg.status === 'CLOSED';
             const isOpen = seg.status === 'OPEN';
@@ -149,23 +207,39 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
           })}
 
         {/* Highlight Active Route if present */}
-        {highlightRoute && highlightRoute.segments && (
-          highlightRoute.segments.map((seg: any, idx: number) => (
-            <Polyline
-              key={`hl-${idx}`}
-              positions={seg.coordinates}
-              pathOptions={{
-                color: '#38bdf8',
-                weight: 7,
-                opacity: 0.9
-              }}
-            />
-          ))
+        {highlightRoute && (
+          <>
+            {Array.isArray(highlightRoute.coordinates) && highlightRoute.coordinates.length > 0 && (
+              <Polyline
+                positions={highlightRoute.coordinates as any}
+                pathOptions={{
+                  color: '#0284c7',
+                  weight: 6,
+                  opacity: 0.95
+                }}
+              />
+            )}
+            {Array.isArray(highlightRoute.segments) &&
+              highlightRoute.segments.map((seg: any, idx: number) => {
+                if (!Array.isArray(seg.coordinates) || seg.coordinates.length === 0) return null;
+                return (
+                  <Polyline
+                    key={`hl-seg-${idx}-${seg.segment_id || idx}`}
+                    positions={seg.coordinates as any}
+                    pathOptions={{
+                      color: '#38bdf8',
+                      weight: 7,
+                      opacity: 0.85
+                    }}
+                  />
+                );
+              })}
+          </>
         )}
 
         {/* 2. District Headquarter Markers */}
         {showDistricts &&
-          districts.map((d) => (
+          visibleDistricts.map((d) => (
             <CircleMarker
               key={d.id}
               center={[d.lat, d.lng]}
@@ -211,7 +285,7 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
 
         {/* 3. Strategic Bridge IoT Sensors */}
         {showBridges &&
-          bridges.map((br) => (
+          visibleBridges.map((br) => (
             <Marker
               key={br.id}
               position={[br.lat, br.lng]}

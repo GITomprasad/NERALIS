@@ -1,25 +1,54 @@
 """
 GPS & NavIC Vehicle Tracking & Fleet Telemetry Engine (Module 3).
 Simulates and ingests real-time telemetry, satellite failover (NavIC / 4G / Iridium),
-cold chain temperature logging, fuel theft IQR anomaly detector,
-driver safety scoring, and trip playback waypoints.
+cold chain temperature logging with multiple profile thresholds, fuel theft IQR anomaly detector,
+driver safety scoring, bounding-box spatial filtering, and trip playback waypoints.
 """
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import datetime
-from app.data.ner_geography import NER_VEHICLES
+from app.data.fleet import NER_VEHICLES
 
 class FleetTelemetryEngine:
     def __init__(self):
         self.vehicles = NER_VEHICLES
         self.is_demo_simulation_mode = True
 
-    def get_all_vehicles(self, is_demo_mode: bool = True) -> List[Dict[str, Any]]:
+    def get_all_vehicles(
+        self,
+        is_demo_mode: bool = True,
+        bbox: Optional[str] = None,
+        state: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
         """
-        Returns active fleet vehicles. In DEMO mode, marks simulation flags; in LIVE mode, indicates verified NavIC/GPS feeds.
+        Returns active fleet vehicles.
+        Supports optional bounding box (min_lat,min_lng,max_lat,max_lng) and state code filtering.
         """
         updated_fleet = []
+        parsed_bbox = None
+        if bbox:
+            try:
+                parts = [float(x.strip()) for x in bbox.split(",")]
+                if len(parts) == 4:
+                    parsed_bbox = parts  # min_lat, min_lng, max_lat, max_lng
+            except ValueError:
+                parsed_bbox = None
+
         for veh in self.vehicles:
+            # Filter by state prefix in plate number or origin/destination
+            if state:
+                state_upper = state.upper()
+                if not (veh["plate_number"].startswith(state_upper) or state_upper in veh.get("origin", "").upper() or state_upper in veh.get("destination", "").upper()):
+                    continue
+
+            # Filter by bounding box
+            if parsed_bbox:
+                min_lat, min_lng, max_lat, max_lng = parsed_bbox
+                lat = veh["current_lat"]
+                lng = veh["current_lng"]
+                if not (min_lat <= lat <= max_lat and min_lng <= lng <= max_lng):
+                    continue
+
             v_copy = dict(veh)
             v_copy["is_simulated"] = is_demo_mode and veh["id"] not in ["VEH-01", "VEH-04"]
             v_copy["verification_status"] = "SIMULATED" if v_copy["is_simulated"] else "OBSERVED"
@@ -44,7 +73,7 @@ class FleetTelemetryEngine:
                 "lat": veh["current_lat"] - 0.5,
                 "lng": veh["current_lng"] - 0.4,
                 "speed_kmh": 45,
-                "temp_c": 4.1 if veh.get("cold_chain") else None,
+                "temp_c": veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None,
                 "fuel_pct": 98,
                 "network": "4G LTE",
                 "status": "CLEAR"
@@ -55,7 +84,7 @@ class FleetTelemetryEngine:
                 "lat": veh["current_lat"] - 0.25,
                 "lng": veh["current_lng"] - 0.2,
                 "speed_kmh": 15,
-                "temp_c": 4.2 if veh.get("cold_chain") else None,
+                "temp_c": veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None,
                 "fuel_pct": 89,
                 "network": "NavIC Satellite Active",
                 "status": "INSPECTED_VALID"
@@ -66,7 +95,7 @@ class FleetTelemetryEngine:
                 "lat": veh["current_lat"] - 0.1,
                 "lng": veh["current_lng"] - 0.08,
                 "speed_kmh": 0,
-                "temp_c": 4.2 if veh.get("cold_chain") else None,
+                "temp_c": veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None,
                 "fuel_pct": 81,
                 "network": "NavIC Satellite Active",
                 "status": "REST_LOGGED"
@@ -92,6 +121,7 @@ class FleetTelemetryEngine:
             "origin": origin_name,
             "destination": dest_name,
             "waypoints": waypoints,
+            "cold_chain_profile": veh.get("cold_chain_profile", "STANDARD_VACCINES"),
             "cold_chain_compliance_pct": 99.4 if veh.get("cold_chain") else None,
             "driver_safety_score": veh["driver_score"]
         }

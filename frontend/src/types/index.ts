@@ -83,6 +83,9 @@ export interface Bridge {
   cctv_status: string;
   status: string;
   load_capacity_tons: number;
+  sensor_last_ping?: string;
+  sensor_status?: string;
+  scour_depth_m?: number;
   source?: string;
   observed_at?: string;
   verification_status?: VerificationStatus;
@@ -125,6 +128,7 @@ export interface Vehicle {
   network_mode: string;
   cold_chain?: {
     sensor_id: string;
+    profile?: string;
     current_temp_c: number;
     target_min_c: number;
     target_max_c: number;
@@ -132,6 +136,7 @@ export interface Vehicle {
     door_locked: boolean;
     temp_history: number[];
   } | null;
+  cold_chain_profile?: string;
   fuel_monitor: {
     tank_level_pct: number;
     consumption_rate_lph: number;
@@ -160,6 +165,7 @@ export interface Alert {
   escalation_sla_mins: number;
   dispatched_channels: string[];
   target_recipients_count: number;
+  dispatch_status?: string;
   message_i18n: Record<string, string>;
   source?: string;
   verification_status?: VerificationStatus;
@@ -265,3 +271,37 @@ export interface PrepositioningAdvisory {
     confidence: number;
   };
 }
+
+export type GovernanceRole = 'CITIZEN' | 'STATE_ADMIN' | 'DISTRICT_COLLECTOR' | 'LOGISTICS_OPERATOR' | 'FIELD_INSPECTOR';
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  frontend_role: GovernanceRole;
+  state?: string;
+  district?: string;
+  organization?: string;
+  phone?: string;
+  token?: string;
+  created_at?: string;
+}
+
+export interface DemoAccount {
+  role_key: GovernanceRole;
+  label: string;
+  badge: string;
+  email: string;
+  password?: string;
+  name: string;
+  description: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  token: string;
+  user: UserProfile;
+}
+
