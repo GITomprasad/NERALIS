@@ -16,6 +16,41 @@ const MapResizer: React.FC<{ isSidebarCollapsed?: boolean }> = ({ isSidebarColla
   return null;
 };
 
+const RouteBoundsFitter: React.FC<{ highlightRoute?: any }> = ({ highlightRoute }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (!highlightRoute) return;
+    const coords: [number, number][] = [];
+    if (Array.isArray(highlightRoute.coordinates)) {
+      highlightRoute.coordinates.forEach((c: any) => {
+        if (Array.isArray(c) && c.length >= 2 && typeof c[0] === 'number' && typeof c[1] === 'number') {
+          coords.push([c[0], c[1]]);
+        }
+      });
+    }
+    if (coords.length === 0 && Array.isArray(highlightRoute.segments)) {
+      highlightRoute.segments.forEach((seg: any) => {
+        if (Array.isArray(seg.coordinates)) {
+          seg.coordinates.forEach((c: any) => {
+            if (Array.isArray(c) && c.length >= 2 && typeof c[0] === 'number' && typeof c[1] === 'number') {
+              coords.push([c[0], c[1]]);
+            }
+          });
+        }
+      });
+    }
+    if (coords.length > 0) {
+      try {
+        const bounds = L.latLngBounds(coords);
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 10, animate: true });
+      } catch {
+        // Safe fallback
+      }
+    }
+  }, [highlightRoute, map]);
+  return null;
+};
+
 // Fix standard Leaflet default icon issues in React
 const createCustomIcon = (color: string, label: string) => {
   return L.divIcon({
@@ -111,6 +146,7 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
         className="w-full h-full"
       >
         <MapResizer isSidebarCollapsed={isSidebarCollapsed} />
+        <RouteBoundsFitter highlightRoute={highlightRoute} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | ISRO Bhuvan GIS'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -171,18 +207,34 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
           })}
 
         {/* Highlight Active Route if present */}
-        {highlightRoute && highlightRoute.segments && (
-          highlightRoute.segments.map((seg: any, idx: number) => (
-            <Polyline
-              key={`hl-${idx}`}
-              positions={seg.coordinates}
-              pathOptions={{
-                color: '#38bdf8',
-                weight: 7,
-                opacity: 0.9
-              }}
-            />
-          ))
+        {highlightRoute && (
+          <>
+            {Array.isArray(highlightRoute.coordinates) && highlightRoute.coordinates.length > 0 && (
+              <Polyline
+                positions={highlightRoute.coordinates as any}
+                pathOptions={{
+                  color: '#0284c7',
+                  weight: 6,
+                  opacity: 0.95
+                }}
+              />
+            )}
+            {Array.isArray(highlightRoute.segments) &&
+              highlightRoute.segments.map((seg: any, idx: number) => {
+                if (!Array.isArray(seg.coordinates) || seg.coordinates.length === 0) return null;
+                return (
+                  <Polyline
+                    key={`hl-seg-${idx}-${seg.segment_id || idx}`}
+                    positions={seg.coordinates as any}
+                    pathOptions={{
+                      color: '#38bdf8',
+                      weight: 7,
+                      opacity: 0.85
+                    }}
+                  />
+                );
+              })}
+          </>
         )}
 
         {/* 2. District Headquarter Markers */}
