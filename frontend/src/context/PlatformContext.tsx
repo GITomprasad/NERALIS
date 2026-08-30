@@ -11,6 +11,17 @@ import type {
   MLModelMetrics
 } from '../types';
 import { apiClient } from '../services/api/apiClient';
+import { offlineStore } from '../services/offline/offlineStore';
+import {
+  FALLBACK_SOURCES,
+  FALLBACK_DISTRICTS,
+  FALLBACK_CORRIDORS,
+  FALLBACK_BRIDGES,
+  FALLBACK_DEPOTS,
+  FALLBACK_VEHICLES,
+  FALLBACK_ALERTS,
+  FALLBACK_FIELD_REPORTS
+} from '../services/data/nerGeographyFallback';
 
 export type ActiveModule =
   | 'ACCESSIBILITY'
@@ -34,6 +45,15 @@ export interface ToastMessage {
   timestamp: string;
 }
 
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  tier: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER';
+  timestamp: string;
+  isRead: boolean;
+}
+
 export interface OutboxItem {
   client_event_id: string;
   action: 'FIELD_REPORT' | 'ROAD_STATUS' | 'ALERT_ACK';
@@ -52,11 +72,30 @@ interface PlatformContextType {
   previousModule: ActiveModule | null;
   userRole: UserRole;
   setUserRole: (role: UserRole) => void;
+  currentUser: any | null;
+  isAuthModalOpen: boolean;
+  authModalMode: 'SIGNIN' | 'SIGNUP';
+  openAuthModal: (mode?: 'SIGNIN' | 'SIGNUP') => void;
+  closeAuthModal: () => void;
+  login: (email: string, password: string) => Promise<boolean>;
+  loginWithGoogle: (payload?: {
+    email?: string;
+    name?: string;
+    role?: UserRole;
+    photo_url?: string;
+    google_id?: string;
+    credential?: string;
+    is_sandbox?: boolean;
+  }) => Promise<boolean>;
+  signup: (payload: any) => Promise<boolean>;
+  logout: () => void;
+  quickSwitchRole: (role: UserRole) => void;
+  demoAccounts: any[];
   isAdminOrAuthority: boolean;
   isFullAdmin: boolean;
   networkMode: NetworkMode;
   setNetworkMode: (mode: NetworkMode) => void;
-  
+
   // Demo vs Live Mode
   isDemoMode: boolean;
   toggleDemoMode: () => void;
@@ -65,7 +104,7 @@ interface PlatformContextType {
   isSidebarCollapsed: boolean;
   setIsSidebarCollapsed: (v: boolean) => void;
   toggleSidebar: () => void;
-  
+
   // Drawer state
   isDrawerOpen: boolean;
   drawerData: any | null;
@@ -99,10 +138,14 @@ interface PlatformContextType {
   isParliamentModalOpen: boolean;
   setIsParliamentModalOpen: (open: boolean) => void;
 
-  // Live Toast Notifications
+  // Live Toast Notifications & Notifications History
   toasts: ToastMessage[];
+  notifications: NotificationItem[];
+  unreadNotifCount: number;
   addToast: (title: string, message: string, tier?: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER') => void;
   dismissToast: (id: string) => void;
+  markAllNotificationsAsRead: () => void;
+  clearAllNotifications: () => void;
 
   // Master Data Cache
   sources: SourceRegistryItem[];
@@ -133,6 +176,141 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [userRole, setUserRole] = useState<UserRole>('STATE_ADMIN');
   const [networkMode, setNetworkMode] = useState<NetworkMode>('ONLINE');
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
+
+  // Authentication State
+  const [currentUser, setCurrentUser] = useState<any | null>(() => {
+    try {
+      const saved = localStorage.getItem('neralis_user_session');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'SIGNIN' | 'SIGNUP'>('SIGNIN');
+  const [demoAccounts, setDemoAccounts] = useState<any[]>([]);
+
+  // Sync userRole with currentUser on mount
+  useEffect(() => {
+    if (currentUser?.frontend_role) {
+      setUserRole(currentUser.frontend_role as UserRole);
+    }
+  }, [currentUser]);
+
+  // Load demo accounts
+  useEffect(() => {
+    apiClient.getDemoAccounts().then((accs) => {
+      if (accs && accs.length > 0) setDemoAccounts(accs);
+    });
+  }, []);
+
+  const openAuthModal = (mode: 'SIGNIN' | 'SIGNUP' = 'SIGNIN') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const res = await apiClient.signIn(email, password);
+      if (res?.success && res.user) {
+        setCurrentUser(res.user);
+        setUserRole(res.user.frontend_role as UserRole);
+        localStorage.setItem('neralis_user_session', JSON.stringify(res.user));
+        addToast('Authentication Verified', `Logged in as ${res.user.name} (${res.user.frontend_role}).`, 'SUCCESS');
+        setIsAuthModalOpen(false);
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      addToast('Authentication Failed', err.message || 'Invalid credentials', 'DANGER');
+      return false;
+    }
+  };
+
+  const loginWithGoogle = async (payload?: {
+    email?: string;
+    name?: string;
+    role?: UserRole;
+    photo_url?: string;
+    google_id?: string;
+    credential?: string;
+    is_sandbox?: boolean;
+  }): Promise<boolean> => {
+    try {
+      const googleData = {
+        email: payload?.email,
+        name: payload?.name,
+        role: payload?.role || 'CITIZEN',
+        photo_url: payload?.photo_url,
+        google_id: payload?.google_id,
+        credential: payload?.credential,
+        is_sandbox: payload?.is_sandbox
+      };
+      const res = await apiClient.signInWithGoogle(googleData);
+      if (res?.success && res.user) {
+        setCurrentUser(res.user);
+        setUserRole(res.user.frontend_role as UserRole);
+        localStorage.setItem('neralis_user_session', JSON.stringify(res.user));
+        const toastTitle = payload?.is_sandbox ? 'Sandbox Session Active' : 'Google Sign-In Verified';
+        addToast(toastTitle, `Welcome to NERALIS, ${res.user.name}!`, 'SUCCESS');
+        setIsAuthModalOpen(false);
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      addToast('Google Sign-In Failed', err.message || 'Unable to authenticate with Google', 'DANGER');
+      return false;
+    }
+  };
+
+  const signup = async (payload: any): Promise<boolean> => {
+    try {
+      const res = await apiClient.signUp(payload);
+      if (res?.success && res.user) {
+        setCurrentUser(res.user);
+        setUserRole(res.user.frontend_role as UserRole);
+        localStorage.setItem('neralis_user_session', JSON.stringify(res.user));
+        addToast('Registration Successful', `Welcome to NERALIS, ${res.user.name}!`, 'SUCCESS');
+        setIsAuthModalOpen(false);
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      addToast('Registration Error', err.message || 'Could not register user', 'DANGER');
+      return false;
+    }
+  };
+
+  const logout = () => {
+    apiClient.logout().catch(() => { });
+    setCurrentUser(null);
+    setUserRole('CITIZEN');
+    localStorage.removeItem('neralis_user_session');
+    addToast('Session Ended', 'You have been signed out successfully.', 'INFO');
+  };
+
+  const quickSwitchRole = (role: UserRole) => {
+    setUserRole(role);
+    const demo = demoAccounts.find((d) => d.role_key === role);
+    if (demo) {
+      const demoUser = {
+        id: `USR-${role}`,
+        name: demo.name,
+        email: demo.email,
+        role: role,
+        frontend_role: role,
+        organization: demo.description
+      };
+      setCurrentUser(demoUser);
+      localStorage.setItem('neralis_user_session', JSON.stringify(demoUser));
+    }
+    addToast('Governance Role Switched', `Active governance permission: ${role}`, 'INFO');
+  };
 
   const toggleDemoMode = () => {
     setIsDemoMode((prev) => {
@@ -217,41 +395,82 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Live Outbox
   const [outbox, setOutbox] = useState<OutboxItem[]>([]);
 
-  // Toasts
-  const [toasts, setToasts] = useState<ToastMessage[]>([
+  // Toasts (Auto-vanish after 2s) & Notifications Dropdown History
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
-      id: 't-1',
+      id: 'notif-1',
       title: 'T4 Emergency Warning Dispatched',
       message: 'Teesta Valley NH-10 Corridor blocked due to debris surge. 482 operators alerted.',
       tier: 'DANGER',
-      timestamp: '08:15 IST'
+      timestamp: '08:15 IST',
+      isRead: false
+    },
+    {
+      id: 'notif-2',
+      title: 'Bridge Telemetry Synchronized',
+      message: 'Saraighat Bridge sensor health: 94%. Water clearance 5.8m (safe).',
+      tier: 'SUCCESS',
+      timestamp: '08:10 IST',
+      isRead: true
     }
   ]);
 
-  // Master Data state
-  const [sources, setSources] = useState<SourceRegistryItem[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [corridors, setCorridors] = useState<RoadSegment[]>([]);
-  const [bridges, setBridges] = useState<Bridge[]>([]);
-  const [depots, setDepots] = useState<SupplyDepot[]>([]);
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [fieldReports, setFieldReports] = useState<FieldReport[]>([]);
+  // Master Data state initialized with full fallback datasets
+  const [sources, setSources] = useState<SourceRegistryItem[]>(FALLBACK_SOURCES);
+  const [districts, setDistricts] = useState<District[]>(FALLBACK_DISTRICTS);
+  const [corridors, setCorridors] = useState<RoadSegment[]>(FALLBACK_CORRIDORS);
+  const [bridges, setBridges] = useState<Bridge[]>(FALLBACK_BRIDGES);
+  const [depots, setDepots] = useState<SupplyDepot[]>(FALLBACK_DEPOTS);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(FALLBACK_VEHICLES);
+  const [alerts, setAlerts] = useState<Alert[]>(FALLBACK_ALERTS);
+  const [fieldReports, setFieldReports] = useState<FieldReport[]>(FALLBACK_FIELD_REPORTS);
 
   const addToast = (title: string, message: string, tier: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER' = 'INFO') => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     const newToast: ToastMessage = {
-      id: `toast-${Date.now()}-${Math.random()}`,
+      id,
       title,
       message,
       tier,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      timestamp
     };
+
+    const newNotif: NotificationItem = {
+      id,
+      title,
+      message,
+      tier,
+      timestamp,
+      isRead: false
+    };
+
+    // Show floating toast
     setToasts((prev) => [newToast, ...prev].slice(0, 5));
+    // Add to dropdown notification history
+    setNotifications((prev) => [newNotif, ...prev].slice(0, 30));
+
+    // Automatically vanish toast from screen after 2 seconds
+    setTimeout(() => {
+      dismissToast(id);
+    }, 2000);
   };
 
   const dismissToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const unreadNotifCount = notifications.filter((n) => !n.isRead).length;
 
   const openDrawer = (type: 'DISTRICT' | 'CORRIDOR' | 'BRIDGE' | 'VEHICLE' | 'ALERT' | 'REPORT', data: any) => {
     setDrawerType(type);
@@ -283,16 +502,22 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   // Offline Outbox Queueing & Sync
-  const queueOfflineMutation = (action: 'FIELD_REPORT' | 'ROAD_STATUS' | 'ALERT_ACK', payload: any) => {
+  const queueOfflineMutation = async (action: 'FIELD_REPORT' | 'ROAD_STATUS' | 'ALERT_ACK', payload: any) => {
     const client_event_id = `OUTBOX-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const newItem: OutboxItem = {
       client_event_id,
       action,
-      payload,
+      payload: { ...payload, client_event_id },
       status: networkMode === 'OFFLINE' ? 'QUEUED' : 'SYNCING',
       queued_at: new Date().toLocaleTimeString()
     };
     setOutbox((prev) => [newItem, ...prev]);
+
+    // Save to durable IndexedDB
+    await offlineStore.saveOutboxItem({
+      ...newItem,
+      retry_count: 0
+    });
 
     if (action === 'FIELD_REPORT') {
       const optimisticReport: FieldReport = {
@@ -312,7 +537,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           pothole_depth_cm: payload.pothole_depth_cm || 0,
           debris_volume_cum: payload.debris_volume_cum || 0
         },
-        ai_severity_predicted: 'CALCULATING (Queued)',
+        ai_severity_predicted: 'CALCULATING (Queued in IndexedDB)',
         status: 'QUEUED_LOCAL',
         assigned_crew: 'Local Division',
         points_awarded: 30,
@@ -321,26 +546,43 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         verification_status: 'REPORTED'
       };
       setFieldReports((prev) => [optimisticReport, ...prev]);
-      addToast('Report Saved to Offline Outbox', 'Will auto-sync as soon as network connects.', 'INFO');
+      addToast('Report Saved to IndexedDB Outbox', 'Durable offline storage active. Will auto-sync on reconnect.', 'INFO');
     }
   };
 
   const syncOutbox = async () => {
-    if (outbox.length === 0) return;
-    addToast('Syncing Outbox...', `Uploading ${outbox.length} pending mutations to backend.`, 'INFO');
-    
-    for (const item of outbox) {
-      if (item.action === 'FIELD_REPORT') {
-        const synced = await apiClient.submitFieldReport(item.payload);
-        if (synced) {
-          setFieldReports((prev) =>
-            prev.map((r) => (r.client_event_id === item.client_event_id ? { ...synced, sync_status: 'SYNCED' } : r))
-          );
+    try {
+      const dbItems = await offlineStore.getAllOutboxItems();
+      const currentItems = dbItems && dbItems.length > 0 ? dbItems : outbox;
+
+      if (currentItems.length === 0) {
+        return;
+      }
+
+      addToast('Syncing Outbox...', `Uploading ${currentItems.length} pending mutations to backend.`, 'INFO');
+
+      for (const item of currentItems) {
+        if (item.action === 'FIELD_REPORT') {
+          const synced = await apiClient.submitFieldReport(item.payload);
+          if (synced) {
+            await offlineStore.removeOutboxItem(item.client_event_id);
+            setFieldReports((prev) =>
+              prev.map((r) => (r.client_event_id === item.client_event_id ? { ...synced, sync_status: 'SYNCED' } : r))
+            );
+          }
+        } else if (item.action === 'ROAD_STATUS') {
+          await apiClient.updateCorridorStatus(item.payload.corridor_id, item.payload.status);
+          await offlineStore.removeOutboxItem(item.client_event_id);
+        } else if (item.action === 'ALERT_ACK') {
+          await apiClient.acknowledgeAlert(item.payload.alert_id, item.payload.acknowledged_by);
+          await offlineStore.removeOutboxItem(item.client_event_id);
         }
       }
+      setOutbox([]);
+      addToast('Outbox Synced Successfully', 'All offline mutations assigned canonical server IDs.', 'SUCCESS');
+    } catch {
+      // Offline fallback handling
     }
-    setOutbox([]);
-    addToast('Outbox Synced Successfully', 'All offline mutations assigned canonical server IDs.', 'SUCCESS');
   };
 
   // Fetch initial data from backend via typed apiClient
@@ -357,29 +599,34 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         apiClient.getFieldReports()
       ]);
 
-      const srcRes = results[0].status === 'fulfilled' ? results[0].value : [];
-      const distRes = results[1].status === 'fulfilled' ? results[1].value : [];
-      const corrRes = results[2].status === 'fulfilled' ? results[2].value : [];
-      const brRes = results[3].status === 'fulfilled' ? results[3].value : [];
-      const depRes = results[4].status === 'fulfilled' ? results[4].value : [];
-      const vehRes = results[5].status === 'fulfilled' ? results[5].value : [];
-      const altRes = results[6].status === 'fulfilled' ? results[6].value : [];
-      const repRes = results[7].status === 'fulfilled' ? results[7].value : [];
-
-      setSources(srcRes);
-      setDistricts(distRes);
-      setCorridors(corrRes);
-      setBridges(brRes);
-      setDepots(depRes);
-      setVehicles(vehRes);
-      setAlerts(altRes);
-      setFieldReports(repRes);
+      if (srcRes.length > 0) setSources(srcRes);
+      if (distRes.length > 0) setDistricts(distRes);
+      if (corrRes.length > 0) setCorridors(corrRes);
+      if (brRes.length > 0) setBridges(brRes);
+      if (depRes.length > 0) setDepots(depRes);
+      if (vehRes.length > 0) setVehicles(vehRes);
+      if (altRes.length > 0) setAlerts(altRes);
+      if (repRes.length > 0) setFieldReports(repRes);
     } catch (e) {
-      console.warn('API error during refresh, using client fallbacks', e);
+      console.warn('API error during refresh, loading from IndexedDB cache', e);
+      const cachedDistricts = await offlineStore.getCachedReferenceData<District[]>('districts');
+      if (cachedDistricts) setDistricts(cachedDistricts);
     }
   };
 
   useEffect(() => {
+    // Load existing IndexedDB outbox items on startup
+    offlineStore.getAllOutboxItems().then((items) => {
+      if (items && items.length > 0) {
+        setOutbox(items.map((i) => ({
+          client_event_id: i.client_event_id,
+          action: i.action,
+          payload: i.payload,
+          status: i.status,
+          queued_at: i.queued_at
+        })));
+      }
+    });
     refreshData();
   }, [isDemoMode]);
 
@@ -404,6 +651,17 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         previousModule,
         userRole,
         setUserRole,
+        currentUser,
+        isAuthModalOpen,
+        authModalMode,
+        openAuthModal,
+        closeAuthModal,
+        login,
+        loginWithGoogle,
+        signup,
+        logout,
+        quickSwitchRole,
+        demoAccounts,
         isAdminOrAuthority,
         isFullAdmin,
         networkMode,
@@ -437,8 +695,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         isParliamentModalOpen,
         setIsParliamentModalOpen,
         toasts,
+        notifications,
+        unreadNotifCount,
         addToast,
         dismissToast,
+        markAllNotificationsAsRead,
+        clearAllNotifications,
         sources,
         districts,
         corridors,
