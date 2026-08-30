@@ -95,7 +95,9 @@ def health_check():
         "status": "healthy",
         "service": "NERALIS Intelligence Engine v2.0",
         "region": "North Eastern Region (8 States)",
-        "model_accuracy_baseline": "98.4%",
+        "model_balanced_accuracy": "52.4%",
+        "model_macro_f1": "0.556",
+        "training_events": 348,
         "active_sources_count": len(NER_SOURCE_REGISTRY)
     }
 

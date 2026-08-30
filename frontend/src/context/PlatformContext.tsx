@@ -346,7 +346,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Fetch initial data from backend via typed apiClient
   const refreshData = async () => {
     try {
-      const [srcRes, distRes, corrRes, brRes, depRes, vehRes, altRes, repRes] = await Promise.all([
+      const results = await Promise.allSettled([
         apiClient.getSources(),
         apiClient.getDistricts(),
         apiClient.getCorridors(),
@@ -357,14 +357,23 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         apiClient.getFieldReports()
       ]);
 
-      if (srcRes.length > 0) setSources(srcRes);
-      if (distRes.length > 0) setDistricts(distRes);
-      if (corrRes.length > 0) setCorridors(corrRes);
-      if (brRes.length > 0) setBridges(brRes);
-      if (depRes.length > 0) setDepots(depRes);
-      if (vehRes.length > 0) setVehicles(vehRes);
-      if (altRes.length > 0) setAlerts(altRes);
-      if (repRes.length > 0) setFieldReports(repRes);
+      const srcRes = results[0].status === 'fulfilled' ? results[0].value : [];
+      const distRes = results[1].status === 'fulfilled' ? results[1].value : [];
+      const corrRes = results[2].status === 'fulfilled' ? results[2].value : [];
+      const brRes = results[3].status === 'fulfilled' ? results[3].value : [];
+      const depRes = results[4].status === 'fulfilled' ? results[4].value : [];
+      const vehRes = results[5].status === 'fulfilled' ? results[5].value : [];
+      const altRes = results[6].status === 'fulfilled' ? results[6].value : [];
+      const repRes = results[7].status === 'fulfilled' ? results[7].value : [];
+
+      setSources(srcRes);
+      setDistricts(distRes);
+      setCorridors(corrRes);
+      setBridges(brRes);
+      setDepots(depRes);
+      setVehicles(vehRes);
+      setAlerts(altRes);
+      setFieldReports(repRes);
     } catch (e) {
       console.warn('API error during refresh, using client fallbacks', e);
     }
