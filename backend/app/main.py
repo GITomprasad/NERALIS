@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
+from fastapi import Query
 
 from app.data.ner_geography import (
     NER_STATES,
@@ -153,10 +154,20 @@ def get_vehicle_playback(vehicle_id: str):
 def ingest_telemetry(req: TelemetryIngestRequest):
     return fleet_telemetry_engine.ingest_telemetry(req.model_dump())
 
-# Module 4: Predictive Disruption Intelligence (>98% Accuracy)
+# Module 4: Predictive Disruption Intelligence (>85% RAW Accuracy)
 @app.get("/api/predictions/72h")
-def get_72h_predictions(hours: int = 24):
-    return disruption_engine.get_72h_disruption_forecast(forecast_hours_ahead=hours)
+def get_72h_predictions(
+    hours: int = Query(24, description="Forecast horizon in hours")
+):
+    if hours not in [24, 48, 72]:
+        raise HTTPException(
+            status_code=400,
+            detail="hours must be one of: 24, 48, 72"
+        )
+
+    return disruption_engine.get_72h_disruption_forecast(
+        forecast_hours_ahead=hours
+    )
 
 @app.get("/api/predictions/model-metrics")
 def get_model_metrics():

@@ -66,6 +66,8 @@ class RealDisruptionMLModel:
     def __init__(self):
         self.model         = _model
         self.model_version = "NERALIS-RF-NER-Landslide-v1.0"
+        self.model_status = "ACTIVE"
+        self.is_simulation = False
         self.algorithm     = (
             "Random Forest Classifier | class_weight=balanced | "
             "n_estimators=500 | max_depth=10 | max_features=log2"

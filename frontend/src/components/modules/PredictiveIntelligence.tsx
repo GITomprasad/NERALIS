@@ -73,7 +73,7 @@ export const PredictiveIntelligence: React.FC = () => {
             </h2>
             <span className="bg-purple-100 text-purple-800 text-[10px] font-black px-2 py-0.5 rounded-full border border-purple-300 flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-purple-600" />
-              Accuracy: 98.4% (Evaluated)
+              RAW Accuracy: 85% (Evaluated)
             </span>
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
@@ -104,11 +104,10 @@ export const PredictiveIntelligence: React.FC = () => {
             <button
               key={hrs}
               onClick={() => setForecastHorizon(hrs)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                forecastHorizon === hrs
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${forecastHorizon === hrs
                   ? 'bg-[#1E3A5F] text-white shadow-xs'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+                }`}
             >
               +{hrs} Hours
             </button>
@@ -125,13 +124,12 @@ export const PredictiveIntelligence: React.FC = () => {
           return (
             <div
               key={pred.corridor_id || idx}
-              className={`p-4 rounded-xl border transition-all ${
-                isCritical
+              className={`p-4 rounded-xl border transition-all ${isCritical
                   ? 'bg-red-50/50 border-red-300 shadow-xs'
                   : isHigh
-                  ? 'bg-amber-50/40 border-amber-300'
-                  : 'bg-white border-gray-200'
-              }`}
+                    ? 'bg-amber-50/40 border-amber-300'
+                    : 'bg-white border-gray-200'
+                }`}
             >
               {/* Card Header */}
               <div className="flex items-start justify-between gap-2 mb-2.5">
