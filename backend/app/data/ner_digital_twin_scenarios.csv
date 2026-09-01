@@ -1,0 +1,6 @@
+scenario_id,incident_type,asset_id,asset_name,disaster_trigger,isolated_districts,isolated_population_millions,daily_freight_loss_tons,travel_delay_overhead_hrs,emergency_mitigation_plan,ndma_alert_tier
+SCN-01,BRIDGE_COLLAPSE,BR-01,Saraighat Bridge,Seismic Shift & Hydro-Scour,"Guwahati North, Barpeta, Nalbari",3.2,8500,28.0,Deploy Inland Waterways NW-2 Ro-Ro Barge & Divert via Kolia Bhomora,LEVEL_4_STATE_EMERGENCY
+SCN-02,BRIDGE_COLLAPSE,BR-05,Teesta Coronation Bridge,Glacial Lake Outburst (GLOF) Flash Surge,"Gangtok, Mangan, Namchi, Pakyong",0.75,4200,38.5,Activate Bagdogra Heli-Bridge & Resurface Lava-Algarah Hill bypass,LEVEL_4_STATE_EMERGENCY
+SCN-03,HIGHWAY_BLOCKADE,SEG-05,NH-13 Sela Pass Sector,"Massive Rock Avalanche (>8,000 cu.m)","Tawang, Jang, Lumla",0.12,1200,42.0,Deploy BRO Project Vartak heavy snow-cutters & Tawang heli-bridge,LEVEL_3_REGIONAL_ALERT
+SCN-04,HIGHWAY_BLOCKADE,SEG-03,NH-6 Sonapur Tunnel Mud Silt,Torrential Cloudburst & Mud Torrent,"Silchar, Aizawl, Agartala, Karimganj",5.4,7600,34.0,Activate Badarpur-Jowai old ridge bypass with 15T axle load restriction,LEVEL_4_STATE_EMERGENCY
+SCN-05,HIGHWAY_BLOCKADE,SEG-08,NH-2 Pagla Pahar Subsidence,Continuous Hill Creep & Pavement Subsidence,"Kohima, Dimapur, Senapati",1.8,3900,18.0,Divert light cargo via Niuland-Kohima bypass & enforce night convoy,LEVEL_3_REGIONAL_ALERT
