@@ -8,7 +8,11 @@ import type {
   Alert,
   FieldReport,
   SourceRegistryItem,
-  MLModelMetrics
+  MLModelMetrics,
+  ConnectivityClassification,
+  EffectiveConnectionType,
+  NetworkOverrideMode,
+  LiteStatusResponse
 } from '../types';
 import { apiClient } from '../services/api/apiClient';
 import { offlineStore } from '../services/offline/offlineStore';
@@ -172,6 +176,18 @@ interface PlatformContextType {
   outbox: OutboxItem[];
   queueOfflineMutation: (action: 'FIELD_REPORT' | 'ROAD_STATUS' | 'ALERT_ACK', payload: any) => void;
   syncOutbox: () => Promise<void>;
+
+  // Connectivity & Low-Network Lite Mode
+  connectivityStatus: ConnectivityClassification;
+  effectiveConnectionType: EffectiveConnectionType;
+  networkOverride: NetworkOverrideMode;
+  setNetworkOverride: (mode: NetworkOverrideMode) => void;
+  isLiteMode: boolean;
+  liteData: LiteStatusResponse | null;
+  isCachedData: boolean;
+  lastSyncedAt: string | null;
+  fetchLiteData: () => Promise<void>;
+  syncNow: () => Promise<void>;
 }
 
 const PlatformContext = createContext<PlatformContextType | undefined>(undefined);
@@ -183,6 +199,158 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [userRole, setUserRole] = useState<UserRole>('STATE_ADMIN');
   const [networkMode, setNetworkMode] = useState<NetworkMode>('ONLINE');
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
+
+  // Connectivity-Aware & Lite Mode State
+  const [networkOverride, setNetworkOverrideState] = useState<NetworkOverrideMode>('AUTO');
+  const [effectiveConnectionType, setEffectiveConnectionType] = useState<EffectiveConnectionType>('4g');
+  const [connectivityStatus, setConnectivityStatus] = useState<ConnectivityClassification>('GOOD');
+  const [liteData, setLiteData] = useState<LiteStatusResponse | null>(null);
+  const [isCachedData, setIsCachedData] = useState<boolean>(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+  // Evaluate genuine browser connection state
+  const evaluateBrowserConnection = () => {
+    if (typeof window === 'undefined') return;
+
+    if (!navigator.onLine) {
+      setEffectiveConnectionType('offline');
+      setConnectivityStatus('CRITICAL');
+      setNetworkMode('OFFLINE');
+      setIsCachedData(true);
+      return;
+    }
+
+    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    if (!conn) {
+      setEffectiveConnectionType('4g');
+      setConnectivityStatus('GOOD');
+      setNetworkMode('ONLINE');
+      return;
+    }
+
+    const effType: EffectiveConnectionType = conn.effectiveType || '4g';
+    setEffectiveConnectionType(effType);
+
+    if (effType === 'slow-2g' || effType === '2g') {
+      setConnectivityStatus('CRITICAL');
+      setNetworkMode('LOW_2G');
+    } else if (effType === '3g' || (conn.rtt && conn.rtt > 800) || (conn.downlink && conn.downlink < 1.0) || conn.saveData) {
+      setConnectivityStatus('LIMITED');
+    } else {
+      setConnectivityStatus('GOOD');
+      setNetworkMode('ONLINE');
+    }
+  };
+
+  const setNetworkOverride = (override: NetworkOverrideMode) => {
+    setNetworkOverrideState(override);
+    if (override === 'AUTO') {
+      evaluateBrowserConnection();
+      addToast('Auto Network Detection', 'Adapting dynamically to browser hardware & connection telemetry.', 'INFO');
+    } else if (override === 'GOOD') {
+      setConnectivityStatus('GOOD');
+      setEffectiveConnectionType('4g');
+      setNetworkMode('ONLINE');
+      setIsCachedData(false);
+      addToast('Manual Override: 4G Good', 'Simulating optimal high-speed network.', 'SUCCESS');
+    } else if (override === 'LIMITED') {
+      setConnectivityStatus('LIMITED');
+      setEffectiveConnectionType('3g');
+      addToast('Manual Override: 3G Limited', 'Lite Mode engaged with reduced polling.', 'WARNING');
+    } else if (override === 'CRITICAL') {
+      setConnectivityStatus('CRITICAL');
+      setEffectiveConnectionType('2g');
+      setNetworkMode('LOW_2G');
+      addToast('Manual Override: 2G Critical', 'Extreme low-bandwidth Lite Mode active (<2 KB payloads).', 'WARNING');
+    } else if (override === 'OFFLINE') {
+      setConnectivityStatus('CRITICAL');
+      setEffectiveConnectionType('offline');
+      setNetworkMode('OFFLINE');
+      setIsCachedData(true);
+      addToast('Manual Override: Offline', 'Zero-connectivity mode. Displaying cached local snapshot.', 'DANGER');
+    }
+  };
+
+  // Browser Network Event Listeners
+  useEffect(() => {
+    if (networkOverride !== 'AUTO') return;
+
+    evaluateBrowserConnection();
+
+    const handleOnline = () => {
+      evaluateBrowserConnection();
+      addToast('Network Reconnected', 'Live internet link restored. Synchronizing state.', 'SUCCESS');
+      setIsCachedData(false);
+      refreshData();
+      syncOutbox();
+    };
+
+    const handleOffline = () => {
+      setEffectiveConnectionType('offline');
+      setConnectivityStatus('CRITICAL');
+      setNetworkMode('OFFLINE');
+      setIsCachedData(true);
+      addToast('Network Disconnected', 'Offline mode engaged. Displaying cached local data.', 'WARNING');
+    };
+
+    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    const handleConnChange = () => {
+      evaluateBrowserConnection();
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    if (conn) {
+      conn.addEventListener('change', handleConnChange);
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      if (conn) {
+        conn.removeEventListener('change', handleConnChange);
+      }
+    };
+  }, [networkOverride]);
+
+  const isLiteMode = connectivityStatus === 'LIMITED' || connectivityStatus === 'CRITICAL' || networkMode === 'LOW_2G' || networkMode === 'OFFLINE';
+
+  const fetchLiteData = async () => {
+    try {
+      const data = await apiClient.getLiteStatus();
+      setLiteData(data);
+      setIsCachedData(!!data.is_cached);
+      setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    } catch {
+      setIsCachedData(true);
+    }
+  };
+
+  const syncNow = async () => {
+    if (isLiteMode) {
+      await fetchLiteData();
+    } else {
+      await refreshData();
+    }
+    await syncOutbox();
+    setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    addToast('Data Synchronized', `Synchronized status (${isLiteMode ? 'Lite Mode' : 'Full Mode'}).`, 'SUCCESS');
+  };
+
+  // Lite Mode Polling (Every 45s instead of aggressive polling)
+  useEffect(() => {
+    fetchLiteData();
+  }, []);
+
+  useEffect(() => {
+    if (!isLiteMode || effectiveConnectionType === 'offline') return;
+
+    const liteInterval = setInterval(() => {
+      fetchLiteData();
+    }, 45000);
+
+    return () => clearInterval(liteInterval);
+  }, [isLiteMode, effectiveConnectionType]);
 
   // Authentication State
   const [currentUser, setCurrentUser] = useState<any | null>(() => {
@@ -811,7 +979,17 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         addNewAlert,
         outbox,
         queueOfflineMutation,
-        syncOutbox
+        syncOutbox,
+        connectivityStatus,
+        effectiveConnectionType,
+        networkOverride,
+        setNetworkOverride,
+        isLiteMode,
+        liteData,
+        isCachedData,
+        lastSyncedAt,
+        fetchLiteData,
+        syncNow
       }}
     >
       {children}

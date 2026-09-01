@@ -177,5 +177,17 @@ class TestApiEndpoints(unittest.TestCase):
         comp_res = self.client.get("/api/reports/state-comparative")
         self.assertEqual(comp_res.status_code, 200)
 
+    def test_lite_status_endpoint(self):
+        """Verifies lightweight status endpoint for 2G/low-network environments."""
+        res = self.client.get("/api/lite/status")
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertEqual(data["mode"], "LITE_CRITICAL")
+        self.assertIn("vehicles", data)
+        self.assertIn("corridors_at_risk", data)
+        self.assertIn("critical_bridges", data)
+        self.assertIn("critical_alerts", data)
+        self.assertGreaterEqual(len(data["vehicles"]), 1)
+
 if __name__ == "__main__":
     unittest.main()

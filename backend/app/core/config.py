@@ -32,6 +32,9 @@ class Settings:
     DEFAULT_API_KEY: str = os.getenv("NERALIS_API_KEY", "neralis-sec-key-2026-auth")
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
 
+    # LLM & AI Engine (Groq Fast Inference)
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "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")
+    GROQ_MODEL: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 
     # Real-Time Telemetry & Simulation Modes
     SIMULATION_MODE_ENABLED: bool = os.getenv("NERALIS_SIMULATION_MODE", "true").lower() == "true"

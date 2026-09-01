@@ -48,6 +48,9 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
     quickSwitchRole,
     networkMode,
     setNetworkMode,
+    networkOverride,
+    setNetworkOverride,
+    isLiteMode,
     isDemoMode,
     toggleDemoMode,
     setIsModelMetricsModalOpen,
@@ -570,32 +573,42 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
           )}
         </div>
 
-        {/* Network Mode Switcher (5G / 2G / Offline) */}
+        {/* Network Mode Switcher (4G / 3G / 2G / Offline) */}
         <div className="flex items-center bg-black/20 rounded-lg p-0.5 border border-white/10 text-[11px]">
           <button
-            onClick={() => setNetworkMode('ONLINE')}
+            onClick={() => setNetworkOverride('GOOD')}
             className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkMode === 'ONLINE' ? 'bg-emerald-500 text-white font-bold' : 'text-sky-200 hover:text-white'
+              networkOverride === 'GOOD' || (networkOverride === 'AUTO' && networkMode === 'ONLINE') ? 'bg-emerald-500 text-white font-bold' : 'text-sky-200 hover:text-white'
             }`}
-            title="Full 5G / Broadband Online Mode"
+            title="Full 4G / Broadband Online Mode"
           >
             <Wifi className="w-3 h-3" />
-            <span className="hidden 2xl:inline">5G</span>
+            <span className="hidden 2xl:inline">4G</span>
           </button>
           <button
-            onClick={() => setNetworkMode('LOW_2G')}
+            onClick={() => setNetworkOverride('LIMITED')}
             className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkMode === 'LOW_2G' ? 'bg-amber-500 text-black font-bold' : 'text-sky-200 hover:text-white'
+              networkOverride === 'LIMITED' ? 'bg-amber-500 text-black font-bold' : 'text-sky-200 hover:text-white'
             }`}
-            title="Simulate Remote 2G Low Bandwidth Payload Mode"
+            title="Simulate 3G Limited Lite Mode"
           >
             <SignalLow className="w-3 h-3" />
+            <span className="hidden 2xl:inline">3G</span>
+          </button>
+          <button
+            onClick={() => setNetworkOverride('CRITICAL')}
+            className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
+              networkOverride === 'CRITICAL' || networkMode === 'LOW_2G' ? 'bg-rose-600 text-white font-bold' : 'text-sky-200 hover:text-white'
+            }`}
+            title="Simulate 2G Critical Bandwidth Mode"
+          >
+            <SignalLow className="w-3 h-3 text-rose-200" />
             <span className="hidden 2xl:inline">2G</span>
           </button>
           <button
-            onClick={() => setNetworkMode('OFFLINE')}
+            onClick={() => setNetworkOverride('OFFLINE')}
             className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkMode === 'OFFLINE' ? 'bg-red-600 text-white font-bold' : 'text-sky-200 hover:text-white'
+              networkOverride === 'OFFLINE' || networkMode === 'OFFLINE' ? 'bg-red-600 text-white font-bold' : 'text-sky-200 hover:text-white'
             }`}
             title="Simulate Zero Connectivity Offline Storage Mode"
           >

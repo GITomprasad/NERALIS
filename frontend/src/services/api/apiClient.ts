@@ -15,7 +15,8 @@ import type {
   SourceRegistryItem,
   MLModelMetrics,
   CorridorPrediction,
-  PrepositioningAdvisory
+  PrepositioningAdvisory,
+  LiteStatusResponse
 } from '../../types';
 import {
   FALLBACK_SOURCES,
@@ -1156,6 +1157,77 @@ export const apiClient = {
         { label: 'View GIS Command Center', action: 'NAVIGATE', target: 'ACCESSIBILITY' },
         { label: 'Explore Route Optimizer', action: 'NAVIGATE', target: 'ROUTE' }
       ]
+    };
+  },
+
+  // Module 8 / Lite Mode: Lightweight Status Endpoint
+  async getLiteStatus(): Promise<LiteStatusResponse> {
+    try {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/api/lite/status`, {}, 3000);
+      if (res.ok) {
+        const data: LiteStatusResponse = await res.json();
+        try {
+          localStorage.setItem('neralis_cached_lite_data', JSON.stringify({ ...data, is_cached: true, cached_at: new Date().toISOString() }));
+        } catch {
+          // Ignore local storage quota
+        }
+        return data;
+      }
+    } catch {
+      // Fallback
+    }
+
+    // Check localStorage cache first
+    try {
+      const cached = localStorage.getItem('neralis_cached_lite_data');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        return { ...parsed, is_cached: true };
+      }
+    } catch {
+      // Ignore
+    }
+
+    // Local fallback synthesis from existing fallback data
+    return {
+      timestamp: new Date().toISOString(),
+      mode: 'LITE_CRITICAL',
+      payload_size_kb: 1.2,
+      is_cached: true,
+      vehicles: FALLBACK_VEHICLES.map((v) => ({
+        vehicle_id: v.id,
+        status: v.status,
+        risk_score: v.status === 'RESTRICTED' ? 0.75 : 0.15,
+        last_known_location: `${v.origin} → ${v.destination}`,
+        next_checkpoint: v.destination,
+        current_lat: v.current_lat,
+        current_lng: v.current_lng,
+        speed_kmh: v.speed_kmh,
+        cold_chain_temp_c: v.cold_chain?.current_temp_c || null,
+        alert: v.status === 'RESTRICTED' ? 'High Hazard Pass' : null
+      })),
+      corridors_at_risk: FALLBACK_CORRIDORS.filter((c) => c.status !== 'OPEN' || c.risk_score >= 40).map((c) => ({
+        id: c.id,
+        name: c.name,
+        status: c.status,
+        risk_score: c.risk_score,
+        hazard_type: c.hazard_type
+      })),
+      critical_bridges: FALLBACK_BRIDGES.filter((b) => b.status !== 'OPEN' || b.structural_health_pct < 85).map((b) => ({
+        id: b.id,
+        name: b.name,
+        status: b.status,
+        structural_health_pct: b.structural_health_pct
+      })),
+      critical_alerts: FALLBACK_ALERTS.slice(0, 5).map((a) => ({
+        id: a.id,
+        tier: a.tier,
+        title: a.title,
+        corridor_id: a.corridor_id,
+        message: a.message_i18n?.en || a.title,
+        timestamp: a.timestamp
+      })),
+      districts_count: FALLBACK_DISTRICTS.length
     };
   }
 };

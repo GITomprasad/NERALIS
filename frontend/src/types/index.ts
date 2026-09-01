@@ -305,3 +305,58 @@ export interface AuthResponse {
   user: UserProfile;
 }
 
+// Connectivity & Low-Network Lite Mode Types
+export type ConnectivityClassification = 'GOOD' | 'LIMITED' | 'CRITICAL';
+export type EffectiveConnectionType = '4g' | '3g' | '2g' | 'slow-2g' | 'offline' | 'unknown';
+export type NetworkOverrideMode = 'AUTO' | 'GOOD' | 'LIMITED' | 'CRITICAL' | 'OFFLINE';
+
+export interface LiteVehicle {
+  vehicle_id: string;
+  status: string;
+  risk_score: number;
+  last_known_location: string;
+  next_checkpoint: string;
+  current_lat?: number;
+  current_lng?: number;
+  speed_kmh: number;
+  cold_chain_temp_c?: number | null;
+  alert?: string | null;
+}
+
+export interface LiteCorridor {
+  id: string;
+  name: string;
+  status: string;
+  risk_score: number;
+  hazard_type: string;
+}
+
+export interface LiteBridge {
+  id: string;
+  name: string;
+  status: string;
+  structural_health_pct: number;
+}
+
+export interface LiteAlert {
+  id: string;
+  tier: string;
+  title: string;
+  corridor_id: string;
+  message: string;
+  timestamp: string;
+}
+
+export interface LiteStatusResponse {
+  timestamp: string;
+  mode: string;
+  payload_size_kb: number;
+  vehicles: LiteVehicle[];
+  corridors_at_risk: LiteCorridor[];
+  critical_bridges: LiteBridge[];
+  critical_alerts: LiteAlert[];
+  districts_count: number;
+  is_cached?: boolean;
+}
+
+

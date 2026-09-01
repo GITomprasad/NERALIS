@@ -13,11 +13,27 @@ import {
   Database,
   Layers,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Radio
 } from 'lucide-react';
 
 export const OfflineMultilingual: React.FC = () => {
-  const { networkMode, setNetworkMode, setIsUSSDModalOpen, addToast, syncOutbox, refreshData, outbox } = usePlatform();
+  const {
+    networkMode,
+    setNetworkMode,
+    networkOverride,
+    setNetworkOverride,
+    connectivityStatus,
+    effectiveConnectionType,
+    isLiteMode,
+    liteData,
+    lastSyncedAt,
+    setIsUSSDModalOpen,
+    addToast,
+    syncOutbox,
+    refreshData,
+    outbox
+  } = usePlatform();
   const { languages, currentLanguage, setLanguage, t } = useLanguage();
 
   const [isSyncingQueue, setIsSyncingQueue] = useState(false);
@@ -52,7 +68,7 @@ export const OfflineMultilingual: React.FC = () => {
             {t('module_8')} — Offline-First & Multilingual Infrastructure
           </h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            Vector tile caching, delta synchronization, 2G bandwidth compression, and native 8-language support
+            Connectivity-Aware Lite Mode, Vector tile caching, delta synchronization, 2G bandwidth compression (under 2 KB payloads), and native 8-language support
           </p>
         </div>
 
@@ -67,71 +83,84 @@ export const OfflineMultilingual: React.FC = () => {
 
       {/* Network Connectivity Simulator Controls */}
       <div className="bg-white p-5 rounded-xl border border-[#D1D5DB] shadow-xs space-y-3 text-xs">
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-[#1E3A5F] text-xs uppercase">
-            Simulate NER Field Connectivity Environment
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <span className="font-bold text-[#1E3A5F] text-xs uppercase block">
+              Simulate NER Field Connectivity Environment (Hardware Telemetry: {effectiveConnectionType.toUpperCase()})
+            </span>
+            <span className="text-[10px] text-gray-500">Auto-adapts to browser online/offline events, RTT, and effective network type</span>
+          </div>
+          <span className={`px-2.5 py-1 rounded text-xs font-bold font-mono ${isLiteMode ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-emerald-100 text-emerald-900 border border-emerald-300'}`}>
+            {isLiteMode ? '⚠ LITE MODE ACTIVE' : '✓ 4G FULL STREAM'}
           </span>
-          <span className="text-[10px] text-gray-500">Tests system behavior in deep terrain deadzones</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
           <button
-            onClick={() => {
-              setNetworkMode('ONLINE');
-              addToast('Network Switched', 'Full 5G/Broadband Online Mode active.', 'SUCCESS');
-            }}
-            className={`p-3.5 rounded-xl border text-left flex items-start gap-3 transition-all ${
-              networkMode === 'ONLINE'
+            onClick={() => setNetworkOverride('AUTO')}
+            className={`p-3 rounded-xl border text-left flex items-start gap-2.5 transition-all ${
+              networkOverride === 'AUTO'
+                ? 'bg-sky-50 border-sky-500 ring-2 ring-sky-200'
+                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+            }`}
+          >
+            <div className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center shrink-0">
+              <Radio className="w-3.5 h-3.5 text-sky-700" />
+            </div>
+            <div>
+              <div className="font-bold text-gray-900 text-xs">Auto Network Detection</div>
+              <div className="text-[10px] text-gray-500 mt-0.5">Real-time hardware telemetry ({effectiveConnectionType})</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setNetworkOverride('GOOD')}
+            className={`p-3 rounded-xl border text-left flex items-start gap-2.5 transition-all ${
+              networkOverride === 'GOOD'
                 ? 'bg-emerald-50 border-emerald-500 ring-2 ring-emerald-200'
                 : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
             }`}
           >
-            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-              <Wifi className="w-4 h-4 text-emerald-700" />
+            <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+              <Wifi className="w-3.5 h-3.5 text-emerald-700" />
             </div>
             <div>
-              <div className="font-bold text-gray-900">5G / Broadband Online</div>
-              <div className="text-[10px] text-gray-500 mt-0.5">Full vector tiles, live MQTT telemetry & cloud sync</div>
+              <div className="font-bold text-gray-900 text-xs">4G / Broadband Online</div>
+              <div className="text-[10px] text-gray-500 mt-0.5">Full vector map, live MQTT telemetry & cloud sync</div>
             </div>
           </button>
 
           <button
-            onClick={() => {
-              setNetworkMode('LOW_2G');
-              addToast('Network Switched', 'Remote 2G low bandwidth adaptive payload mode active.', 'WARNING');
-            }}
-            className={`p-3.5 rounded-xl border text-left flex items-start gap-3 transition-all ${
-              networkMode === 'LOW_2G'
+            onClick={() => setNetworkOverride('LIMITED')}
+            className={`p-3 rounded-xl border text-left flex items-start gap-2.5 transition-all ${
+              networkOverride === 'LIMITED'
                 ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-200'
                 : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
             }`}
           >
-            <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-              <SignalLow className="w-4 h-4 text-amber-700" />
+            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+              <SignalLow className="w-3.5 h-3.5 text-amber-700" />
             </div>
             <div>
-              <div className="font-bold text-gray-900">Low 2G Bandwidth</div>
-              <div className="text-[10px] text-gray-500 mt-0.5">60% JSON payload reduction, vector tile compression</div>
+              <div className="font-bold text-gray-900 text-xs">3G / Limited Lite Mode</div>
+              <div className="text-[10px] text-gray-500 mt-0.5">Throttled polling, reduced graphics load</div>
             </div>
           </button>
 
           <button
-            onClick={() => {
-              setNetworkMode('OFFLINE');
-              addToast('Network Switched', 'Zero connectivity offline IndexedDB mode active.', 'DANGER');
-            }}
-            className={`p-3.5 rounded-xl border text-left flex items-start gap-3 transition-all ${
-              networkMode === 'OFFLINE'
+            onClick={() => setNetworkOverride('OFFLINE')}
+            className={`p-3 rounded-xl border text-left flex items-start gap-2.5 transition-all ${
+              networkOverride === 'OFFLINE'
                 ? 'bg-red-50 border-red-500 ring-2 ring-red-200'
                 : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
             }`}
           >
-            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-              <WifiOff className="w-4 h-4 text-red-700" />
+            <div className="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+              <WifiOff className="w-3.5 h-3.5 text-red-700" />
             </div>
             <div>
-              <div className="font-bold text-gray-900">Zero Network Offline</div>
-              <div className="text-[10px] text-gray-500 mt-0.5">IndexedDB local queueing & SMS/USSD fallback</div>
+              <div className="font-bold text-gray-900 text-xs">Offline / 2G Deadzone</div>
+              <div className="text-[10px] text-gray-500 mt-0.5">IndexedDB cached snapshot & USSD fallback</div>
             </div>
           </button>
         </div>
