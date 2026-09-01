@@ -1,9 +1,12 @@
 """
 NERALIS Database Seeding Engine.
 Initializes tables and seeds master geospatial and domain datasets if empty.
+Supports both Supabase PostgreSQL and local SQLite databases.
 """
 
+import sys
 from app.db.database import engine, Base, SessionLocal
+from app.core.config import settings
 from app.db.models import (
     StateModel,
     DistrictModel,
@@ -13,18 +16,27 @@ from app.db.models import (
     VehicleModel,
     DisasterAlertModel,
     FieldReportModel,
-    SourceRegistryModel
+    SourceRegistryModel,
+    UserModel,
+    AuditLogModel
 )
 from app.data.sources import NER_SOURCE_REGISTRY
 from app.data.states import NER_STATES, NER_DISTRICTS
 from app.data.infrastructure import NER_ROAD_SEGMENTS, NER_BRIDGES, NER_DEPOTS
 from app.data.fleet import NER_VEHICLES
+from app.core.security import hash_password
 
 def init_and_seed_db():
     """
     Creates all database tables and seeds master data if tables are empty.
     """
+    db_target = "SQLite" if settings.DATABASE_URL.startswith("sqlite") else "PostgreSQL / Supabase"
+    print(f"Connecting to database target: {db_target}")
+    
+    # 1. Create all schemas/tables
     Base.metadata.create_all(bind=engine)
+    print("[OK] Schema initialized (all tables verified or created).")
+    
     db = SessionLocal()
     try:
         # 1. Seed States
@@ -32,36 +44,54 @@ def init_and_seed_db():
             for s in NER_STATES:
                 db.add(StateModel(**s))
             db.commit()
+            print(f"[OK] Seeded {len(NER_STATES)} NER States.")
+        else:
+            print(f"[+] States table already populated ({db.query(StateModel).count()} records).")
 
         # 2. Seed Districts
         if db.query(DistrictModel).count() == 0:
             for d in NER_DISTRICTS:
                 db.add(DistrictModel(**d))
             db.commit()
+            print(f"[OK] Seeded {len(NER_DISTRICTS)} NER Districts.")
+        else:
+            print(f"[+] Districts table already populated ({db.query(DistrictModel).count()} records).")
 
         # 3. Seed Corridors
         if db.query(RoadSegmentModel).count() == 0:
             for r in NER_ROAD_SEGMENTS:
                 db.add(RoadSegmentModel(**r))
             db.commit()
+            print(f"[OK] Seeded {len(NER_ROAD_SEGMENTS)} Strategic Road Corridors.")
+        else:
+            print(f"[+] Road Segments table already populated ({db.query(RoadSegmentModel).count()} records).")
 
         # 4. Seed Bridges
         if db.query(BridgeModel).count() == 0:
             for b in NER_BRIDGES:
                 db.add(BridgeModel(**b))
             db.commit()
+            print(f"[OK] Seeded {len(NER_BRIDGES)} Monitored Bridges.")
+        else:
+            print(f"[+] Bridges table already populated ({db.query(BridgeModel).count()} records).")
 
         # 5. Seed Depots
         if db.query(SupplyDepotModel).count() == 0:
             for dep in NER_DEPOTS:
                 db.add(SupplyDepotModel(**dep))
             db.commit()
+            print(f"[OK] Seeded {len(NER_DEPOTS)} Supply Depots & Hubs.")
+        else:
+            print(f"[+] Supply Depots table already populated ({db.query(SupplyDepotModel).count()} records).")
 
         # 6. Seed Vehicles
         if db.query(VehicleModel).count() == 0:
             for v in NER_VEHICLES:
                 db.add(VehicleModel(**v))
             db.commit()
+            print(f"[OK] Seeded {len(NER_VEHICLES)} Fleet Telemetry Vehicles.")
+        else:
+            print(f"[+] Vehicles table already populated ({db.query(VehicleModel).count()} records).")
 
         # 7. Seed Source Registry
         if db.query(SourceRegistryModel).count() == 0:
@@ -71,24 +101,33 @@ def init_and_seed_db():
                 src_copy["is_live_connector"] = True
                 db.add(SourceRegistryModel(**src_copy))
             db.commit()
+            print(f"[OK] Seeded {len(NER_SOURCE_REGISTRY)} Official Source Registry connectors.")
+        else:
+            print(f"[+] Source Registry already populated ({db.query(SourceRegistryModel).count()} records).")
 
         # 8. Seed Initial Alerts
         if db.query(DisasterAlertModel).count() == 0:
             from app.services.alert_dispatcher import alert_dispatcher
-            for a in alert_dispatcher.get_alerts():
+            alerts = alert_dispatcher.get_alerts()
+            for a in alerts:
                 db.add(DisasterAlertModel(**a))
             db.commit()
+            print(f"[OK] Seeded {len(alerts)} Active Disaster Alerts.")
+        else:
+            print(f"[+] Disaster Alerts table already populated ({db.query(DisasterAlertModel).count()} records).")
 
         # 9. Seed Initial Field Reports
         if db.query(FieldReportModel).count() == 0:
             from app.services.field_reporting import field_reporting_engine
-            for r in field_reporting_engine.get_reports():
+            reports = field_reporting_engine.get_reports()
+            for r in reports:
                 db.add(FieldReportModel(**r))
             db.commit()
+            print(f"[OK] Seeded {len(reports)} Field Inspection Reports.")
+        else:
+            print(f"[+] Field Reports table already populated ({db.query(FieldReportModel).count()} records).")
 
         # 10. Seed Default Governance Accounts for all 5 Roles
-        from app.db.models import UserModel
-        from app.core.security import hash_password
         if db.query(UserModel).count() == 0:
             default_users = [
                 {
@@ -150,11 +189,20 @@ def init_and_seed_db():
             for u in default_users:
                 db.add(UserModel(**u))
             db.commit()
+            print("[OK] Seeded 5 Official Governance Demo Accounts.")
+        else:
+            print(f"[+] User accounts table already populated ({db.query(UserModel).count()} records).")
 
+    except Exception as e:
+        db.rollback()
+        print(f"[ERROR] Database seeding failed: {e}", file=sys.stderr)
+        raise
     finally:
         db.close()
 
 if __name__ == "__main__":
     init_and_seed_db()
-    print("Database initialized and seeded successfully!")
+    print("[SUCCESS] Database initialized and verified successfully!")
+
+
 

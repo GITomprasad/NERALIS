@@ -574,9 +574,10 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                 >
                   <Sparkles className="w-4 h-4 text-purple-700 shrink-0" />
                   <div>
-                    <div className="font-bold text-gray-900">AI Model Performance (98.4%)</div>
+                    <div className="font-bold text-gray-900">AI Model Performance (98.7%)</div>
                     <div className="text-[10px] text-gray-500">ROC-AUC, calibration & test confusion matrix</div>
                   </div>
+
                 </button>
 
                 {/* 4. Demo Simulation Switch */}

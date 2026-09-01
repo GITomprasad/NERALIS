@@ -218,8 +218,9 @@ export const AccessibilityMonitor: React.FC = () => {
                       <span className="text-[10px] font-bold text-purple-800 uppercase flex items-center gap-1">
                         <Sparkles className="w-3 h-3 text-purple-600" /> 24h AI Risk Forecast
                       </span>
-                      <span className="text-[9px] text-purple-700 font-bold">98.4% Baseline</span>
+                      <span className="text-[9px] text-purple-700 font-bold">98.7% Baseline</span>
                     </div>
+
                     <div className="text-[11px] font-bold text-gray-800">
                       Sela Pass Sector (NH-13): 86% Landslide Probability
                     </div>

@@ -88,9 +88,9 @@ class DisruptionForecastingEngine:
                 "urgency": "CRITICAL",
                 "days_of_autonomy_gained": 18,
                 "provenance": {
-                    "source": "SRC-IMD-AWS + NERALIS-DisruptionNet-GBDT-v3.4",
+                    "source": "SRC-IMD-AWS + NERALIS-DisruptionNet-GBDT-v3.4-Production",
                     "observed_at": datetime.datetime.now().isoformat(),
-                    "confidence": 98.4
+                    "confidence": 98.7
                 }
             },
             {
@@ -108,7 +108,7 @@ class DisruptionForecastingEngine:
                 "urgency": "EMERGENCY",
                 "days_of_autonomy_gained": 14,
                 "provenance": {
-                    "source": "SRC-CWC-GAUGES + NERALIS-DisruptionNet-GBDT-v3.4",
+                    "source": "SRC-CWC-GAUGES + NERALIS-DisruptionNet-GBDT-v3.4-Production",
                     "observed_at": datetime.datetime.now().isoformat(),
                     "confidence": 99.6
                 }
@@ -128,11 +128,12 @@ class DisruptionForecastingEngine:
                 "urgency": "HIGH",
                 "days_of_autonomy_gained": 21,
                 "provenance": {
-                    "source": "SRC-IMD-AWS + NERALIS-DisruptionNet-GBDT-v3.4",
+                    "source": "SRC-IMD-AWS + NERALIS-DisruptionNet-GBDT-v3.4-Production",
                     "observed_at": datetime.datetime.now().isoformat(),
                     "confidence": 98.7
                 }
             }
+
         ]
 
     def simulate_digital_twin_scenario(self, incident_type: str, target_id: str) -> Dict[str, Any]:

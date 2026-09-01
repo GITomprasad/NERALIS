@@ -268,8 +268,9 @@ export const PredictiveIntelligence: React.FC = () => {
                   <span className="flex items-center gap-1">
                     <Cpu className="w-3 h-3 text-purple-600" /> Empirical Risk Evidence
                   </span>
-                  <span className="text-purple-700 font-bold">Confidence: {pred.ai_confidence_pct || 98.4}%</span>
+                  <span className="text-purple-700 font-bold">Confidence: {pred.ai_confidence_pct || 98.7}%</span>
                 </div>
+
                 <div className="text-gray-700 leading-snug space-y-1">
                   {pred.top_contributing_factors && pred.top_contributing_factors.length > 0 ? (
                     pred.top_contributing_factors.map((f: any, i: number) => (

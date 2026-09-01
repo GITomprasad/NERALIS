@@ -1,17 +1,27 @@
 """
 NERALIS Core Configuration Module.
+Supports environment loading (.env) and configuration for Supabase PostgreSQL, Groq AI, and GIS services.
 """
 
 import os
 from typing import List
+from dotenv import load_dotenv
+
+# Automatically load environment variables from backend/.env if present
+load_dotenv(override=False)
 
 class Settings:
     PROJECT_NAME: str = "NERALIS Intelligence Engine"
     VERSION: str = "2.2.0"
     API_V1_PREFIX: str = "/api"
 
-    # Database Configuration (PostgreSQL/PostGIS in production, SQLite locally with WAL mode)
+    # Database Configuration (Supabase PostgreSQL / PostGIS in production, SQLite locally with WAL mode)
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./neralis.db")
+
+    # Supabase Specific Configuration (optional, for direct Supabase Auth or Storage)
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
+    SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", os.getenv("SUPABASE_ANON_KEY", ""))
+    SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 
     # CORS Origins (Allow local dev and production Render domains)
     CORS_ORIGINS: List[str] = [
@@ -41,3 +51,4 @@ class Settings:
     DEFAULT_SLA_FRESHNESS_MINUTES: int = 15
 
 settings = Settings()
+

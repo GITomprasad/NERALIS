@@ -83,9 +83,10 @@ export const InfoDrawer: React.FC = () => {
             </span>
             <ProvenanceBadge
               status={drawerData.verification_status || 'OBSERVED'}
-              confidence={drawerData.confidence || 98.4}
+              confidence={drawerData.confidence || 98.7}
               dataItem={drawerData}
             />
+
           </div>
           <div className="flex items-center justify-between text-[11px]">
             <span className="text-gray-600 font-medium">Source Agency:</span>

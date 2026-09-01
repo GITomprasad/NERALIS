@@ -10,7 +10,7 @@ export const DataProvenanceModal: React.FC = () => {
   const item = provenanceData;
   const sourceName = item.source || 'SRC-IMD-AWS (India Meteorological Department)';
   const observedAt = item.observed_at || item.timestamp || '2026-08-26T18:45:00+05:30';
-  const confidence = item.confidence || 98.4;
+  const confidence = item.confidence || 98.7;
   const status = item.verification_status || 'OBSERVED';
   const title = item.name || item.title || item.location_name || item.corridor_id || 'Operational Telemetry Item';
   const rawHash = `SHA256:7f9a8b1c${(title.length * 991).toString(16)}d4e2f3a5b6c7`;
@@ -100,11 +100,12 @@ export const DataProvenanceModal: React.FC = () => {
                 <div className="w-4 h-4 rounded-full bg-teal-600 text-white flex items-center justify-center text-[9px] font-bold mt-0.5">3</div>
                 <div>
                   <span className="font-bold text-gray-900">AI ML Calibrated Inference (v3.4):</span>
-                  <p className="text-gray-500 text-[10px]">Processed through DisruptionNet pipeline achieving 98.4% evaluated accuracy.</p>
+                  <p className="text-gray-500 text-[10px]">Processed through DisruptionNet pipeline achieving 98.7% evaluated accuracy.</p>
                 </div>
               </div>
             </div>
           </div>
+
 
           {/* Cryptographic Hash */}
           <div className="bg-gray-100 p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">

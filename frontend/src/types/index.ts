@@ -203,17 +203,21 @@ export interface FieldReport {
 export interface MLModelMetrics {
   model_version: string;
   algorithm: string;
+  dataset?: string;
   training_samples_count: number;
   test_samples_count: number;
   validation_method: string;
   accuracy_pct: number;
+  balanced_accuracy?: number;
+  macro_f1?: number;
+  f1_score: number;
   roc_auc: number;
   pr_auc: number;
-  f1_score: number;
   precision_pct: number;
   recall_pct: number;
   brier_score: number;
   lead_time_accuracy_pct: number;
+  metric_note?: string;
   confusion_matrix: {
     true_negative: number;
     false_positive: number;
@@ -222,8 +226,10 @@ export interface MLModelMetrics {
   };
   roc_curve_points: Array<{ fpr: number; tpr: number }>;
   calibration_curve: Array<{ predicted_prob: number; actual_frequency: number }>;
+  class_distribution?: Record<string, number>;
   feature_importance: Array<{ feature: string; weight: number; category: string }>;
 }
+
 
 export interface CorridorPrediction {
   corridor_id: string;

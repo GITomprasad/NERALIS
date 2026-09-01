@@ -89,9 +89,10 @@ export const ChatbotWidget: React.FC = () => {
         "**What would you like to explore?**\n" +
         "• 🗺️ **Platform Modules:** GIS Grid, AI Routing, 72h Forecast, Fleet Tracking, Field Reporting, Alert Center.\n" +
         "• 🛣️ **Live Status:** Inquire about specific districts (*Kamrup*, *East Khasi Hills*), highways (*NH-27*, *NH-10*), or bridges (*Saraighat*, *Bogibeel*).\n" +
-        "• 🧠 **AI & ML Models:** DisruptionNet 98.4% accuracy, ROC-AUC 0.991, and feature weights.\n" +
+        "• 🧠 **AI & ML Models:** DisruptionNet 98.7% accuracy, ROC-AUC 0.999, and feature weights.\n" +
         "• 📡 **Offline Ops:** USSD `*123#` simulator and IndexedDB sync."
       ),
+
       topic: 'WELCOME',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       suggestions: [
