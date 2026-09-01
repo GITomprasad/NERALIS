@@ -1124,9 +1124,32 @@ export const apiClient = {
       };
     }
 
+    // Gibberish / Unrecognized text check
+    const lettersOnly = raw_q.replace(/[^a-zA-Z]/g, '').toLowerCase();
+    if (lettersOnly.length >= 5) {
+      const vowels = (lettersOnly.match(/[aeiouy]/g) || []).length;
+      if (vowels === 0 || /[^aeiouy]{6,}/.test(lettersOnly) || (new Set(lettersOnly).size <= 2 && lettersOnly.length >= 5)) {
+        return {
+          text: `🤔 **I didn't quite catch that message (\`${raw_q}\`).**\n\nIt looks like an unrecognized query or typo. Please try asking a question in plain language, or click any topic below:`,
+          topic: 'UNCLEAR_INPUT',
+          suggestions: [
+            'What is NERALIS?',
+            'Explain the 8 Platform Modules',
+            'How does AI Route Optimization work?',
+            'Check 72-hour Disruption Forecast',
+            'What is the status of Saraighat Bridge?'
+          ],
+          actions: [
+            { label: 'Explore GIS Command Center', action: 'NAVIGATE', target: 'ACCESSIBILITY' },
+            { label: 'Launch Route Optimizer', action: 'NAVIGATE', target: 'ROUTE' }
+          ]
+        };
+      }
+    }
+
     // Default Comprehensive Synthesis
     return {
-      text: `### 💡 NERALIS AI Assistant Response\n\nRegarding **'${raw_q}'**:\n\nNERALIS is the **AI & GIS Logistics Command Center for the North Eastern Region of India (MDoNER)**. It combines:\n\n1. 🗺️ **GIS Regional Monitoring:** Real-time visibility across 89 districts and national highways.\n2. 🧠 **AI Multi-Objective Routing:** Weather-safe routes with Brahmaputra NW-2 Ro-Ro barge intermodal alternatives.\n3. 🌧️ **72h Disruption Forecasting:** Machine-learning hazard predictions (98.4% accuracy) trained on IMD and ISRO Bhuvan feeds.\n4. 🚚 **NavIC Satellite Fleet Tracking:** Live location, cold-chain temperature surveillance (2°C–8°C), and driver fatigue compliance.\n5. 🚨 **Multilingual Emergency Alerts:** NDMA CAP XML broadcasting and zero-data USSD \`*123#\` feature phone support.\n\n*Try asking about a specific district (e.g. 'Kamrup status'), bridge ('Saraighat bridge'), route ('how does Ro-Ro routing work'), or offline tool ('USSD \*123#').*`,
+      text: `### 🤖 NERALIS AI Sahayak Assistant\n\nRegarding your query **"${raw_q}"**:\n\nI am the specialized **Operations Copilot for North Eastern Region Logistics (MDoNER)**. I can provide real-time data and guidance on:\n• 🗺️ **GIS Road Grid & Accessibility:** Status of 89 districts and highway corridors.\n• 🧠 **AI Safe Routing:** Multi-factor routing with Brahmaputra NW-2 Ro-Ro barge alternatives.\n• 🌧️ **72-Hour Disruption Forecasting:** Machine-learning early warnings for landslides & floods.\n• 🚚 **NavIC Fleet & Cold Chain:** Temperature tracking (2°C–8°C) for vaccines and medicines.\n• 📡 **Offline Operations:** Using USSD \`*123#\` on basic phones with zero internet.\n\nFeel free to ask any specific question about road conditions, bridge statuses, or platform modules!`,
       topic: 'GENERAL_QUERY',
       suggestions: ['Explain the 8 Platform Modules', 'How does AI Route Optimizer work?', 'Check 72-hour Disruption Forecast', 'What data sources are integrated?'],
       actions: [

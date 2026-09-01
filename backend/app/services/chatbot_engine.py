@@ -632,14 +632,41 @@ class ChatbotEngine:
             }
 
         # ----------------------------------------------------------------------
-        # 5. GENERAL POLITE ASSISTANT RESPONSE
+        # 5. GIBBERISH / UNRECOGNIZED INPUT CHECK
+        # ----------------------------------------------------------------------
+        letters_only = re.sub(r'[^a-zA-Z]', '', raw_q).lower()
+        if len(letters_only) >= 5:
+            vowels = sum(1 for c in letters_only if c in 'aeiouy')
+            # Zero vowels in a 5+ letter string, or 6+ consecutive consonants, or high repetition
+            if vowels == 0 or re.search(r'[^aeiouy]{6,}', letters_only) or (len(set(letters_only)) <= 2 and len(letters_only) >= 5):
+                return {
+                    "text": (
+                        f"🤔 **I didn't quite catch that message (`{raw_q}`).**\n\n"
+                        "It looks like an unrecognized query or typo. Please try asking a question in plain language, or click any topic below:"
+                    ),
+                    "topic": "UNCLEAR_INPUT",
+                    "suggestions": [
+                        "What is NERALIS?",
+                        "Explain the 8 Platform Modules",
+                        "How does AI Route Optimization work?",
+                        "Check 72-hour Disruption Forecast",
+                        "What is the status of Saraighat Bridge?"
+                    ],
+                    "actions": [
+                        {"label": "Explore GIS Command Center", "action": "NAVIGATE", "target": "ACCESSIBILITY"},
+                        {"label": "Launch Route Optimizer", "action": "NAVIGATE", "target": "ROUTE"}
+                    ]
+                }
+
+        # ----------------------------------------------------------------------
+        # 6. GENERAL POLITE ASSISTANT RESPONSE
         # ----------------------------------------------------------------------
         return {
             "text": (
                 f"### 🤖 NERALIS AI Sahayak Assistant\n\n"
-                f"I received your inquiry: **\"{raw_q}\"**.\n\n"
-                f"As the **NERALIS Operations Copilot**, my specialized knowledge covers:\n"
-                f"• 🗺️ **GIS Road Grid & Accessibility:** Status of 89 districts and key highway corridors.\n"
+                f"Regarding your query **\"{raw_q}\"**:\n\n"
+                f"I am the specialized **Operations Copilot for North Eastern Region Logistics (MDoNER)**. I can provide real-time data and guidance on:\n"
+                f"• 🗺️ **GIS Road Grid & Accessibility:** Status of 89 districts and highway corridors.\n"
                 f"• 🧠 **AI Safe Routing:** Multi-factor routing with Brahmaputra NW-2 Ro-Ro barge alternatives.\n"
                 f"• 🌧️ **72-Hour Disruption Forecasting:** Machine-learning early warnings for landslides & floods.\n"
                 f"• 🚚 **NavIC Fleet & Cold Chain:** Temperature tracking (2°C–8°C) for vaccines and medicines.\n"

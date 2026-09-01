@@ -84,6 +84,11 @@ class TestChatbot(unittest.TestCase):
         self.assertEqual(res["topic"], "COURTESY")
         self.assertIn("welcome", res["text"].lower())
 
+    def test_chatbot_engine_gibberish(self):
+        res = chatbot_engine.process_query("hcfrgbtntjn")
+        self.assertEqual(res["topic"], "UNCLEAR_INPUT")
+        self.assertIn("didn't quite catch", res["text"])
+
     def test_chatbot_suggestions_endpoint(self):
         response = self.client.get("/api/chatbot/suggestions")
         self.assertEqual(response.status_code, 200)
