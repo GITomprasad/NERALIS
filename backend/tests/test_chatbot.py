@@ -70,6 +70,20 @@ class TestChatbot(unittest.TestCase):
         self.assertIn("topic", data)
         self.assertIn("suggestions", data)
 
+    def test_chatbot_engine_math_calculation(self):
+        res = chatbot_engine.process_query("1+2")
+        self.assertEqual(res["topic"], "CALCULATION")
+        self.assertIn("3", res["text"])
+
+        res2 = chatbot_engine.process_query("what is 470 / 62")
+        self.assertEqual(res2["topic"], "CALCULATION")
+        self.assertIn("7.58", res2["text"])
+
+    def test_chatbot_engine_courtesy(self):
+        res = chatbot_engine.process_query("thank you")
+        self.assertEqual(res["topic"], "COURTESY")
+        self.assertIn("welcome", res["text"].lower())
+
     def test_chatbot_suggestions_endpoint(self):
         response = self.client.get("/api/chatbot/suggestions")
         self.assertEqual(response.status_code, 200)

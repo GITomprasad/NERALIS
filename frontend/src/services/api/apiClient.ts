@@ -910,6 +910,32 @@ export const apiClient = {
 
     // Client-side fallback knowledge engine for offline operation
     const raw_q = query.trim();
+
+    // 0. Arithmetic / Math Evaluation (e.g. '1+2', '470 / 60', '15 * 4')
+    const mathMatch = raw_q.match(/^(?:what\s+is\s+|calculate\s+|solve\s+)?\s*([\d\.\s\+\-\*\/\(\)]+)\s*\??$/i);
+    if (mathMatch && /[\+\-\*\/]/.test(mathMatch[1]) && /\d/.test(mathMatch[1])) {
+      try {
+        const sanitizedExpr = mathMatch[1].replace(/[^0-9\+\-\*\/\.\(\)\s]/g, '');
+        // Safe evaluation with Function limited to basic arithmetic
+        const evalVal = Function(`'use strict'; return (${sanitizedExpr})`)();
+        if (typeof evalVal === 'number' && !isNaN(evalVal) && isFinite(evalVal)) {
+          const displayVal = Number.isInteger(evalVal) ? evalVal : Math.round(evalVal * 10000) / 10000;
+          return {
+            text: `### 🧮 Calculation Result\n\n$$\\mathbf{${raw_q.replace(/[?=\s]+$/, '')}} = \\mathbf{${displayVal}}$$\n\n• **Input Expression:** \`${raw_q}\`\n• **Evaluated Value:** \`${displayVal}\`\n\n*Tip:* You can also ask me logistics calculations like estimated transit times (e.g. *'transit time for 470 km at 62 km/h'*) or bridge load conversions.`,
+            topic: 'CALCULATION',
+            suggestions: [
+              'Calculate route between Guwahati and Shillong',
+              'How does the AI Route Cost formula work?',
+              'What is the distance of NH-27?'
+            ],
+            actions: [{ label: 'Launch Route Optimizer', action: 'NAVIGATE', target: 'ROUTE' }]
+          };
+        }
+      } catch {
+        // Fall through
+      }
+    }
+
     const clean_q = raw_q.toLowerCase().replace(/[^\w\s]/g, ' ').trim();
     const tokens = new Set(clean_q.split(/\s+/).filter(Boolean));
 
@@ -924,6 +950,25 @@ export const apiClient = {
           { label: 'Explore GIS Map', action: 'NAVIGATE', target: 'ACCESSIBILITY' },
           { label: 'Open Route Optimizer', action: 'NAVIGATE', target: 'ROUTE' }
         ]
+      };
+    }
+
+    // Courtesy & Gratitude
+    if (/^\s*(thank\s*you|thanks|thx|great|awesome|good\s+job)\s*$/i.test(raw_q)) {
+      return {
+        text: "🙏 **You're very welcome!**\n\nI am here 24/7 to assist with disaster relief logistics, road accessibility intelligence, and route safety in the North Eastern Region. Feel free to ask whenever you need operational updates.",
+        topic: 'COURTESY',
+        suggestions: ['View active alerts', 'Calculate safe route', 'Open GIS Command Center'],
+        actions: [{ label: 'Open GIS Map', action: 'NAVIGATE', target: 'ACCESSIBILITY' }]
+      };
+    }
+
+    if (/^\s*(bye|goodbye|see\s+you|exit|quit|good\s*night)\s*$/i.test(raw_q)) {
+      return {
+        text: "👋 **Stay safe on the road!**\n\nFor real-time road conditions in offline mountain passes, you can always dial **`*123#`** via USSD on any mobile phone.",
+        topic: 'COURTESY',
+        suggestions: ['Launch USSD *123# Simulator', 'View GIS Map'],
+        actions: [{ label: 'Launch USSD *123#', action: 'OPEN_MODAL', target: 'USSD' }]
       };
     }
 

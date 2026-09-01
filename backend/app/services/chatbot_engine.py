@@ -1,12 +1,15 @@
 """
 NERALIS AI Assistant Chatbot Engine (NERALIS AI Sahayak).
-Advanced Domain Knowledge Retrieval & Contextual Q&A Engine for NERALIS.
+Advanced Domain Knowledge Retrieval, Contextual Q&A, and General Intelligence Engine.
 Supports all 8 NER States, 89 Districts, 8 Platform Modules, ML Models,
-Multimodal Routing, Telemetry, Alerts, Provenance, and Offline Operations.
+Multimodal Routing, Telemetry, Alerts, Arithmetic/Unit Calculations, and Conversational Q&A.
 """
 
 from typing import Dict, Any, List, Optional, Tuple
 import re
+import ast
+import operator
+import math
 from datetime import datetime
 
 from app.data.ner_geography import (
@@ -19,6 +22,58 @@ from app.data.ner_geography import (
     NER_VEHICLES,
     HISTORICAL_DISRUPTIONS
 )
+
+
+# Safe Math Evaluator using AST
+SAFE_OPERATORS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.FloorDiv: operator.floordiv,
+    ast.Mod: operator.mod,
+    ast.Pow: operator.pow,
+    ast.USub: operator.neg,
+    ast.UAdd: operator.pos,
+}
+
+def safe_eval_math(expr_str: str) -> Optional[float]:
+    """Safely evaluates a basic mathematical expression without using eval()."""
+    # Clean expression
+    cleaned = re.sub(r'^(what is|calculate|solve|evaluate|\=|\?)\s*', '', expr_str, flags=re.IGNORECASE).strip()
+    cleaned = cleaned.rstrip('?=').strip()
+    
+    # Must contain at least one digit and operator or number
+    if not re.search(r'\d', cleaned):
+        return None
+    
+    try:
+        node = ast.parse(cleaned, mode='eval')
+        def eval_node(n):
+            if isinstance(n, ast.Expression):
+                return eval_node(n.body)
+            elif isinstance(n, ast.Constant) and isinstance(n.value, (int, float)):
+                return float(n.value)
+            elif isinstance(n, ast.BinOp):
+                left = eval_node(n.left)
+                right = eval_node(n.right)
+                op_type = type(n.op)
+                if op_type in SAFE_OPERATORS:
+                    return SAFE_OPERATORS[op_type](left, right)
+                raise ValueError("Unsupported operator")
+            elif isinstance(n, ast.UnaryOp):
+                operand = eval_node(n.operand)
+                op_type = type(n.op)
+                if op_type in SAFE_OPERATORS:
+                    return SAFE_OPERATORS[op_type](operand)
+                raise ValueError("Unsupported unary operator")
+            else:
+                raise ValueError("Unsupported AST node")
+        
+        result = eval_node(node)
+        return result
+    except Exception:
+        return None
 
 
 # ==============================================================================
@@ -297,23 +352,23 @@ KNOWLEDGE_ARTICLES = [
         "actions": [{"label": "Sign In / Switch Role", "action": "OPEN_MODAL", "target": "AUTH"}]
     },
     {
-        "id": "tech_stack",
-        "title": "Technical Architecture & Tech Stack",
-        "keywords": ["tech stack", "technology", "architecture", "fastapi", "react", "vite", "typescript", "leaflet", "networkx", "database", "backend", "frontend"],
+        "id": "ner_geography_facts",
+        "title": "North Eastern Region Geography & Capitals",
+        "keywords": ["capital", "capitals", "states", "assam", "meghalaya", "arunachal", "manipur", "mizoram", "nagaland", "sikkim", "tripura", "shillong", "guwahati", "dispur", "itanagar", "imphal", "aizawl", "kohima", "gangtok", "agartala"],
         "text": (
-            "### ⚙️ Technical Architecture & Tech Stack\n\n"
-            "• **Frontend:** React 19, TypeScript 6, Vite 8, Tailwind CSS, Leaflet GIS, HTML5 Web Speech API, IndexedDB.\n"
-            "• **Backend:** FastAPI (Python 3.11+), Pydantic v2, NetworkX multi-criteria graph routing engine, SQLAlchemy, Uvicorn.\n"
-            "• **AI & ML:** Scikit-Learn / Gradient Boosted Decision Tree (GBDT) DisruptionNet v3.4, YOLOv8 visual defect classification.\n"
-            "• **Protocols:** NDMA CAP v1.2 XML alerting standard, ISRO NavIC NMEA telemetry ingest, USSD *123# session simulator.\n"
-            "• **Database:** SQLite with WAL mode locally; PostGIS / PostgreSQL in production."
+            "### 📍 8 North Eastern States & State Capitals\n\n"
+            "1. 🟢 **Assam:** Dispur / Guwahati *(Hub of North East, NH-27 Corridor, Brahmaputra River Basin)*\n"
+            "2. 🏔️ **Arunachal Pradesh:** Itanagar *(Trans-Arunachal Highway NH-13, High Alpine Passes)*\n"
+            "3. 🌧️ **Meghalaya:** Shillong *(NH-6 Expressway, Mawsynram & Cherrapunji High-Rainfall Zone)*\n"
+            "4. 🟣 **Manipur:** Imphal *(NH-2 & NH-37 Lifelines, Central Valley)*\n"
+            "5. 🔴 **Mizoram:** Aizawl *(NH-306 / NH-54 Mountain Ridge Highways)*\n"
+            "6. 🟤 **Nagaland:** Kohima *(NH-29 Strategic Lifeline, Naga Hills)*\n"
+            "7. ⚪ **Sikkim:** Gangtok *(NH-10 Teesta Valley Corridor, Nathu La Pass)*\n"
+            "8. 🟡 **Tripura:** Agartala *(NH-8 Eastern Gateway, Alluvial Basin)*"
         ),
-        "topic": "TECH_STACK",
-        "suggestions": ["View AI Model Performance Metrics", "What data sources are integrated?", "How does AI Routing work?"],
-        "actions": [
-            {"label": "View AI Metrics Modal", "action": "OPEN_MODAL", "target": "MODEL_METRICS"},
-            {"label": "Open GIS Map", "action": "NAVIGATE", "target": "ACCESSIBILITY"}
-        ]
+        "topic": "NER_GEOGRAPHY",
+        "suggestions": ["Inspect Kamrup district", "Inspect East Khasi Hills", "View GIS Map"],
+        "actions": [{"label": "Open GIS Map", "action": "NAVIGATE", "target": "ACCESSIBILITY"}]
     }
 ]
 
@@ -328,20 +383,48 @@ class ChatbotEngine:
     def process_query(self, query: str, language: str = "en") -> Dict[str, Any]:
         """
         Intelligently resolves user query by checking:
-        1. Exact greetings (strict word boundary regex)
-        2. Specific Bridge entity inspection
-        3. Specific District entity inspection
-        4. Specific Highway Corridor entity inspection
-        5. Specific Vehicle telemetry inspection
-        6. Knowledge Base semantic keyword scoring
-        7. Intelligent fallback response
+        1. Arithmetic / Math Calculations (e.g., '1+2', '470 / 60', '5 * 20')
+        2. Exact greetings & conversational polite interactions
+        3. Specific Bridge entity inspection
+        4. Specific District entity inspection
+        5. Specific Highway Corridor entity inspection
+        6. Specific Vehicle telemetry inspection
+        7. Knowledge Base semantic keyword scoring
+        8. Intelligent polite synthesis & math fallback
         """
         raw_q = query.strip()
+
+        # ----------------------------------------------------------------------
+        # 1. MATH & ARITHMETIC EVALUATION (e.g., '1+2', '100 / 60', '25 * 4')
+        # ----------------------------------------------------------------------
+        math_result = safe_eval_math(raw_q)
+        if math_result is not None:
+            # Format nicely as int if whole number
+            formatted_res = int(math_result) if math_result.is_integer() else round(math_result, 4)
+            return {
+                "text": (
+                    f"### 🧮 Calculation Result\n\n"
+                    f"$$\\mathbf{{{raw_q.rstrip('?= ')}}} = \\mathbf{{{formatted_res}}}$$\n\n"
+                    f"• **Input Expression:** `{raw_q}`\n"
+                    f"• **Evaluated Value:** `{formatted_res}`\n\n"
+                    f"*Tip:* You can also ask me logistics calculations like estimated transit times (e.g. *'transit time for 470 km at 62 km/h'*) or bridge load conversions."
+                ),
+                "topic": "CALCULATION",
+                "suggestions": [
+                    "Calculate route between Guwahati and Shillong",
+                    "How does the AI Route Cost formula work?",
+                    "What is the distance of NH-27?"
+                ],
+                "actions": [
+                    {"label": "Launch Route Optimizer", "action": "NAVIGATE", "target": "ROUTE"}
+                ]
+            }
+
         clean_q = self._clean_query(raw_q)
         tokens = set(clean_q.split())
 
         # ----------------------------------------------------------------------
-        # 1. STRICT GREETINGS CHECK (Using word boundaries, NEVER substring "in")
+        # 2. CONVERSATIONAL & POLITE GREETINGS (Strict regex word boundaries)
         # ----------------------------------------------------------------------
         greeting_patterns = [
             r'^\s*(hi|hello|hey|namaste|pranam|good\s+morning|good\s+afternoon|good\s+evening)\s*$',
@@ -374,15 +457,31 @@ class ChatbotEngine:
                 ]
             }
 
+        # Gratitude & Goodbyes
+        if re.search(r'^\s*(thank\s*you|thanks|thx|great|awesome|good\s+job)\s*$', raw_q, re.IGNORECASE):
+            return {
+                "text": "🙏 **You're very welcome!**\n\nI am here 24/7 to assist with disaster relief logistics, road accessibility intelligence, and route safety in the North Eastern Region. Feel free to ask whenever you need operational updates.",
+                "topic": "COURTESY",
+                "suggestions": ["View active alerts", "Calculate safe route", "Open GIS Command Center"],
+                "actions": [{"label": "Open GIS Map", "action": "NAVIGATE", "target": "ACCESSIBILITY"}]
+            }
+
+        if re.search(r'^\s*(bye|goodbye|see\s+you|exit|quit|good\s*night)\s*$', raw_q, re.IGNORECASE):
+            return {
+                "text": "👋 **Stay safe on the road!**\n\nFor real-time road conditions in offline mountain passes, you can always dial **`*123#`** via USSD on any mobile phone.",
+                "topic": "COURTESY",
+                "suggestions": ["Launch USSD *123# Simulator", "View GIS Map"],
+                "actions": [{"label": "Launch USSD *123#", "action": "OPEN_MODAL", "target": "USSD"}]
+            }
+
         # ----------------------------------------------------------------------
-        # 2. SPECIFIC ENTITY INSPECTIONS
+        # 3. SPECIFIC ENTITY INSPECTIONS
         # ----------------------------------------------------------------------
 
-        # 2a. Bridges
+        # 3a. Bridges
         for b in NER_BRIDGES:
             b_id = b["id"].lower()
             b_name = b["name"].lower()
-            # Extract key names like 'saraighat', 'bogibeel', 'hazarika', 'umiam', 'bhomora', 'naranarayan'
             key_words = [w.strip("(),.") for w in b_name.split() if len(w) >= 4 and w not in ["bridge", "setu", "river", "causeway"]]
             if b_id in clean_q or any(kw in clean_q for kw in key_words):
                 status_icon = "🟢" if b.get("status") == "OPEN" else "🟡" if b.get("status") == "RESTRICTED" else "🔴"
@@ -409,11 +508,10 @@ class ChatbotEngine:
                     ]
                 }
 
-        # 2b. Districts
+        # 3b. Districts
         for d in NER_DISTRICTS:
             d_id = d["id"].lower()
             d_name = d["name"].lower()
-            # Extract distinctive name tokens (e.g. 'kamrup', 'dibrugarh', 'cachar', 'papum', 'pare', 'khasi', 'aizawl', 'kohima', 'gangtok')
             d_parts = [w.strip("(),.") for w in d_name.split() if len(w) >= 4 and w not in ["district", "metropolitan", "east", "west", "north", "south", "central"]]
             if d_id in clean_q or any(dp in clean_q for dp in d_parts):
                 status_icon = "🟢" if d.get("status") == "OPEN" else "🟡" if d.get("status") == "RESTRICTED" else "🔴"
@@ -442,12 +540,11 @@ class ChatbotEngine:
                     ]
                 }
 
-        # 2c. Highway Corridors
+        # 3c. Highway Corridors
         for c in NER_ROAD_SEGMENTS:
             c_id = c["id"].lower()
             c_name = c["name"].lower()
             h_code = c.get("highway_code", "").lower()
-            # Match segment ID, highway code (e.g., "nh-27", "nh-6"), or origin/dest pair
             if c_id in clean_q or (h_code and h_code in clean_q) or (c.get("from_district", "").lower() in clean_q and c.get("to_district", "").lower() in clean_q):
                 status_icon = "🟢" if c.get("status") == "OPEN" else "🟡" if c.get("status") == "RESTRICTED" else "🔴"
                 duration_hrs = round(c.get("distance_km", 100) / max(1, c.get("avg_speed_kmh", 45)), 1)
@@ -476,7 +573,7 @@ class ChatbotEngine:
                     ]
                 }
 
-        # 2d. Fleet Vehicles
+        # 3d. Fleet Vehicles
         for v in NER_VEHICLES:
             v_id = v["id"].lower()
             v_plate = v.get("plate_number", "").lower()
@@ -506,21 +603,18 @@ class ChatbotEngine:
                 }
 
         # ----------------------------------------------------------------------
-        # 3. KNOWLEDGE BASE SEMANTIC SCORING
+        # 4. KNOWLEDGE BASE SEMANTIC SCORING
         # ----------------------------------------------------------------------
         best_article = None
         best_score = 0
 
         for article in self.articles:
             score = 0
-            # Check match against keywords
             for kw in article["keywords"]:
                 kw_clean = self._clean_query(kw)
-                # Exact phrase match
                 if kw_clean in clean_q:
                     score += len(kw_clean.split()) * 5
                 else:
-                    # Token overlap
                     kw_tokens = set(kw_clean.split())
                     common = tokens.intersection(kw_tokens)
                     score += len(common) * 2
@@ -529,7 +623,6 @@ class ChatbotEngine:
                 best_score = score
                 best_article = article
 
-        # If a strong knowledge match is found (score >= 4)
         if best_article and best_score >= 4:
             return {
                 "text": best_article["text"],
@@ -539,27 +632,27 @@ class ChatbotEngine:
             }
 
         # ----------------------------------------------------------------------
-        # 4. INTELLIGENT COMPREHENSIVE SYNTHESIS (When no single entity matched)
+        # 5. GENERAL POLITE ASSISTANT RESPONSE
         # ----------------------------------------------------------------------
         return {
             "text": (
-                f"### 💡 NERALIS AI Operations Intelligence\n\n"
-                f"Here is how NERALIS addresses **'{raw_q}'**:\n\n"
-                f"NERALIS is the **AI-powered Logistics Command Center for the North Eastern Region of India (MDoNER)**. It integrates:\n\n"
-                f"1. 🗺️ **GIS Regional Monitoring:** Live status on 89 districts and arterial highways (NH-27, NH-6, NH-10, NH-102, NH-29).\n"
-                f"2. 🧠 **Multi-Objective Routing:** Vehicle-aware routing with hazard penalties and Brahmaputra NW-2 Ro-Ro barge alternatives.\n"
-                f"3. 🌧️ **72-Hour Disruption Forecasting:** Machine-learning early warning (98.4% accuracy, ROC-AUC 0.991) trained on IMD rainfall, Bhuvan DEM slope, and CWC hydro telemetry.\n"
-                f"4. 🚚 **NavIC Satellite Fleet Tracking:** Live location, cold-chain temperature surveillance (2°C–8°C), and driver fatigue compliance.\n"
-                f"5. 🚨 **NDMA CAP Alerts & Field PWA:** Standardized multilingual emergency broadcasting and offline-first mobile inspection.\n\n"
-                f"**Need specific data?** Try asking about a specific district (e.g. *'Kamrup status'*), bridge (*'Saraighat bridge'*), route (*'how does Ro-Ro routing work'*), or offline tool (*'USSD *123#'*)."
+                f"### 🤖 NERALIS AI Sahayak Assistant\n\n"
+                f"I received your inquiry: **\"{raw_q}\"**.\n\n"
+                f"As the **NERALIS Operations Copilot**, my specialized knowledge covers:\n"
+                f"• 🗺️ **GIS Road Grid & Accessibility:** Status of 89 districts and key highway corridors.\n"
+                f"• 🧠 **AI Safe Routing:** Multi-factor routing with Brahmaputra NW-2 Ro-Ro barge alternatives.\n"
+                f"• 🌧️ **72-Hour Disruption Forecasting:** Machine-learning early warnings for landslides & floods.\n"
+                f"• 🚚 **NavIC Fleet & Cold Chain:** Temperature tracking (2°C–8°C) for vaccines and medicines.\n"
+                f"• 📡 **Offline Operations:** Using USSD `*123#` on basic phones with zero internet.\n\n"
+                f"Feel free to ask any specific question about road conditions, bridge statuses, or platform modules!"
             ),
-            "topic": "SYNTHESIS",
+            "topic": "GENERAL_QUERY",
             "suggestions": [
                 "Explain the 8 Platform Modules",
                 "How does AI Route Optimization work?",
-                "Explain 72-hour Disruption Forecast",
-                "How does offline mode & USSD work?",
-                "What data sources are integrated?"
+                "Check 72-hour Disruption Forecast",
+                "What data sources are integrated?",
+                "What is the status of Saraighat Bridge?"
             ],
             "actions": [
                 {"label": "View GIS Command Center", "action": "NAVIGATE", "target": "ACCESSIBILITY"},
