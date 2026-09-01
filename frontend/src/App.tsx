@@ -11,6 +11,7 @@ import { ParliamentReportModal } from './components/reports/ParliamentReportModa
 import { DataProvenanceModal } from './components/common/DataProvenanceModal';
 import { MLModelMetricsModal } from './components/common/MLModelMetricsModal';
 import { AuthModal } from './components/common/AuthModal';
+import { ChatbotWidget } from './components/common/ChatbotWidget';
 
 // Module Components
 import { AccessibilityMonitor } from './components/modules/AccessibilityMonitor';
@@ -143,12 +144,13 @@ const MainLayout: React.FC = () => {
       {/* Slide-out Entity Inspector Drawer (480px) */}
       <InfoDrawer />
 
-      {/* Global Modals & Toasts */}
+      {/* Global Modals, Chatbot & Toasts */}
       <USSDPhoneModal />
       <ParliamentReportModal />
       <DataProvenanceModal />
       <MLModelMetricsModal />
       <AuthModal />
+      <ChatbotWidget />
       <ToastContainer />
     </div>
   );

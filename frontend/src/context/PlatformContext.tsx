@@ -138,6 +138,13 @@ interface PlatformContextType {
   isParliamentModalOpen: boolean;
   setIsParliamentModalOpen: (open: boolean) => void;
 
+  // AI Assistant Chatbot (NERALIS AI Sahayak)
+  isChatbotOpen: boolean;
+  setIsChatbotOpen: (open: boolean) => void;
+  toggleChatbot: () => void;
+  chatbotInitialPrompt: string;
+  openChatbotWithPrompt: (prompt: string) => void;
+
   // Live Toast Notifications & Notifications History
   toasts: ToastMessage[];
   notifications: NotificationItem[];
@@ -391,6 +398,19 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isARModalOpen, setIsARModalOpen] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [isParliamentModalOpen, setIsParliamentModalOpen] = useState(false);
+
+  // AI Assistant Chatbot
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [chatbotInitialPrompt, setChatbotInitialPrompt] = useState('');
+
+  const toggleChatbot = () => {
+    setIsChatbotOpen((prev) => !prev);
+  };
+
+  const openChatbotWithPrompt = (prompt: string) => {
+    setChatbotInitialPrompt(prompt);
+    setIsChatbotOpen(true);
+  };
 
   // Live Outbox
   const [outbox, setOutbox] = useState<OutboxItem[]>([]);
@@ -765,6 +785,11 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setIsSignatureModalOpen,
         isParliamentModalOpen,
         setIsParliamentModalOpen,
+        isChatbotOpen,
+        setIsChatbotOpen,
+        toggleChatbot,
+        chatbotInitialPrompt,
+        openChatbotWithPrompt,
         toasts,
         notifications,
         unreadNotifCount,

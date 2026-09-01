@@ -24,6 +24,7 @@ from app.services.fleet_telemetry import fleet_telemetry_engine
 from app.services.alert_dispatcher import alert_dispatcher
 from app.services.field_reporting import field_reporting_engine
 from app.services.report_generator import report_generator
+from app.services.chatbot_engine import chatbot_engine
 
 app = FastAPI(
     title="NERALIS - AI Smart Logistics & Accessibility Intelligence Platform for NER",
@@ -87,6 +88,11 @@ class TelemetryIngestRequest(BaseModel):
     speed_kmh: float
     heading_deg: Optional[float] = 0.0
     network_mode: Optional[str] = "NavIC"
+
+class ChatbotQueryRequest(BaseModel):
+    query: str
+    language: Optional[str] = "en"
+    context: Optional[Dict[str, Any]] = None
 
 # Health Check & Provenance
 @app.get("/api/health")
@@ -213,3 +219,13 @@ def get_parliament_brief():
 @app.get("/api/reports/state-comparative")
 def get_state_comparative():
     return {"comparative_stats": report_generator.get_comparative_state_analytics()}
+
+# Module 9: AI Assistant Chatbot (NERALIS AI Sahayak)
+@app.post("/api/chatbot/query")
+def query_chatbot(req: ChatbotQueryRequest):
+    return chatbot_engine.process_query(req.query, language=req.language or "en")
+
+@app.get("/api/chatbot/suggestions")
+def get_chatbot_suggestions():
+    return {"suggestions": chatbot_engine.get_suggestions()}
+

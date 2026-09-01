@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ArrowLeft,
   Sparkles,
+  Bot,
   FlaskConical,
   Radio,
   ShieldCheck,
@@ -54,6 +55,8 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
     setSearchQuery,
     setIsUSSDModalOpen,
     setIsParliamentModalOpen,
+    isChatbotOpen,
+    toggleChatbot,
     toasts,
     notifications,
     unreadNotifCount,
@@ -438,6 +441,20 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
           )}
         </button>
 
+        {/* AI Assistant Sahayak Quick Trigger */}
+        <button
+          onClick={toggleChatbot}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs ${
+            isChatbotOpen
+              ? 'bg-amber-400 text-slate-900 shadow-amber-400/20'
+              : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-amber-400/50'
+          }`}
+          title="Open NERALIS AI Sahayak Assistant"
+        >
+          <Bot className={`w-3.5 h-3.5 ${isChatbotOpen ? 'text-slate-900' : 'text-amber-400 animate-pulse'}`} />
+          <span className="hidden sm:inline">AI Sahayak</span>
+        </button>
+
         {/* More Tools Dropdown (USSD, Parliament, AI Metrics, Demo switch) */}
         <div className="relative">
           <button
@@ -466,6 +483,21 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                   <span>Advanced Operations Tools</span>
                   <span className="text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">HQ & Field</span>
                 </div>
+
+                {/* 0. NERALIS AI Sahayak Assistant */}
+                <button
+                  onClick={() => {
+                    toggleChatbot();
+                    setShowToolsDropdown(false);
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-lg flex items-center gap-2.5 hover:bg-amber-50 text-gray-800 transition-colors"
+                >
+                  <Bot className="w-4 h-4 text-amber-600 shrink-0" />
+                  <div>
+                    <div className="font-bold text-gray-900">NERALIS AI Sahayak</div>
+                    <div className="text-[10px] text-gray-500">Ask questions, routing logic & live status</div>
+                  </div>
+                </button>
 
                 {/* 1. Parliament Star Question Report */}
                 <button

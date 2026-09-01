@@ -16,6 +16,7 @@ import {
   ChevronRight,
   ExternalLink,
   Map,
+  Bot,
   X
 } from 'lucide-react';
 
@@ -30,7 +31,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
     navigateToModule,
     setIsParliamentModalOpen,
     isSidebarCollapsed,
-    toggleSidebar
+    toggleSidebar,
+    toggleChatbot,
+    isChatbotOpen
   } = usePlatform();
   const { t } = useLanguage();
 
@@ -144,13 +147,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
           ))}
 
           {!isSidebarCollapsed && (
-            <div className="pt-3 border-t border-gray-100">
+            <div className="pt-3 border-t border-gray-100 space-y-1.5">
               <div className="px-3 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                {t('reports_compliance') || 'Reports & Compliance'}
+                {t('reports_compliance') || 'Reports & Tools'}
               </div>
+              {/* NERALIS AI Assistant Trigger Button */}
+              <button
+                onClick={() => { toggleChatbot(); onMobileClose?.(); }}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs ${
+                  isChatbotOpen
+                    ? 'bg-amber-400 text-slate-900 shadow-amber-400/20'
+                    : 'text-slate-800 bg-amber-50 hover:bg-amber-100 border border-amber-300/80'
+                }`}
+                title="Open NERALIS AI Sahayak Assistant"
+              >
+                <div className="flex items-center gap-2">
+                  <Bot className={`w-4 h-4 ${isChatbotOpen ? 'text-slate-900' : 'text-amber-600'}`} />
+                  <span>NERALIS Sahayak</span>
+                </div>
+                <span className="text-[9px] bg-amber-200/80 text-amber-900 px-1.5 py-0.2 rounded font-mono font-bold">
+                  AI
+                </span>
+              </button>
+
               <button
                 onClick={() => { setIsParliamentModalOpen(true); onMobileClose?.(); }}
-                className="w-full mt-1 flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors cursor-pointer"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-emerald-700" />
@@ -235,7 +257,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
             </div>
           ))}
 
-          <div className="pt-3 border-t border-gray-100">
+          <div className="pt-3 border-t border-gray-100 space-y-2">
+            <button
+              onClick={() => { toggleChatbot(); onMobileClose?.(); }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                isChatbotOpen
+                  ? 'bg-amber-400 text-slate-900 shadow-md'
+                  : 'text-slate-800 bg-amber-50 hover:bg-amber-100 border border-amber-300'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Bot className={`w-5 h-5 ${isChatbotOpen ? 'text-slate-900' : 'text-amber-600'}`} />
+                <span>NERALIS AI Sahayak</span>
+              </div>
+              <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-bold">
+                AI Copilot
+              </span>
+            </button>
+
             <button
               onClick={() => { setIsParliamentModalOpen(true); onMobileClose?.(); }}
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors cursor-pointer"
