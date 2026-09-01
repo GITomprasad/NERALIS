@@ -25,7 +25,9 @@ import {
   FALLBACK_DEPOTS,
   FALLBACK_VEHICLES,
   FALLBACK_ALERTS,
-  FALLBACK_FIELD_REPORTS
+  FALLBACK_FIELD_REPORTS,
+  FALLBACK_ADVISORIES,
+  FALLBACK_DIGITAL_TWIN_SCENARIOS
 } from '../data/nerGeographyFallback';
 
 const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
@@ -317,12 +319,14 @@ export const apiClient = {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/predictions/prepositioning`);
       if (res.ok) {
         const data = await res.json();
-        return data.advisories || [];
+        if (data.advisories && data.advisories.length > 0) {
+          return data.advisories;
+        }
       }
     } catch {
       // Fallback
     }
-    return [];
+    return FALLBACK_ADVISORIES as unknown as PrepositioningAdvisory[];
   },
 
   // Digital Twin Simulation
@@ -334,12 +338,20 @@ export const apiClient = {
         body: JSON.stringify({ incident_type: incidentType, target_id: targetId })
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (data && data.scenario) {
+          return data;
+        }
       }
     } catch {
       // Fallback
     }
-    return null;
+    const key = `${incidentType}_${targetId}`;
+    return (
+      FALLBACK_DIGITAL_TWIN_SCENARIOS[key] ||
+      FALLBACK_DIGITAL_TWIN_SCENARIOS[`${incidentType}_DEFAULT`] ||
+      FALLBACK_DIGITAL_TWIN_SCENARIOS['BRIDGE_COLLAPSE_DEFAULT']
+    );
   },
 
   // Route Optimization
