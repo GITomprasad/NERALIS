@@ -607,6 +607,7 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                       onClick={() => {
                         setLanguage(l.code);
                         setShowLangDropdown(false);
+                        addToast('Language Switched', `Interface language set to ${l.native} (${l.label}).`, 'INFO');
                       }}
                       className={`w-full text-left px-3 py-2 rounded-lg flex items-center justify-between hover:bg-[#EBF3FB] transition-colors ${
                         currentLanguage === l.code ? 'bg-[#EBF3FB] text-[#1E3A5F] font-bold border border-blue-200' : ''
