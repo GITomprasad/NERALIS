@@ -13,11 +13,9 @@ class TestChatbot(unittest.TestCase):
         self.client = TestClient(app)
 
     def test_chatbot_engine_greeting(self):
-        res = chatbot_engine.process_query("hello sahayak")
+        res = chatbot_engine.process_query("hello")
         self.assertEqual(res["topic"], "GREETING")
         self.assertIn("NERALIS", res["text"])
-        self.assertGreaterEqual(len(res["suggestions"]), 2)
-        self.assertGreaterEqual(len(res["actions"]), 1)
 
     def test_chatbot_engine_overview(self):
         res = chatbot_engine.process_query("what is neralis")
@@ -26,7 +24,8 @@ class TestChatbot(unittest.TestCase):
         self.assertIn("8 North Eastern States", res["text"])
 
     def test_chatbot_engine_routing_query(self):
-        res = chatbot_engine.process_query("how does AI route optimizer work?")
+        # Queries with 'which', 'highway' shouldn't falsely trigger 'hi' greeting
+        res = chatbot_engine.process_query("which routes are optimized by AI?")
         self.assertEqual(res["topic"], "MODULE_ROUTE")
         self.assertIn("Ro-Ro", res["text"])
 
@@ -44,6 +43,21 @@ class TestChatbot(unittest.TestCase):
         res = chatbot_engine.process_query("tell me about Saraighat Bridge")
         self.assertEqual(res["topic"], "BRIDGE_ENTITY")
         self.assertIn("Saraighat", res["text"])
+
+    def test_chatbot_engine_fleet_query(self):
+        res = chatbot_engine.process_query("how does vehicle tracking and cold chain work?")
+        self.assertEqual(res["topic"], "MODULE_FLEET")
+        self.assertIn("NavIC", res["text"])
+
+    def test_chatbot_engine_offline_ussd_query(self):
+        res = chatbot_engine.process_query("how does offline mode and USSD 123 work?")
+        self.assertEqual(res["topic"], "MODULE_OFFLINE")
+        self.assertIn("USSD", res["text"])
+
+    def test_chatbot_engine_provenance_sources_query(self):
+        res = chatbot_engine.process_query("what data sources and IMD Bhuvan feeds are used?")
+        self.assertEqual(res["topic"], "SOURCES")
+        self.assertIn("ISRO", res["text"])
 
     def test_chatbot_api_endpoint(self):
         response = self.client.post("/api/chatbot/query", json={

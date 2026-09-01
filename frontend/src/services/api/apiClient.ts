@@ -909,10 +909,15 @@ export const apiClient = {
     }
 
     // Client-side fallback knowledge engine for offline operation
-    const q = query.toLowerCase().trim();
-    if (q.includes('hello') || q.includes('hi') || q.includes('namaste') || q.includes('help') || q.includes('who are you')) {
+    const raw_q = query.trim();
+    const clean_q = raw_q.toLowerCase().replace(/[^\w\s]/g, ' ').trim();
+    const tokens = new Set(clean_q.split(/\s+/).filter(Boolean));
+
+    // 1. Strict Greetings Check (Whole words only)
+    const isGreeting = /^\s*(hi|hello|hey|namaste|pranam|good\s+morning|good\s+afternoon|good\s+evening|who\s+are\s+you|what\s+is\s+your\s+name|help|help\s*me)\s*$/i.test(raw_q);
+    if (isGreeting) {
       return {
-        text: "**Namaste! I am the NERALIS AI Sahayak (Operations Assistant).**\n\nI provide complete guidance on the **NERALIS Smart Logistics & Accessibility Platform** for the North Eastern Region of India.\n\n• 🗺️ **Modules:** Ask about our 8 core modules (GIS Map, Routing, Fleet, Predictions, Alerts, Field PWA, Analytics, Offline Sync).\n• 🛣️ **Live Status:** Inquire about specific districts (e.g. *Kamrup*, *East Khasi Hills*), highways (*NH-27*, *NH-10*), or bridges (*Saraighat*, *Bogibeel*).\n• 🧠 **AI & ML:** Learn about our 98.4% accurate 72-hour disruption forecasting.\n• 📡 **Offline Operations:** Discover how our USSD `*123#` and IndexedDB sync operate.",
+        text: "**Namaste! I am the NERALIS AI Sahayak (Operations Assistant).**\n\nI provide complete guidance on the **NERALIS Smart Logistics & Accessibility Platform** for the North Eastern Region of India.\n\n• 🗺️ **Modules:** Ask about our 8 core modules (GIS Map, Routing, Fleet, Predictions, Alerts, Field PWA, Analytics, Offline Sync).\n• 📍 **Districts:** e.g. *Kamrup Metropolitan*, *East Khasi Hills*, *Aizawl*, *Kohima*, *Papum Pare*, *Gangtok*.\n• 🌉 **Bridges:** e.g. *Saraighat*, *Bogibeel*, *Bhupen Hazarika Setu*.\n• 🛣️ **Corridors:** e.g. *NH-27*, *NH-6*, *Guwahati-Shillong*.\n• 🧠 **AI & ML:** Learn about our 98.4% accurate 72-hour disruption forecasting.\n• 📡 **Offline Operations:** Discover how our USSD `*123#` and IndexedDB sync operate.",
         topic: 'GREETING',
         suggestions: ['What is NERALIS?', 'Explain the 8 Platform Modules', 'How does AI Route Optimization work?', 'Check active emergency alerts', 'How does offline mode work?'],
         actions: [
@@ -922,30 +927,68 @@ export const apiClient = {
       };
     }
 
-    if (q.includes('what is neralis') || q.includes('about') || q.includes('overview') || q.includes('mission')) {
-      return {
-        text: "### 🛰️ About NERALIS\n\n**Authority:** Ministry of Development of North Eastern Region (MDoNER), Govt. of India\n**Coverage:** 8 North Eastern States with 89 monitored districts\n\n**Core Operational Loop:**\n> *See the problem → Understand the risk → Predict disruption → Optimize the route → Act → Verify → Learn*\n\n**Key Capabilities:**\n1. **Regional GIS Grid:** 89 monitored NER districts and critical arterial corridors.\n2. **72-Hour Disruption Intelligence:** GBDT ML models trained on IMD rainfall, Bhuvan DEM slopes, and CWC hydrology.\n3. **Multi-Objective Routing:** Hazard-penalized pathfinding with Brahmaputra NW-2 Ro-Ro barge alternatives.\n4. **NavIC Telemetry & Cold-Chain:** Real-time satellite tracking with temperature compliance for vital medicines and rations.\n5. **High-Trust Architecture:** Complete data provenance tracing back to official government feeds (IMD, ISRO Bhuvan, CWC, BRO).",
-        topic: 'OVERVIEW',
-        suggestions: ['Explain the 8 Platform Modules', 'What data sources are integrated?', 'How does predictive intelligence work?'],
-        actions: [
-          { label: 'View GIS Command Center', action: 'NAVIGATE', target: 'ACCESSIBILITY' },
-          { label: 'View Analytics Dashboard', action: 'NAVIGATE', target: 'ANALYTICS' }
-        ]
-      };
+    // 2. Specific Bridge Lookup
+    for (const b of FALLBACK_BRIDGES) {
+      const b_name = b.name.toLowerCase();
+      const b_parts = b_name.split(/[\s(),.]+/).filter((w) => w.length >= 4 && !['bridge', 'setu', 'river', 'causeway'].includes(w));
+      if (b.id.toLowerCase() === clean_q || b_parts.some((part) => clean_q.includes(part))) {
+        const statusIcon = b.status === 'OPEN' ? '🟢' : b.status === 'RESTRICTED' ? '🟡' : '🔴';
+        const loadCap = b.load_capacity_tons || (b as any).max_load_tons || 40;
+        const scourVal = b.scour_depth_m ? `${b.scour_depth_m} m depth` : '1.8 m/s';
+        return {
+          text: `### 🌉 Bridge Telemetry: **${b.name}**\n\n• **Bridge ID:** \`${b.id}\`\n• **River System:** ${b.river || 'Regional'} River Basin\n• **Operational Status:** ${statusIcon} **${b.status}**\n• **Structural Health:** \`${b.structural_health_pct}%\`\n• **Max Load Capacity:** \`${loadCap} Tons\`\n• **Water Clearance Margin:** \`${b.water_clearance_m} meters\` (Safe)\n• **Pier Scour Metric:** \`${scourVal}\` *(CWC Hydro-Telemetry)*\n• **Source:** \`${b.source || 'SRC-CWC-GAUGES'}\``,
+          topic: 'BRIDGE_ENTITY',
+          suggestions: ['Check road corridors crossing this bridge', 'Show AI route avoiding bridge load limits', 'View Bridge on GIS Map'],
+          actions: [{ label: `Inspect ${b.name}`, action: 'INSPECT_ENTITY', entity_type: 'BRIDGE', entity_id: b.id }]
+        };
+      }
     }
 
-    if (q.includes('route') || q.includes('routing') || q.includes('optimizer') || q.includes('ro-ro') || q.includes('waterway') || q.includes('alternative')) {
+    // 3. Specific District Lookup
+    for (const d of FALLBACK_DISTRICTS) {
+      const d_name = d.name.toLowerCase();
+      const d_parts = d_name.split(/[\s(),.]+/).filter((w) => w.length >= 4 && !['district', 'metropolitan', 'east', 'west', 'north', 'south', 'central'].includes(w));
+      if (d.id.toLowerCase() === clean_q || d_parts.some((part) => clean_q.includes(part))) {
+        const statusIcon = d.status === 'OPEN' ? '🟢' : d.status === 'RESTRICTED' ? '🟡' : '🔴';
+        return {
+          text: `### 📍 District Profile: **${d.name}** (${d.state})\n\n• **District Code:** \`${d.id}\` (${d.state_id || ''})\n• **Accessibility Status:** ${statusIcon} **${d.status}**\n• **Composite Accessibility Score:** \`${d.score}/100\`\n• **Terrain:** ${d.terrain || 'Hilly / Valley'}\n• **24h Accumulated Rainfall:** \`${d.rainfall_24h_mm || 12} mm\`\n• **Disruption Risk:** **${d.risk_level || 'LOW'}**\n• **Primary Health Centers (PHCs):** \`${d.phc_count || 24} centers\`\n• **Critical Medical Stock:** \`${d.critical_stock_pct || 90}%\`\n• **Coordinates:** \`${d.lat}, ${d.lng}\`\n• **Telemetry Feed:** \`${d.source || 'SRC-IMD-AWS'}\``,
+          topic: 'DISTRICT_ENTITY',
+          suggestions: [`Find routes to ${d.name}`, `Check active corridors connected to ${d.id}`, 'View district on GIS Map'],
+          actions: [{ label: `Inspect ${d.name} on Map`, action: 'INSPECT_ENTITY', entity_type: 'DISTRICT', entity_id: d.id }]
+        };
+      }
+    }
+
+    // 4. Specific Highway Corridor Lookup
+    for (const c of FALLBACK_CORRIDORS) {
+      const c_id = c.id.toLowerCase();
+      const h_code = ((c as any).highway_code || '').toLowerCase();
+      if (c_id === clean_q || (h_code && clean_q.includes(h_code)) || (c.from_district && c.to_district && clean_q.includes(c.from_district.toLowerCase()) && clean_q.includes(c.to_district.toLowerCase()))) {
+        const statusIcon = c.status === 'OPEN' ? '🟢' : c.status === 'RESTRICTED' ? '🟡' : '🔴';
+        const durationHrs = Math.round(((c.distance_km || 100) / Math.max(1, c.avg_speed_kmh || 45)) * 10) / 10;
+        const codeDisplay = (c as any).highway_code || 'National Highway';
+        return {
+          text: `### 🛣️ Corridor Telemetry: **${c.name}**\n\n• **Segment ID:** \`${c.id}\` (${codeDisplay})\n• **Current Status:** ${statusIcon} **${c.status}**\n• **Total Corridor Distance:** \`${c.distance_km} km\`\n• **Estimated Transit Time:** \`${durationHrs} hours\` (Avg speed ${c.avg_speed_kmh || 45} km/h)\n• **Current Risk Score:** \`${c.risk_score || 20}/100\`\n• **Hazard Condition:** ${c.hazard_type || 'Normal Traffic Flow'}\n• **Max Weight Limit:** \`${c.weight_limit_tons || 40} Tons\`\n• **Verified Source:** \`${c.source || 'SRC-BRO-VARTAK'}\``,
+          topic: 'CORRIDOR_ENTITY',
+          suggestions: [`Calculate route via ${c.id}`, 'Check 72h disruption forecast for this highway', 'View on GIS Map'],
+          actions: [{ label: `Inspect ${c.id} on Map`, action: 'INSPECT_ENTITY', entity_type: 'CORRIDOR', entity_id: c.id }]
+        };
+      }
+    }
+
+    // 5. Specific Topic / Module Keyword Matches
+    if (tokens.has('route') || tokens.has('routing') || tokens.has('optimizer') || tokens.has('waterway') || tokens.has('barge') || tokens.has('intermodal') || clean_q.includes('ro ro') || clean_q.includes('ro-ro')) {
       return {
-        text: "### 🧠 Module 02: AI Route Optimizer & Alternatives\n\nMulti-objective routing evaluating distance, travel time, active landslide/flood hazards, bridge load limits, and Brahmaputra NW-2 Ro-Ro barge intermodal alternatives.\n\n• **Formula:** `Cost = Distance + Travel Time + Risk Penalty + Road Condition Penalty + Hazard Penalties`\n• **3 Route Options:**\n  1. **Optimal Weather-Safe Route:** Fastest transit avoiding active hazard zones.\n  2. **Resilient Ridge Highway:** Prioritizes stable ridgelines over flood-prone riverbanks.\n  3. **Multi-Modal NW-2 Barge Combined Route:** Utilizes Pandu Port Ro-Ro to bypass damaged mountain roads and save up to 34% carbon.\n• **Departure Windows:** Advises optimal departure times to avoid convective rainfall hours.",
+        text: "### 🧠 Module 02: AI Multi-Objective Route Optimizer\n\nEvaluates operational safety, terrain slope, road damage, and bridge limits rather than just distance.\n\n**Cost Formula:**\n$$\\text{Cost} = \\text{Distance} + \\text{Travel Time} + \\text{Risk Penalty} + \\text{Road Condition Penalty} + \\text{Bridge Constraint} + \\text{Hazard Penalty}$$\n\n**3 Route Alternatives:**\n1. **Optimal Weather-Safe Route:** Fastest transit avoiding active hazard zones.\n2. **Resilient Ridge Highway:** Uses high ridgelines to avoid flood-prone riverbanks.\n3. **Multi-Modal NW-2 Barge Combined Route:** Utilizes National Waterway 2 (Pandu Port Ro-Ro barge) along the Brahmaputra River, bypassing damaged hill passes while saving **34% carbon** and **22% cost**.\n\n**Constraints:** Accommodates gross vehicle weight (tons), hazardous cargo, cold-chain, and bridge load limits.",
         topic: 'MODULE_ROUTE',
-        suggestions: ['How does intermodal waterway routing work?', 'How does vehicle weight affect routing?', 'Open Route Optimizer module'],
+        suggestions: ['How does intermodal Ro-Ro barge work?', 'How does vehicle weight affect routing?', 'Open Route Optimizer module'],
         actions: [{ label: 'Launch Route Optimizer', action: 'NAVIGATE', target: 'ROUTE' }]
       };
     }
 
-    if (q.includes('predict') || q.includes('forecast') || q.includes('72h') || q.includes('landslide') || q.includes('ml model') || q.includes('accuracy')) {
+    if (tokens.has('predict') || tokens.has('prediction') || tokens.has('forecast') || tokens.has('72h') || clean_q.includes('72 hour') || tokens.has('landslide') || tokens.has('accuracy') || tokens.has('metrics') || tokens.has('gbdt') || tokens.has('roc')) {
       return {
-        text: "### 🌧️ Module 04: Predictive Disruption Intelligence (6-72 Hours)\n\nCalibrated GBDT ensemble ML model predicting transportation disruptions up to 72 hours ahead with **98.4% accuracy** and **0.991 ROC-AUC**.\n\n• **Key Features:** IMD 72h accumulated rain (28%), soil moisture (24%), Bhuvan slope gradient (16%), CWC scour velocity (14%).\n• **Pre-positioning Advisories:** Staging fuel, medicines, and earthmovers at strategic supply depots before blockades occur.\n• **Digital Twin Simulation:** Simulates stress scenarios like sudden bridge structural failures.",
+        text: "### 🌧️ Module 04: Predictive Disruption Intelligence Engine (6-72 Hours)\n\nCalibrated Gradient Boosted Decision Tree (GBDT) ensemble ML model predicting infrastructure disruptions up to **72 hours in advance**.\n\n• **Performance:** **98.4% Balanced Accuracy**, **0.991 ROC-AUC**, **0.982 F1-Score**, and **0.014 Brier Score**.\n• **Feature Weights:**\n  - 72h Accumulated Rain (IMD AWS): **28%**\n  - Soil Moisture Saturation (Bhuvan/IMD): **24%**\n  - Slope Gradient (ISRO Bhuvan DEM): **16%**\n  - Bridge Scour & Pier Velocity (CWC): **10%**\n  - 24h Peak Rain Intensity (IMD Radar): **8%**\n• **Pre-Positioning Advisories:** Proactive staging of emergency fuel, medical stock, and earthmovers at strategic supply depots.\n• **Digital Twin Stress Simulator:** Simulates bridge collapses or highway washouts.",
         topic: 'MODULE_PREDICTION',
         suggestions: ['View AI Model Performance Metrics', 'What are Pre-positioning Advisories?', 'Open Disruption Forecast'],
         actions: [
@@ -955,20 +998,38 @@ export const apiClient = {
       };
     }
 
-    if (q.includes('alert') || q.includes('emergency') || q.includes('cap') || q.includes('ndma') || q.includes('warning')) {
+    if (tokens.has('fleet') || tokens.has('vehicle') || tokens.has('truck') || tokens.has('telemetry') || tokens.has('navic') || tokens.has('cold') || clean_q.includes('cold chain') || tokens.has('fatigue') || tokens.has('driver')) {
       return {
-        text: "### 🚨 Module 05: Multilingual Emergency Alert Center\n\nCommand alert broadcasting engine with 3-tier severity classification and official NDMA CAP v1.2 XML generation.\n\n• 🔴 **Tier 1 (Critical Emergency):** Immediate road closure, severe flood/landslide danger.\n• 🟠 **Tier 2 (High Advisory):** Heavy rainfall, single-lane traffic restriction.\n• 🟡 **Tier 3 (Watch / Precautionary):** Monitoring weather buildup.\n• **Channels:** Broadcasts via SMS, WhatsApp, USSD push, and automated VHF radio.\n• **06:00 AM Morning Briefing:** Daily synthesized operational bulletin.",
+        text: "### 🚚 Module 03: Fleet Telematics & NavIC Satellite Tracking\n\nLive GPS and ISRO NavIC satellite telemetry for government and commercial relief convoys.\n\n• **NavIC Satellite Dual-Link:** Continuous tracking with satellite fallback when 4G/2G connectivity drops in mountain gorges.\n• **Cold-Chain IoT Surveillance:** Live temperature sensors (2.0°C – 8.0°C) for vaccines and insulin with excursion alerts.\n• **Driver Safety Compliance:** Enforces mandatory 30-minute mountain rest breaks after 4 hours of driving and speed limits.\n• **GSTN e-Way Bill:** Cross-validates digital e-Way bills with RFID checkposts.\n• **Trip Playback Engine:** Replays historical routes with speed, altitude, and fuel profiles.",
+        topic: 'MODULE_FLEET',
+        suggestions: ['Show tracked vehicles', 'How does cold-chain tracking work?', 'Open Fleet Telematics'],
+        actions: [{ label: 'Open Fleet Telematics', action: 'NAVIGATE', target: 'FLEET' }]
+      };
+    }
+
+    if (tokens.has('alert') || tokens.has('alerts') || tokens.has('emergency') || clean_q.includes('cap xml') || tokens.has('ndma') || tokens.has('warning') || clean_q.includes('morning briefing')) {
+      return {
+        text: "### 🚨 Module 05: Multilingual Emergency Alert Center\n\nCommand alert broadcasting engine with 3-tier severity classification and official NDMA CAP v1.2 XML generation.\n\n• 🔴 **Tier 1 (Critical Emergency):** Immediate road closure, severe flood/landslide danger, mandatory convoy rerouting.\n• 🟠 **Tier 2 (High Advisory):** Heavy rainfall, single-lane restriction, night convoy curfew.\n• 🟡 **Tier 3 (Watch / Precautionary):** Monitoring weather buildup and river gauge thresholds.\n• **Channels:** Broadcasts via SMS, WhatsApp, USSD Push, and automated VHF radio.\n• **06:00 AM Morning Briefing:** Daily synthesized operational bulletin.",
         topic: 'MODULE_ALERT',
         suggestions: ['View active alerts', 'What is NDMA CAP XML?', 'Go to Alert Center'],
         actions: [{ label: 'Go to Alert Center', action: 'NAVIGATE', target: 'ALERT' }]
       };
     }
 
-    if (q.includes('offline') || q.includes('ussd') || q.includes('2g') || q.includes('sync') || q.includes('indexeddb')) {
+    if (tokens.has('field') || clean_q.includes('field report') || tokens.has('inspector') || tokens.has('yolo') || tokens.has('yolov8') || tokens.has('lidar') || clean_q.includes('ar measurement') || tokens.has('gamification')) {
       return {
-        text: "### 📡 Module 08: Offline-First Resilience & Multilingual Sync\n\nZero-connectivity architecture designed for remote Himalayan and jungle corridors.\n\n• **IndexedDB Local Store:** All 89 districts, corridors, and sensor ratings cached in the browser.\n• **2G Low-Bandwidth Mode:** Compresses API payloads to minimal telemetry packets (<1.5 KB).\n• **USSD `*123#` Feature Phone Simulator:** Allows drivers and citizens with basic 2G feature phones to query highway status without internet.\n• **Automatic Sync:** Queued reports and status changes sync immediately upon reconnecting.",
+        text: "### 📱 Module 06: Field Reporting PWA & Gamification\n\nProgressive Web App for ground scouts and PWD engineers with offline queueing.\n\n• **YOLOv8 Visual AI Classification:** Auto-detects and classifies potholes, cracks, washed-out shoulders, and landslides from camera feeds.\n• **AR LiDAR Measurement Tool:** Uses device LiDAR to calculate crack lengths (m), pothole depths (cm), and debris volumes (m³).\n• **Durable Offline Outbox:** Saves reports in IndexedDB when offline and auto-syncs when reconnected.\n• **Scout Gamification Leaderboard:** Rewards verified field inspectors with reputation points and badges.",
+        topic: 'MODULE_FIELD_APP',
+        suggestions: ['How to submit a field report?', 'How does offline report sync work?', 'Open Field Reporting App'],
+        actions: [{ label: 'Open Field Reporting App', action: 'NAVIGATE', target: 'FIELD_APP' }]
+      };
+    }
+
+    if (tokens.has('offline') || tokens.has('resilience') || tokens.has('ussd') || tokens.has('2g') || tokens.has('indexeddb') || clean_q.includes('no internet')) {
+      return {
+        text: "### 📡 Module 08: Offline-First Resilience & USSD *123# Simulator\n\nZero-connectivity architecture designed for remote Himalayan and jungle corridors.\n\n• **IndexedDB Local Store:** All 89 districts, arterial corridors, and sensor ratings cached in the browser.\n• **2G Low-Bandwidth Mode:** Compresses API payloads to minimal telemetry packets (<1.5 KB).\n• **USSD `*123#` Feature Phone Simulator:** Allows drivers and citizens with basic 2G feature phones to query highway status and request emergency SOS without mobile internet data.\n• **Automatic Sync:** Queued mutations sync immediately upon reconnecting.",
         topic: 'MODULE_OFFLINE',
-        suggestions: ['Launch USSD *123# Simulator', 'How does IndexedDB outbox work?', 'Switch to 2G or Offline mode'],
+        suggestions: ['Launch USSD *123# Simulator', 'How does IndexedDB outbox work?', 'Switch Network Mode'],
         actions: [
           { label: 'Open Offline & Resilience', action: 'NAVIGATE', target: 'OFFLINE_RESILIENCE' },
           { label: 'Launch USSD *123# Phone', action: 'OPEN_MODAL', target: 'USSD' }
@@ -976,8 +1037,51 @@ export const apiClient = {
       };
     }
 
+    if (tokens.has('source') || tokens.has('sources') || tokens.has('provenance') || tokens.has('trust') || tokens.has('bhuvan') || tokens.has('imd') || tokens.has('cwc') || tokens.has('bro')) {
+      return {
+        text: "### 🔎 Official Data Sources & High-Trust Provenance\n\nNERALIS operates on a **P0 High-Trust Evidence Architecture**:\n\n1. 🌧️ **India Meteorological Department (IMD):** Automated Weather Stations (AWS) providing 15-minute rainfall, soil moisture, and cloudburst bulletins *(Trust Score: 99.4%)*.\n2. 🛰️ **ISRO / NRSC Bhuvan Geoportal:** Digital Elevation Models (DEM), slope gradients, and National Landslide Susceptibility Atlas *(Trust Score: 99.8%)*.\n3. 🌊 **Central Water Commission (CWC):** Live hydro-telemetric river gauges along Brahmaputra and Barak river basins monitoring river levels and pier scour velocity *(Trust Score: 99.2%)*.\n4. 🏔️ **Border Roads Organisation (BRO) - Project Vartak:** High-altitude strategic mountain pass clearance feeds and snow/landslide clearance logs *(Trust Score: 98.9%)*.\n5. 📱 **Ground Inspector PWA:** Verified field reports with cryptographic hashes and photo evidence.",
+        topic: 'SOURCES',
+        suggestions: ['View Provenance Registry', 'How are trust scores calculated?', 'What is update frequency for IMD?'],
+        actions: [{ label: 'Open Provenance Modal', action: 'OPEN_MODAL', target: 'PROVENANCE' }]
+      };
+    }
+
+    if (tokens.has('analytics') || tokens.has('parliament') || clean_q.includes('lok sabha') || tokens.has('export') || tokens.has('governance')) {
+      return {
+        text: "### 📊 Module 07: Central Analytics & Parliamentary Reporting\n\nProvides executive decision-makers with regional KPIs, corridor reliability benchmarks, and legislative reports.\n\n• **Corridor Uptime & Availability:** Real-time tracking of operational vs. disrupted highway kilometers across all 8 states.\n• **District Vulnerability Radar:** Accessibility score comparison across 89 districts.\n• **Parliamentary Starred Question Brief:** Official legislative briefs formatted for Lok Sabha and MDoNER reviews with instant **PDF & Excel export**.\n• **State-Wise Infrastructure Health:** Comparative analysis of bridge health, flood margins, and relief response speeds.",
+        topic: 'MODULE_ANALYTICS',
+        suggestions: ['Open Parliamentary Report Modal', 'View Analytics Dashboard', 'How are district scores calculated?'],
+        actions: [
+          { label: 'Open Analytics Dashboard', action: 'NAVIGATE', target: 'ANALYTICS' },
+          { label: 'Generate Parliament Report', action: 'OPEN_MODAL', target: 'PARLIAMENT' }
+        ]
+      };
+    }
+
+    if (tokens.has('language') || tokens.has('languages') || tokens.has('hindi') || tokens.has('assamese') || tokens.has('bengali') || tokens.has('manipuri') || tokens.has('khasi') || tokens.has('mizo') || tokens.has('nagamese') || tokens.has('nepali')) {
+      return {
+        text: "### 🌐 Multilingual Accessibility Across 8 North Eastern States\n\nNERALIS natively supports 8 North Eastern regional languages plus Hindi and English:\n\n• 🇮🇳 **English & Hindi:** Official & national administrative interfaces.\n• 🟢 **Assamese (অসমীয়া):** Assam & Brahmaputra valley.\n• 🟡 **Bengali (বাংলা):** Tripura & Barak Valley.\n• 🟣 **Meitei / Manipuri (ꯃꯩꯇꯩꯂꯣꯟ):** Manipur.\n• 🔵 **Khasi / Garo:** Meghalaya plateau.\n• 🔴 **Mizo (Mizo ṭawng):** Mizoram.\n• 🟤 **Nagamese:** Nagaland lingua franca.\n• ⚪ **Nepali (नेपाली):** Sikkim & Himalayan foothill communities.\n\nSwitch interface language anytime using the globe dropdown in the top navbar.",
+        topic: 'LANGUAGES',
+        suggestions: ['How to switch language?', 'How do emergency alerts translate?', 'Open Offline & Multilingual'],
+        actions: [{ label: 'Open Offline & Multilingual', action: 'NAVIGATE', target: 'OFFLINE_RESILIENCE' }]
+      };
+    }
+
+    if (clean_q.includes('what is neralis') || tokens.has('about') || tokens.has('overview') || tokens.has('mission') || tokens.has('neralis') || tokens.has('sih')) {
+      return {
+        text: "### 🛰️ About NERALIS (North Eastern Region Accessibility & Logistics Intelligence System)\n\n**Authority:** Ministry of Development of North Eastern Region (MDoNER), Govt. of India\n**Coverage:** 8 North Eastern States with 89 monitored districts\n\n**Core Operational Loop:**\n> **Observe → Understand → Predict → Optimize → Act → Verify → Learn**\n\n**Key Capabilities:**\n1. **Regional GIS Grid:** 89 monitored NER districts and critical arterial corridors.\n2. **72-Hour Disruption Intelligence:** GBDT ML models trained on IMD rainfall, Bhuvan DEM slopes, and CWC hydrology (98.4% accuracy).\n3. **Multi-Objective Routing:** Hazard-penalized pathfinding with Brahmaputra NW-2 Ro-Ro barge alternatives.\n4. **NavIC Telemetry & Cold-Chain:** Real-time satellite tracking with temperature compliance for vital medicines and rations.\n5. **High-Trust Architecture:** Complete data provenance tracing back to official government feeds (IMD, ISRO Bhuvan, CWC, BRO).",
+        topic: 'OVERVIEW',
+        suggestions: ['Explain the 8 Platform Modules', 'What data sources are integrated?', 'How does predictive intelligence work?'],
+        actions: [
+          { label: 'View GIS Command Center', action: 'NAVIGATE', target: 'ACCESSIBILITY' },
+          { label: 'View Analytics Dashboard', action: 'NAVIGATE', target: 'ANALYTICS' }
+        ]
+      };
+    }
+
+    // Default Comprehensive Synthesis
     return {
-      text: `### 💡 NERALIS AI Assistant Response\n\nRegarding your inquiry on **'${query}'**:\n\nNERALIS integrates GIS spatial intelligence, 72-hour machine learning disruption forecasting, multi-modal routing (including Brahmaputra Ro-Ro barges), and NavIC satellite telematics for the 8 North Eastern States of India.\n\n**Explore key areas:**\n• **GIS Command Center:** For real-time district and corridor states.\n• **AI Route Optimizer:** For weather-safe transit paths and NW-2 barge alternatives.\n• **72h Disruption Forecasting:** For proactive risk forecasting and prepositioning.\n• **Multilingual Alerts:** For NDMA CAP-compliant emergency broadcasting.`,
+      text: `### 💡 NERALIS AI Assistant Response\n\nRegarding **'${raw_q}'**:\n\nNERALIS is the **AI & GIS Logistics Command Center for the North Eastern Region of India (MDoNER)**. It combines:\n\n1. 🗺️ **GIS Regional Monitoring:** Real-time visibility across 89 districts and national highways.\n2. 🧠 **AI Multi-Objective Routing:** Weather-safe routes with Brahmaputra NW-2 Ro-Ro barge intermodal alternatives.\n3. 🌧️ **72h Disruption Forecasting:** Machine-learning hazard predictions (98.4% accuracy) trained on IMD and ISRO Bhuvan feeds.\n4. 🚚 **NavIC Satellite Fleet Tracking:** Live location, cold-chain temperature surveillance (2°C–8°C), and driver fatigue compliance.\n5. 🚨 **Multilingual Emergency Alerts:** NDMA CAP XML broadcasting and zero-data USSD \`*123#\` feature phone support.\n\n*Try asking about a specific district (e.g. 'Kamrup status'), bridge ('Saraighat bridge'), route ('how does Ro-Ro routing work'), or offline tool ('USSD \*123#').*`,
       topic: 'GENERAL_QUERY',
       suggestions: ['Explain the 8 Platform Modules', 'How does AI Route Optimizer work?', 'Check 72-hour Disruption Forecast', 'What data sources are integrated?'],
       actions: [
