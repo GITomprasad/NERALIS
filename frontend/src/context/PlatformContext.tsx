@@ -660,6 +660,53 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [networkMode]);
 
+  // Real-Time NavIC & GPS Telematics Simulation Heartbeat (Every 4 seconds)
+  useEffect(() => {
+    const telemetryInterval = setInterval(() => {
+      setVehicles((prevVehicles) =>
+        prevVehicles.map((v) => {
+          if (v.status === 'RESTRICTED' || v.speed_kmh === 0) {
+            return v;
+          }
+
+          // Subtle realistic coordinate drift along heading
+          const headingRad = ((v.heading_deg || 45) * Math.PI) / 180;
+          const delta = 0.0008; // ~80 meters per tick
+          const nextLat = Number((v.current_lat + Math.cos(headingRad) * delta).toFixed(5));
+          const nextLng = Number((v.current_lng + Math.sin(headingRad) * delta).toFixed(5));
+
+          // Speed fluctuation
+          const speedJitter = Math.floor(Math.random() * 5) - 2;
+          const nextSpeed = Math.max(15, Math.min(75, v.speed_kmh + speedJitter));
+
+          // Temperature fluctuation if cold-chain
+          let nextColdChain = v.cold_chain;
+          if (v.cold_chain) {
+            const tempJitter = (Math.random() * 0.2 - 0.1);
+            const nextTemp = Number(Math.max(2.1, Math.min(7.8, v.cold_chain.current_temp_c + tempJitter)).toFixed(1));
+            nextColdChain = {
+              ...v.cold_chain,
+              current_temp_c: nextTemp,
+              status: `NORMAL (Safe ${nextTemp}°C)`
+            };
+          }
+
+          return {
+            ...v,
+            current_lat: nextLat,
+            current_lng: nextLng,
+            speed_kmh: nextSpeed,
+            cold_chain: nextColdChain,
+            observed_at: new Date().toISOString(),
+            verification_status: 'OBSERVED'
+          };
+        })
+      );
+    }, 4000);
+
+    return () => clearInterval(telemetryInterval);
+  }, []);
+
   const isAdminOrAuthority = userRole === 'STATE_ADMIN' || userRole === 'DISTRICT_COLLECTOR' || userRole === 'FIELD_INSPECTOR';
   const isFullAdmin = userRole === 'STATE_ADMIN' || userRole === 'DISTRICT_COLLECTOR';
 

@@ -2363,7 +2363,14 @@ export const FALLBACK_ALERTS: Alert[] = [
     "dispatch_status": "DISPATCHED",
     "message_i18n": {
       "en": "ADVISORY (T2): NH-6 Sonapur tunnel experiencing 1.5-hour delay due to mud silt. Single lane open.",
-      "hi": "\u0938\u0932\u093e\u0939 (T2): \u0915\u0940\u091a\u0921\u093c \u091c\u092e\u093e \u0939\u094b\u0928\u0947 \u0915\u0947 \u0915\u093e\u0930\u0923 NH-6 \u0938\u094b\u0928\u093e\u092a\u0941\u0930 \u0938\u0941\u0930\u0902\u0917 \u092e\u0947\u0902 1.5 \u0918\u0902\u091f\u0947 \u0915\u0940 \u0926\u0947\u0930\u0940\u0964 \u090f\u0915 \u0932\u0947\u0928 \u091a\u093e\u0932\u0942\u0964"
+      "hi": "सलाह (T2): कीचड़ जमा होने के कारण NH-6 सोनापुर सुरंग में 1.5 घंटे की देरी। एक लेन चालू।",
+      "as": "পৰামৰ্শ (T2): বোকা জমা হোৱাৰ বাবে NH-6 সোণাপুৰ সুৰংগত ১.৫ ঘণ্টাৰ পলম। এটা লেন খোলা।",
+      "bn": "পরামর্শ (T2): কাদা জমার কারণে NH-6 সোনাপুর সুড়ঙ্গে ১.৫ ঘণ্টার বিলম্ব। একটি লেন চালু।",
+      "mni": "ꯄꯥꯎꯇꯥꯛ (T2): NH-6 ꯁꯣꯅꯥꯄꯨꯔ ꯇꯅꯦꯜꯗ ꯂꯩꯇꯣꯡ ꯂꯩꯕꯅ ꯃꯔꯝ ꯑꯣꯏꯗꯨꯅ ꯄꯨꯡ ꯱.꯵ ꯊꯦꯡꯊꯒꯅꯤ। ꯂꯦꯟ ꯑꯃꯈꯛ ꯍꯥꯡꯂꯤ।",
+      "khasi": "PYNTIP (T2): Ka surok NH-6 ha Sonapur tunnel ka don jingpynslem 1.5 kynta namar ka ktieh. Tang shiliang ka surok ba plie.",
+      "mizo": "HRIATTIRNA (T2): NH-6 Sonapur tunnel chu chirh vanga minute 90 bawr vel a khaihlak. Kawng lehlam chauh a inhawng.",
+      "nagamese": "ADVISORY (T2): NH-6 Sonapur tunnel te panka piri thakikena 1.5 ghanta deri hobo. Ekta lane he khula asey.",
+      "ne": "परामर्श (T2): हिलो जमेको कारण NH-6 सोनापुर सुरुङमा १.५ घण्टा ढिलाइ। एकल लेन मात्र खुला छ।"
     },
     "source": "SRC-STATE-PWD",
     "verification_status": "VERIFIED"
