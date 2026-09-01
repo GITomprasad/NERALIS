@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { usePlatform } from '../../context/PlatformContext';
-import { Layers, Eye, EyeOff, MapPin, Truck, AlertTriangle, Activity, ShieldCheck } from 'lucide-react';
+import { Layers, Eye, EyeOff, MapPin, Truck, AlertTriangle, Activity, ShieldCheck, Maximize2, Minimize2 } from 'lucide-react';
 import { ProvenanceBadge } from '../common/ProvenanceBadge';
 
-const MapResizer: React.FC<{ isSidebarCollapsed?: boolean }> = ({ isSidebarCollapsed }) => {
+const MapResizer: React.FC<{ isSidebarCollapsed?: boolean; isFullscreen?: boolean }> = ({ isSidebarCollapsed, isFullscreen }) => {
   const map = useMap();
   useEffect(() => {
     const timer = setTimeout(() => {
       map.invalidateSize();
-    }, 200);
+    }, 150);
     return () => clearTimeout(timer);
-  }, [isSidebarCollapsed, map]);
+  }, [isSidebarCollapsed, isFullscreen, map]);
   return null;
 };
 
@@ -119,6 +119,65 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
   const [showDistricts, setShowDistricts] = useState(true);
   const [showLayersMenu, setShowLayersMenu] = useState(false);
 
+  // Fullscreen State & Handlers
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const toggleFullscreen = () => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    if (!isFullscreen) {
+      if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => {
+          setIsFullscreen(true);
+        });
+      } else if ((el as any).webkitRequestFullscreen) {
+        (el as any).webkitRequestFullscreen();
+      } else if ((el as any).msRequestFullscreen) {
+        (el as any).msRequestFullscreen();
+      } else {
+        setIsFullscreen(true);
+      }
+    } else {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {
+          setIsFullscreen(false);
+        });
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
+      } else {
+        setIsFullscreen(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!(document.fullscreenElement || (document as any).webkitFullscreenElement || (document as any).mozFullScreenElement));
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFullscreen]);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'OPEN':
@@ -137,7 +196,15 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
   };
 
   return (
-    <div className={`relative w-full overflow-hidden ${className}`} style={{ height }}>
+    <div
+      ref={containerRef}
+      className={`relative w-full overflow-hidden transition-all ${
+        isFullscreen
+          ? 'fixed inset-0 z-[99999] w-screen h-screen bg-slate-950 flex flex-col'
+          : className
+      }`}
+      style={{ height: isFullscreen ? '100vh' : height }}
+    >
       {/* Map Container */}
       <MapContainer
         center={[26.2000, 92.8000]}
@@ -145,7 +212,7 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
         scrollWheelZoom={true}
         className="w-full h-full"
       >
-        <MapResizer isSidebarCollapsed={isSidebarCollapsed} />
+        <MapResizer isSidebarCollapsed={isSidebarCollapsed} isFullscreen={isFullscreen} />
         <RouteBoundsFitter highlightRoute={highlightRoute} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | ISRO Bhuvan GIS'
@@ -395,12 +462,36 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
           ))}
       </MapContainer>
 
-      {/* Floating Layer Control Panel (Top-Right) */}
-      <div className="absolute top-3 right-3 z-[1000]">
+      {/* Floating Controls (Top-Right) */}
+      <div className="absolute top-3 right-3 z-[1000] flex items-center gap-2">
+        {/* Fullscreen Toggle Button */}
+        <button
+          onClick={toggleFullscreen}
+          className={`backdrop-blur-md shadow-md px-3 py-2 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+            isFullscreen
+              ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500 ring-2 ring-rose-300'
+              : 'bg-white/95 hover:bg-white text-[#1E3A5F] border-gray-300 hover:border-[#1E3A5F]'
+          }`}
+          title={isFullscreen ? 'Exit Fullscreen (Esc)' : 'Open Fullscreen Interactive Map'}
+        >
+          {isFullscreen ? (
+            <>
+              <Minimize2 className="w-4 h-4 text-white" />
+              <span>Exit Fullscreen</span>
+            </>
+          ) : (
+            <>
+              <Maximize2 className="w-4 h-4 text-[#2563A8]" />
+              <span>Fullscreen</span>
+            </>
+          )}
+        </button>
+
+        {/* Floating Layer Control Panel */}
         <div className="relative">
           <button
             onClick={() => setShowLayersMenu(!showLayersMenu)}
-            className="bg-white/95 backdrop-blur shadow-md px-3 py-2 rounded-lg border border-gray-300 text-xs font-bold text-[#1E3A5F] flex items-center gap-2 hover:bg-white transition-all"
+            className="bg-white/95 backdrop-blur shadow-md px-3 py-2 rounded-lg border border-gray-300 text-xs font-bold text-[#1E3A5F] flex items-center gap-2 hover:bg-white transition-all cursor-pointer"
           >
             <Layers className="w-4 h-4 text-[#2563A8]" />
             <span>GIS Map Layers</span>
