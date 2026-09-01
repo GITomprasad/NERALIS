@@ -43,7 +43,11 @@ app.add_middleware(
 )
 
 from app.api.auth import router as auth_router
+from app.api.health import router as health_router
+
 app.include_router(auth_router, prefix="/api")
+app.include_router(health_router)
+app.include_router(health_router, prefix="/api")
 
 # Pydantic Request Models
 class RouteOptimizeRequest(BaseModel):
@@ -106,6 +110,7 @@ class ChatbotQueryRequest(BaseModel):
 
 
 # Health Check & Provenance
+@app.get("/health")
 @app.get("/api/health")
 def health_check():
     m = ml_disruption_model.metrics
@@ -113,17 +118,17 @@ def health_check():
         "status": "healthy",
         "service": "NERALIS Intelligence Engine v2.2",
         "region": "North Eastern Region (8 States)",
-        "model_version": m.get("model_version", "NERALIS-DisruptionNet-GBDT-v3.4-Production"),
-        "model_accuracy": f"{m.get('accuracy_pct', 98.7)}%",
-        "model_balanced_accuracy": f"{round(m.get('balanced_accuracy', 0.9791) * 100, 1)}%",
-        "model_macro_f1": f"{m.get('f1_score', 0.9802)}",
-        "model_roc_auc": f"{m.get('roc_auc', 0.999)}",
-        "training_events": m.get("training_samples_count", 4000),
-        "test_events": m.get("test_samples_count", 1000),
+        "model_version": m.get("model_version", "NERALIS-NASA-IMD-Real-v1.0"),
+        "model_accuracy": f"{m.get('accuracy_pct', 85.1)}%",
+        "model_balanced_accuracy": f"{round(m.get('balanced_accuracy', 0.5242) * 100, 1)}%",
+        "model_macro_f1": f"{m.get('f1_score', 0.5561)}",
+        "model_roc_auc": f"{m.get('roc_auc', 0.884)}",
+        "training_events": m.get("training_samples_count", 348),
+        "test_events": m.get("test_samples_count", 348),
         "active_sources_count": len(NER_SOURCE_REGISTRY),
         "subsystems": {
             "routing_graph": {"status": "UP", "nodes": len(NER_DISTRICTS)},
-            "disruption_engine": {"status": "UP", "accuracy": f"{m.get('accuracy_pct', 98.7)}%"},
+            "disruption_engine": {"status": "UP", "accuracy": f"{m.get('accuracy_pct', 85.1)}%"},
             "telemetry_stream": {"status": "UP"},
             "alert_broadcaster": {"status": "UP"}
         }

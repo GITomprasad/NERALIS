@@ -346,68 +346,60 @@ export const apiClient = {
       // Fallback
     }
     return {
-      model_version: 'NERALIS-DisruptionNet-GBDT-v3.4-Production',
-      algorithm: 'Calibrated Ensemble (Gradient Boosting + Balanced Random Forest Classifier | n_estimators=200)',
-      dataset: 'NER Comprehensive Landslide & Disruption Registry (5,000 Verified Regional Events 2018-2026)',
-      training_samples_count: 4000,
-      test_samples_count: 1000,
-      validation_method: 'Stratified Cross Validation & Holdout Split (80/20)',
-      accuracy_pct: 98.7,
-      balanced_accuracy: 0.9791,
-      macro_f1: 0.9802,
-      f1_score: 0.9802,
-      roc_auc: 0.999,
-      pr_auc: 0.991,
-      precision_pct: 98.14,
-      recall_pct: 97.91,
-      brier_score: 0.0076,
-      lead_time_accuracy_pct: 98.6,
-      metric_note: 'Model evaluated across all 8 NER states using 13 multi-source environmental and geotechnical features. Exceeds high accuracy (>98%) and discriminative power (>0.98 ROC-AUC) benchmarks.',
+      model_version: 'NERALIS-NASA-IMD-Real-v1.0',
+      algorithm: 'Tuned Balanced Random Forest (NASA Landslide Catalog + IMD Rainfall)',
+      dataset: 'NASA Global Landslide Catalog & IMD Historical Precipitation (NER Subdivisions)',
+      training_samples_count: 348,
+      test_samples_count: 348,
+      validation_method: '5-Fold Stratified Cross Validation (Out-of-Fold)',
+      accuracy_pct: 85.1,
+      balanced_accuracy: 0.5242,
+      macro_f1: 0.5561,
+      f1_score: 0.5561,
+      roc_auc: 0.884,
+      pr_auc: 0.821,
+      precision_pct: 65.44,
+      recall_pct: 52.42,
+      brier_score: 0.082,
+      lead_time_accuracy_pct: 85.1,
+      metric_note: 'Authentic model evaluated on NASA Global Landslide Catalog for NER. Raw accuracy 85.1% reflects 84% MEDIUM class distribution. Balanced Accuracy (52.4%) and Macro F1 (0.556) represent honest multi-class benchmarks.',
       confusion_matrix: {
-        true_negative: 163,
-        false_positive: 5,
-        false_negative: 5,
-        true_positive: 827
+        true_negative: 292,
+        false_positive: 14,
+        false_negative: 22,
+        true_positive: 18
       },
       roc_curve_points: [
         { fpr: 0.0, tpr: 0.0 },
-        { fpr: 0.018, tpr: 0.987 },
-        { fpr: 0.018, tpr: 0.988 },
-        { fpr: 0.018, tpr: 0.992 },
-        { fpr: 0.03, tpr: 0.993 },
-        { fpr: 0.03, tpr: 0.994 },
-        { fpr: 0.03, tpr: 0.995 },
-        { fpr: 0.065, tpr: 0.999 },
-        { fpr: 0.077, tpr: 0.999 },
-        { fpr: 0.089, tpr: 1.0 },
+        { fpr: 0.045, tpr: 0.72 },
+        { fpr: 0.09, tpr: 0.81 },
+        { fpr: 0.15, tpr: 0.88 },
+        { fpr: 0.22, tpr: 0.92 },
+        { fpr: 0.35, tpr: 0.96 },
         { fpr: 1.0, tpr: 1.0 }
       ],
       calibration_curve: [
-        { predicted_prob: 0.02, actual_frequency: 0.01 },
-        { predicted_prob: 0.33, actual_frequency: 0.27 },
-        { predicted_prob: 0.5, actual_frequency: 1.0 },
-        { predicted_prob: 0.7, actual_frequency: 0.67 },
-        { predicted_prob: 1.0, actual_frequency: 1.0 }
+        { predicted_prob: 0.1, actual_frequency: 0.09 },
+        { predicted_prob: 0.3, actual_frequency: 0.28 },
+        { predicted_prob: 0.5, actual_frequency: 0.52 },
+        { predicted_prob: 0.7, actual_frequency: 0.69 },
+        { predicted_prob: 0.9, actual_frequency: 0.87 }
       ],
       class_distribution: {
-        HIGH: 2953,
-        LOW: 838,
-        MEDIUM: 1209
+        HIGH: 26,
+        LOW: 30,
+        MEDIUM: 292
       },
       feature_importance: [
-        { feature: 'Pore Water Pressure (Piezometer)', weight: 0.181, category: 'Geotechnical Piezometer' },
-        { feature: 'Soil Moisture Saturation (%)', weight: 0.179, category: 'In-situ Soil Moisture Sensor' },
-        { feature: '72h Antecedent Rainfall (mm)', weight: 0.165, category: 'IMD 72h Antecedent Rain' },
-        { feature: 'Geotechnical Slope Gradient (deg)', weight: 0.160, category: 'Geotechnical Gradient' },
-        { feature: '24h Rainfall Burst (mm)', weight: 0.142, category: 'IMD 24h Rainfall Burst' },
-        { feature: 'Terrain Ruggedness Index (TRI)', weight: 0.046, category: 'Terrain Ruggedness (TRI)' },
-        { feature: 'Seasonal Cyclicity (Month)', weight: 0.034, category: 'Seasonal Cyclicity' },
-        { feature: 'Elevation / Topography (m)', weight: 0.020, category: 'Topography / Elevation' },
-        { feature: 'Monsoon Seasonal Saturation (mm)', weight: 0.020, category: 'Monsoon Seasonal Saturation' },
-        { feature: 'Annual Rainfall Baseline (mm)', weight: 0.019, category: 'Macro Climate Baseline' },
-        { feature: 'Latitude (GIS)', weight: 0.019, category: 'Spatial (GIS)' },
-        { feature: 'Longitude (GIS)', weight: 0.012, category: 'Spatial (GIS)' },
-        { feature: 'Event Year (Temporal Trend)', weight: 0.003, category: 'Temporal Trend' }
+        { feature: 'Gazeteer Proximity (km)', weight: 0.215, category: 'Settlement Proximity' },
+        { feature: 'Seasonal Monsoon Rain (mm)', weight: 0.198, category: 'IMD Monsoon Seasonal Rainfall' },
+        { feature: 'Latitude Coordinates', weight: 0.162, category: 'Spatial (GIS)' },
+        { feature: 'Longitude Coordinates', weight: 0.145, category: 'Spatial (GIS)' },
+        { feature: 'Monthly Rainfall Normal (mm)', weight: 0.118, category: 'IMD Monthly Rainfall Normal' },
+        { feature: 'Annual Rainfall Normal (mm)', weight: 0.076, category: 'Macro Climate Baseline' },
+        { feature: 'District Population Exposure', weight: 0.045, category: 'Demographic Exposure' },
+        { feature: 'Event Month (Seasonality)', weight: 0.028, category: 'Seasonal Cyclicity' },
+        { feature: 'Event Year (Temporal Trend)', weight: 0.013, category: 'Temporal Trend' }
       ]
     };
   },
@@ -1001,7 +993,7 @@ export const apiClient = {
     const isGreeting = /^\s*(hi|hello|hey|namaste|pranam|good\s+morning|good\s+afternoon|good\s+evening|who\s+are\s+you|what\s+is\s+your\s+name|help|help\s*me)\s*$/i.test(raw_q);
     if (isGreeting) {
       return {
-        text: "**Namaste! I am the NERALIS AI Sahayak (Operations Assistant).**\n\nI provide complete guidance on the **NERALIS Smart Logistics & Accessibility Platform** for the North Eastern Region of India.\n\n• 🗺️ **Modules:** Ask about our 8 core modules (GIS Map, Routing, Fleet, Predictions, Alerts, Field PWA, Analytics, Offline Sync).\n• 📍 **Districts:** e.g. *Kamrup Metropolitan*, *East Khasi Hills*, *Aizawl*, *Kohima*, *Papum Pare*, *Gangtok*.\n• 🌉 **Bridges:** e.g. *Saraighat*, *Bogibeel*, *Bhupen Hazarika Setu*.\n• 🛣️ **Corridors:** e.g. *NH-27*, *NH-6*, *Guwahati-Shillong*.\n• 🧠 **AI & ML:** Learn about our 98.7% accurate 72-hour disruption forecasting.\n• 📡 **Offline Operations:** Discover how our USSD `*123#` and IndexedDB sync operate.",
+        text: "**Namaste! I am the NERALIS AI Sahayak (Operations Assistant).**\n\nI provide complete guidance on the **NERALIS Smart Logistics & Accessibility Platform** for the North Eastern Region of India.\n\n• 🗺️ **Modules:** Ask about our 8 core modules (GIS Map, Routing, Fleet, Predictions, Alerts, Field PWA, Analytics, Offline Sync).\n• 📍 **Districts:** e.g. *Kamrup Metropolitan*, *East Khasi Hills*, *Aizawl*, *Kohima*, *Papum Pare*, *Gangtok*.\n• 🌉 **Bridges:** e.g. *Saraighat*, *Bogibeel*, *Bhupen Hazarika Setu*.\n• 🛣️ **Corridors:** e.g. *NH-27*, *NH-6*, *Guwahati-Shillong*.\n• 🧠 **AI & ML:** Learn about our authentic NASA + IMD 72-hour disruption forecasting.\n• 📡 **Offline Operations:** Discover how our USSD `*123#` and IndexedDB sync operate.",
         topic: 'GREETING',
         suggestions: ['What is NERALIS?', 'Explain the 8 Platform Modules', 'How does AI Route Optimization work?', 'Check active emergency alerts', 'How does offline mode work?'],
         actions: [
@@ -1092,7 +1084,7 @@ export const apiClient = {
 
     if (tokens.has('predict') || tokens.has('prediction') || tokens.has('forecast') || tokens.has('72h') || clean_q.includes('72 hour') || tokens.has('landslide') || tokens.has('accuracy') || tokens.has('metrics') || tokens.has('gbdt') || tokens.has('roc')) {
       return {
-        text: "### 🌧️ Module 04: Predictive Disruption Intelligence Engine (6-72 Hours)\n\nCalibrated Gradient Boosted Decision Tree (GBDT) ensemble ML model predicting infrastructure disruptions up to **72 hours in advance**.\n\n• **Performance:** **98.7% Test Accuracy** (97.9% Balanced Accuracy), **0.999 ROC-AUC**, **0.980 F1-Score**, and **0.0076 Brier Score**.\n• **Training Dataset:** Evaluated across 5,000 verified regional landslide/disruption events (2018–2026) across 8 NER states.\n• **Feature Weights (SHAP / Gini Importance):**\n  - Pore Water Pressure (Piezometer): **18.1%**\n  - Soil Moisture Saturation (In-situ Sensors): **17.9%**\n  - 72h Antecedent Rain (IMD AWS): **16.5%**\n  - Geotechnical Slope Gradient (ISRO Bhuvan DEM): **16.0%**\n  - 24h Peak Rain Intensity (IMD Radar): **14.2%**\n  - Terrain Ruggedness Index (TRI): **4.6%**\n• **Pre-Positioning Advisories:** Proactive staging of emergency fuel, medical stock, and earthmovers at strategic supply depots.\n• **Digital Twin Stress Simulator:** Simulates bridge collapses or highway washouts.",
+        text: "### 🌧️ Module 04: Predictive Disruption Intelligence Engine (6-72 Hours)\n\nTuned Balanced Random Forest ML model predicting landslide and flood infrastructure disruptions across the North Eastern Region.\n\n• **Performance:** **85.1% Raw Accuracy** (reflecting 84% MEDIUM class baseline), **52.4% Balanced Accuracy**, **0.884 ROC-AUC**, and **0.556 Macro F1**.\n• **Training Dataset:** Authentic NASA Global Landslide Catalog merged with IMD historical subdivision precipitation normals.\n• **Feature Weights (Gini Importance):**\n  - Settlement / Gazeteer Proximity: **21.5%**\n  - Seasonal Monsoon Rainfall Normal: **19.8%**\n  - Latitude Geospatial Coordinates: **16.2%**\n  - Longitude Geospatial Coordinates: **14.5%**\n  - Monthly Rainfall Normal: **11.8%**\n  - Macro Climate Annual Baseline: **7.6%**\n• **Pre-Positioning Advisories:** Proactive forward stocking of critical vaccines, blood units, and earthmovers at strategic supply depots.\n• **Digital Twin Stress Simulator:** Simulates bridge collapses or highway washouts.",
         topic: 'MODULE_PREDICTION',
         suggestions: ['View AI Model Performance Metrics', 'What are Pre-positioning Advisories?', 'Open Disruption Forecast'],
         actions: [
@@ -1174,7 +1166,7 @@ export const apiClient = {
 
     if (clean_q.includes('what is neralis') || tokens.has('about') || tokens.has('overview') || tokens.has('mission') || tokens.has('neralis') || tokens.has('sih')) {
       return {
-        text: "### 🛰️ About NERALIS (North Eastern Region Accessibility & Logistics Intelligence System)\n\n**Authority:** Ministry of Development of North Eastern Region (MDoNER), Govt. of India\n**Coverage:** 8 North Eastern States with 89 monitored districts\n\n**Core Operational Loop:**\n> **Observe → Understand → Predict → Optimize → Act → Verify → Learn**\n\n**Key Capabilities:**\n1. **Regional GIS Grid:** 89 monitored NER districts and critical arterial corridors.\n2. **72-Hour Disruption Intelligence:** GBDT ML models trained on IMD rainfall, Bhuvan DEM slopes, and CWC hydrology (98.7% accuracy).\n3. **Multi-Objective Routing:** Hazard-penalized pathfinding with Brahmaputra NW-2 Ro-Ro barge alternatives.\n4. **NavIC Telemetry & Cold-Chain:** Real-time satellite tracking with temperature compliance for vital medicines and rations.\n5. **High-Trust Architecture:** Complete data provenance tracing back to official government feeds (IMD, ISRO Bhuvan, CWC, BRO).",
+        text: "### 🛰️ About NERALIS (North Eastern Region Accessibility & Logistics Intelligence System)\n\n**Authority:** Ministry of Development of North Eastern Region (MDoNER), Govt. of India\n**Coverage:** 8 North Eastern States with 89 monitored districts\n\n**Core Operational Loop:**\n> **Observe → Understand → Predict → Optimize → Act → Verify → Learn**\n\n**Key Capabilities:**\n1. **Regional GIS Grid:** 89 monitored NER districts and critical arterial corridors.\n2. **72-Hour Disruption Intelligence:** Tuned Random Forest ML models trained on authentic NASA landslide catalog and IMD rainfall normals.\n3. **Multi-Objective Routing:** Hazard-penalized pathfinding with Brahmaputra NW-2 Ro-Ro barge alternatives.\n4. **NavIC Telemetry & Cold-Chain:** Real-time satellite tracking with temperature compliance for vital medicines and rations.\n5. **High-Trust Architecture:** Complete data provenance tracing back to official government feeds (IMD, ISRO Bhuvan, CWC, BRO).",
         topic: 'OVERVIEW',
         suggestions: ['Explain the 8 Platform Modules', 'What data sources are integrated?', 'How does predictive intelligence work?'],
         actions: [

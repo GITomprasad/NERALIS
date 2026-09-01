@@ -62,11 +62,12 @@ def health_check(db: Session = Depends(get_db)):
         "status": "healthy" if is_healthy else "degraded",
         "service": "NERALIS Intelligence Engine v2.2",
         "region": "North Eastern Region (8 States)",
-        "model_accuracy": f"{m.get('accuracy_pct', 98.7)}%",
-        "model_roc_auc": f"{m.get('roc_auc', 0.999)}",
-        "model_f1_score": f"{m.get('f1_score', 0.9802)}",
-        "training_samples": m.get("training_samples_count", 4000),
-        "test_samples": m.get("test_samples_count", 1000),
+        "model_accuracy": f"{m.get('accuracy_pct', 85.1)}%",
+        "model_balanced_accuracy": f"{m.get('balanced_accuracy', 0.5242)}",
+        "model_roc_auc": f"{m.get('roc_auc', 0.884)}",
+        "model_f1_score": f"{m.get('f1_score', 0.5561)}",
+        "training_samples": m.get("training_samples_count", 348),
+        "test_samples": m.get("test_samples_count", 348),
         "subsystems": subsystems,
         "checked_at": datetime.datetime.now().isoformat()
     }

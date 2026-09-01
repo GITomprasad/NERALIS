@@ -140,11 +140,11 @@ export const PredictiveIntelligence: React.FC = () => {
             </h2>
             <span className="bg-purple-100 text-purple-800 text-[10px] font-black px-2 py-0.5 rounded-full border border-purple-300 flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-purple-600" />
-              Accuracy: 98.7% (Evaluated)
+              Raw Acc: 85.1% | Balanced Acc: 52.4%
             </span>
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
-            Calibrated ensemble model forecasting landslides, flash floods & bridge anomalies across all 8 NER states
+            Tuned Balanced Random Forest model trained on authentic NASA Landslide Catalog & IMD Historical Rainfall
           </p>
         </div>
 
@@ -189,34 +189,38 @@ export const PredictiveIntelligence: React.FC = () => {
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-purple-700" />
             <h3 className="font-black text-xs text-purple-950 uppercase tracking-wide">
-              Dedicated Model Performance & Calibration Panel
+              Authentic NASA & IMD Disruption Model Benchmark
             </h3>
           </div>
           <span className="text-[10px] bg-purple-200 text-purple-900 font-bold px-2 py-0.5 rounded font-mono">
-            NERALIS-DisruptionNet-GBDT-v3.4
+            NERALIS-NASA-IMD-Real-v1.0
           </span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
           <div className="bg-white p-2.5 rounded-lg border border-purple-100 shadow-xs">
-            <div className="text-[10px] text-gray-500 font-bold uppercase">Test Accuracy</div>
-            <div className="text-sm font-black text-emerald-700 mt-0.5">98.7%</div>
+            <div className="text-[10px] text-gray-500 font-bold uppercase">Raw Accuracy</div>
+            <div className="text-sm font-black text-emerald-700 mt-0.5">85.1%</div>
+            <div className="text-[9px] text-gray-400 font-semibold">84% Medium Base</div>
+          </div>
+          <div className="bg-white p-2.5 rounded-lg border border-purple-100 shadow-xs">
+            <div className="text-[10px] text-gray-500 font-bold uppercase">Balanced Acc</div>
+            <div className="text-sm font-black text-purple-900 mt-0.5">52.4%</div>
+            <div className="text-[9px] text-purple-600 font-semibold">Honest Multi-Class</div>
+          </div>
+          <div className="bg-white p-2.5 rounded-lg border border-purple-100 shadow-xs">
+            <div className="text-[10px] text-gray-500 font-bold uppercase">Macro F1</div>
+            <div className="text-sm font-black text-blue-900 mt-0.5">0.556</div>
+            <div className="text-[9px] text-blue-600 font-semibold">Balanced F1</div>
           </div>
           <div className="bg-white p-2.5 rounded-lg border border-purple-100 shadow-xs">
             <div className="text-[10px] text-gray-500 font-bold uppercase">ROC-AUC</div>
-            <div className="text-sm font-black text-purple-900 mt-0.5">0.999</div>
-          </div>
-          <div className="bg-white p-2.5 rounded-lg border border-purple-100 shadow-xs">
-            <div className="text-[10px] text-gray-500 font-bold uppercase">F1-Score</div>
-            <div className="text-sm font-black text-blue-900 mt-0.5">0.980</div>
-          </div>
-          <div className="bg-white p-2.5 rounded-lg border border-purple-100 shadow-xs">
-            <div className="text-[10px] text-gray-500 font-bold uppercase">Brier Score</div>
-            <div className="text-sm font-black text-teal-800 mt-0.5">0.008</div>
+            <div className="text-sm font-black text-teal-800 mt-0.5">0.884</div>
+            <div className="text-[9px] text-teal-600 font-semibold">OOF CV Split</div>
           </div>
           <div className="bg-white p-2.5 rounded-lg border border-purple-100 shadow-xs col-span-2 sm:col-span-1">
-            <div className="text-[10px] text-gray-500 font-bold uppercase">Training Registry</div>
-            <div className="text-xs font-bold text-gray-800 mt-0.5">5,000 Verified NER Events</div>
+            <div className="text-[10px] text-gray-500 font-bold uppercase">Training Dataset</div>
+            <div className="text-xs font-bold text-gray-800 mt-0.5">NASA + IMD Historical</div>
           </div>
         </div>
       </div>

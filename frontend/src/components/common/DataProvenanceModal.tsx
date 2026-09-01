@@ -99,8 +99,8 @@ export const DataProvenanceModal: React.FC = () => {
               <div className="flex items-start gap-2">
                 <div className="w-4 h-4 rounded-full bg-teal-600 text-white flex items-center justify-center text-[9px] font-bold mt-0.5">3</div>
                 <div>
-                  <span className="font-bold text-gray-900">AI ML Calibrated Inference (v3.4):</span>
-                  <p className="text-gray-500 text-[10px]">Processed through DisruptionNet pipeline achieving 98.7% evaluated accuracy.</p>
+                  <span className="font-bold text-gray-900">AI ML Predictive Inference (NASA + IMD Pipeline):</span>
+                  <p className="text-gray-500 text-[10px]">Processed through authentic Random Forest pipeline evaluated on historical regional catalog.</p>
                 </div>
               </div>
             </div>
