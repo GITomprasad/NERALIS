@@ -30,6 +30,9 @@ class AlertCreateRequest(BaseModel):
 class AlertDispatchRequest(BaseModel):
     channels: Optional[List[str]] = None
 
+class AlertAckRequest(BaseModel):
+    acknowledged_by: Optional[str] = "Operator"
+
 @router.get("/alerts")
 def get_alerts(db: Session = Depends(get_db)):
     try:
@@ -95,6 +98,40 @@ def dispatch_alert(alert_id: str, req: Optional[AlertDispatchRequest] = None, db
     log_event(
         event_type="ALERT_DISPATCHED",
         action="dispatch_alert",
+        details=res
+    )
+    return res
+
+@router.post("/alerts/{alert_id}/ack")
+def acknowledge_alert(alert_id: str, req: Optional[AlertAckRequest] = None, db: Session = Depends(get_db)):
+    acknowledged_by = req.acknowledged_by if req and req.acknowledged_by else "Operator"
+    res = alert_dispatcher.acknowledge_alert(alert_id, acknowledged_by=acknowledged_by)
+    if res.get("status") == "NOT_FOUND":
+        raise HTTPException(status_code=404, detail=f"Alert {alert_id} not found")
+
+    # Reflect acknowledgement in the persisted record, if present
+    try:
+        db_alert = db.query(DisasterAlertModel).filter(DisasterAlertModel.id == alert_id).first()
+        if db_alert:
+            db_alert.acknowledged = True
+            db_alert.acknowledged_by = acknowledged_by
+
+        audit = AuditLogModel(
+            event_type="ALERT_ACKNOWLEDGED",
+            actor=acknowledged_by,
+            role="DISASTER_OPS",
+            endpoint=f"/api/alerts/{alert_id}/ack",
+            payload_summary=res,
+            outcome="SUCCESS"
+        )
+        db.add(audit)
+        db.commit()
+    except Exception:
+        db.rollback()
+
+    log_event(
+        event_type="ALERT_ACKNOWLEDGED",
+        action="acknowledge_alert",
         details=res
     )
     return res

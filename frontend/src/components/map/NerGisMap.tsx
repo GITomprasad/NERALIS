@@ -82,10 +82,26 @@ const depotIcon = L.divIcon({
   iconAnchor: [14, 14]
 });
 
-export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; className?: string }> = ({
+export interface NerGisMapProps {
+  height?: string;
+  highlightRoute?: any;
+  className?: string;
+  initialShowRoads?: boolean;
+  initialShowBridges?: boolean;
+  initialShowDepots?: boolean;
+  initialShowVehicles?: boolean;
+  initialShowDistricts?: boolean;
+}
+
+export const NerGisMap: React.FC<NerGisMapProps> = ({
   height = '100%',
   highlightRoute,
-  className = ''
+  className = '',
+  initialShowRoads = true,
+  initialShowBridges = true,
+  initialShowDepots = true,
+  initialShowVehicles = true,
+  initialShowDistricts = true
 }) => {
   const {
     districts,
@@ -112,11 +128,11 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
   });
 
   // Layer Visibility Controls
-  const [showRoads, setShowRoads] = useState(true);
-  const [showBridges, setShowBridges] = useState(true);
-  const [showDepots, setShowDepots] = useState(true);
-  const [showVehicles, setShowVehicles] = useState(true);
-  const [showDistricts, setShowDistricts] = useState(true);
+  const [showRoads, setShowRoads] = useState(initialShowRoads);
+  const [showBridges, setShowBridges] = useState(initialShowBridges);
+  const [showDepots, setShowDepots] = useState(initialShowDepots);
+  const [showVehicles, setShowVehicles] = useState(initialShowVehicles);
+  const [showDistricts, setShowDistricts] = useState(initialShowDistricts);
   const [showLayersMenu, setShowLayersMenu] = useState(false);
 
   // Fullscreen State & Handlers
@@ -502,15 +518,6 @@ export const NerGisMap: React.FC<{ height?: string; highlightRoute?: any; classN
               <div className="font-bold text-gray-500 text-[10px] uppercase border-b pb-1">
                 Toggle GIS Overlays
               </div>
-              <label className="flex items-center justify-between cursor-pointer">
-                <span>🛣️ Road Corridors</span>
-                <input
-                  type="checkbox"
-                  checked={showRoads}
-                  onChange={(e) => setShowRoads(e.target.checked)}
-                  className="rounded text-[#1E3A5F]"
-                />
-              </label>
               <label className="flex items-center justify-between cursor-pointer">
                 <span className="font-medium text-gray-800">Road Corridors</span>
                 <input

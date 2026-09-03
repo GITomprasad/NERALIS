@@ -749,25 +749,37 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       addToast('Syncing Outbox...', `Uploading ${currentItems.length} pending mutations to backend.`, 'INFO');
 
+      const stillPending: typeof currentItems = [];
+
       for (const item of currentItems) {
+        let synced_ok = false;
         if (item.action === 'FIELD_REPORT') {
           const synced = await apiClient.submitFieldReport(item.payload);
           if (synced) {
-            await offlineStore.removeOutboxItem(item.client_event_id);
+            synced_ok = true;
             setFieldReports((prev) =>
               prev.map((r) => (r.client_event_id === item.client_event_id ? { ...synced, sync_status: 'SYNCED' } : r))
             );
           }
         } else if (item.action === 'ROAD_STATUS') {
-          await apiClient.updateCorridorStatus(item.payload.corridor_id, item.payload.status);
-          await offlineStore.removeOutboxItem(item.client_event_id);
+          synced_ok = await apiClient.updateCorridorStatus(item.payload.corridor_id, item.payload.status);
         } else if (item.action === 'ALERT_ACK') {
-          await apiClient.acknowledgeAlert(item.payload.alert_id, item.payload.acknowledged_by);
+          synced_ok = await apiClient.acknowledgeAlert(item.payload.alert_id, item.payload.acknowledged_by);
+        }
+
+        if (synced_ok) {
           await offlineStore.removeOutboxItem(item.client_event_id);
+        } else {
+          stillPending.push(item);
         }
       }
-      setOutbox([]);
-      addToast('Outbox Synced Successfully', 'All offline mutations assigned canonical server IDs.', 'SUCCESS');
+
+      setOutbox(stillPending);
+      if (stillPending.length === 0) {
+        addToast('Outbox Synced Successfully', 'All offline mutations assigned canonical server IDs.', 'SUCCESS');
+      } else {
+        addToast('Partial Sync', `${currentItems.length - stillPending.length} synced, ${stillPending.length} still pending (will retry on next reconnect).`, 'INFO');
+      }
     } catch {
       // Offline fallback handling
     }

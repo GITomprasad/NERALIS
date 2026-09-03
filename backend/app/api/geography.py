@@ -2,14 +2,33 @@
 NERALIS Geospatial & Master Infrastructure Endpoints.
 """
 
-from fastapi import APIRouter, Depends
+import datetime
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.db.models import StateModel, DistrictModel, RoadSegmentModel, BridgeModel, SupplyDepotModel
+from app.db.models import (
+    StateModel,
+    DistrictModel,
+    RoadSegmentModel,
+    BridgeModel,
+    SupplyDepotModel,
+    CorridorStatusEventModel,
+)
 from app.data.states import NER_STATES, NER_DISTRICTS
 from app.data.infrastructure import NER_ROAD_SEGMENTS, NER_BRIDGES, NER_DEPOTS
+from app.core.logging_config import log_event
 
 router = APIRouter(tags=["Geospatial & Infrastructure"])
+
+VALID_CORRIDOR_STATUSES = {"OPEN", "RESTRICTED", "DEGRADED", "SEASONAL", "CLOSED"}
+
+class CorridorStatusUpdateRequest(BaseModel):
+    status: str
+    reason: str | None = None
+    reported_by: str | None = "Operator"
 
 @router.get("/states")
 def get_states(db: Session = Depends(get_db)):
@@ -60,3 +79,61 @@ def get_depots(db: Session = Depends(get_db)):
     except Exception:
         pass
     return {"depots": NER_DEPOTS}
+
+@router.patch("/corridors/{corridor_id}/status")
+def update_corridor_status(corridor_id: str, req: CorridorStatusUpdateRequest, db: Session = Depends(get_db)):
+    """
+    Updates the live accessibility status of a road corridor (field-verified or
+    operator-issued status change) and propagates it to the routing graph,
+    disruption forecasting, and GIS layers, which all read from the shared
+    in-memory corridor registry.
+    """
+    new_status = req.status.strip().upper()
+    if new_status not in VALID_CORRIDOR_STATUSES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid status '{req.status}'. Must be one of: {sorted(VALID_CORRIDOR_STATUSES)}"
+        )
+
+    segment = next((s for s in NER_ROAD_SEGMENTS if s["id"] == corridor_id), None)
+    if not segment:
+        raise HTTPException(status_code=404, detail=f"Corridor {corridor_id} not found")
+
+    previous_status = segment.get("status")
+    segment["status"] = new_status
+
+    now_iso = datetime.datetime.now().isoformat()
+
+    # Keep the DB-backed corridor record in sync, if present
+    try:
+        db_segment = db.query(RoadSegmentModel).filter(RoadSegmentModel.id == corridor_id).first()
+        if db_segment:
+            db_segment.status = new_status
+
+        event = CorridorStatusEventModel(
+            id=f"CSE-{uuid.uuid4().hex[:10].upper()}",
+            corridor_id=corridor_id,
+            status=new_status,
+            onset_time=now_iso,
+            reason=req.reason,
+            reported_by=req.reported_by,
+            event_data={"previous_status": previous_status}
+        )
+        db.add(event)
+        db.commit()
+    except Exception:
+        db.rollback()
+
+    log_event(
+        event_type="CORRIDOR_STATUS_UPDATED",
+        action="update_corridor_status",
+        details={"corridor_id": corridor_id, "previous_status": previous_status, "new_status": new_status}
+    )
+
+    return {
+        "status": "SUCCESS",
+        "corridor_id": corridor_id,
+        "previous_status": previous_status,
+        "new_status": new_status,
+        "updated_at": now_iso
+    }

@@ -36,14 +36,17 @@ class Settings:
     ]
 
     # Security & Role Authorization
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "neralis-super-secure-secret-key-2026")
+    # NOTE: these must be supplied via environment variables (.env, hosting
+    # platform secrets, etc). No real secret should ever be hardcoded here as
+    # a Python default, since app/core/config.py is committed to git.
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
     API_KEY_HEADER: str = "X-API-Key"
     ROLE_HEADER: str = "X-Role"
-    DEFAULT_API_KEY: str = os.getenv("NERALIS_API_KEY", "neralis-sec-key-2026-auth")
+    DEFAULT_API_KEY: str = os.getenv("NERALIS_API_KEY", "")
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
 
     # LLM & AI Engine (Groq Fast Inference)
-    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "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")
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     GROQ_MODEL: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 
     # Real-Time Telemetry & Simulation Modes

@@ -5,12 +5,13 @@ Provides Digital Elevation Model (DEM), terrain ruggedness index (TRI), and land
 
 import datetime
 from typing import Dict, Any
+from app.integrations.connectivity import probe_reachable
 
 class BhuvanConnector:
     def __init__(self):
         self.endpoint = "https://bhuvan-app1.nrsc.gov.in/api/thematic/ner/slopes"
         self.last_heartbeat = datetime.datetime.now().isoformat()
-        self.status = "ONLINE"
+        self.status = "UNVERIFIED"
 
     def get_terrain_profile(self, lat: float, lng: float) -> Dict[str, Any]:
         """
@@ -31,6 +32,13 @@ class BhuvanConnector:
         }
 
     def check_health(self) -> Dict[str, Any]:
+        """
+        Performs a genuine lightweight reachability probe rather than reporting
+        a static hardcoded status, so /api/health reflects real connectivity.
+        """
+        now_str = datetime.datetime.now().isoformat()
+        self.status = "ONLINE" if probe_reachable(self.endpoint) else "OFFLINE (fallback active)"
+        self.last_heartbeat = now_str
         return {
             "connector": "ISRO-Bhuvan-Connector",
             "status": self.status,

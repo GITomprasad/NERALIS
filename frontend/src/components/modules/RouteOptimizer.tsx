@@ -372,7 +372,7 @@ export const RouteOptimizer: React.FC = () => {
 
                   {/* Map Preview */}
                   <div className="h-80 sm:h-96 rounded-xl overflow-hidden border border-gray-200 shadow-inner relative">
-                    <NerGisMap height="100%" highlightRoute={activeDisplayRoute} />
+                    <NerGisMap height="100%" highlightRoute={activeDisplayRoute} initialShowRoads={false} />
                   </div>
                 </div>
               )}

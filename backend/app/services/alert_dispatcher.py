@@ -150,6 +150,24 @@ class AlertDispatcher:
                 }
         return {"status": "NOT_FOUND", "alert_id": alert_id}
 
+    def acknowledge_alert(self, alert_id: str, acknowledged_by: str = "Operator") -> Dict[str, Any]:
+        """
+        Records official acknowledgement of an alert, stopping its escalation SLA timer.
+        """
+        for a in self.active_alerts:
+            if a["id"] == alert_id:
+                a["acknowledged"] = True
+                a["acknowledged_by"] = acknowledged_by
+                a["acknowledged_at"] = datetime.datetime.now().isoformat()
+                return {
+                    "status": "SUCCESS",
+                    "alert_id": alert_id,
+                    "acknowledged": True,
+                    "acknowledged_by": acknowledged_by,
+                    "acknowledged_at": a["acknowledged_at"]
+                }
+        return {"status": "NOT_FOUND", "alert_id": alert_id}
+
     def generate_cap_xml(self, alert_id: str) -> str:
         """
         Generates standard NDMA / ITU-T X.1303 compliant Common Alerting Protocol (CAP v1.2) XML.
