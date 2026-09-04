@@ -5,16 +5,19 @@ Monitors Brahmaputra & Barak basin river gauges and calculates bridge flood marg
 
 import datetime
 from typing import Dict, Any
+from app.integrations.connectivity import probe_reachable
 
 class CWCConnector:
     def __init__(self):
         self.endpoint = "https://cwc.gov.in/telemetry/gauges/ner"
         self.last_heartbeat = datetime.datetime.now().isoformat()
-        self.status = "ONLINE"
+        self.status = "UNVERIFIED"
 
     def get_river_gauge(self, river_name: str) -> Dict[str, Any]:
         """
         Returns latest river gauge telemetry.
+        No live CWC telemetry API is wired up yet (see README Current Limitations),
+        so this is a calibrated simulated baseline, not a real observation.
         """
         now_str = datetime.datetime.now().isoformat()
         return {
@@ -25,11 +28,18 @@ class CWCConnector:
             "margin_to_danger_m": 5.58,
             "trend": "RISING (+0.12m/hr)",
             "observed_at": now_str,
-            "verification_status": "OBSERVED",
+            "verification_status": "SIMULATED_BASELINE",
             "source": "SRC-CWC-GAUGES"
         }
 
     def check_health(self) -> Dict[str, Any]:
+        """
+        Performs a genuine lightweight reachability probe rather than reporting
+        a static hardcoded status, so /api/health reflects real connectivity.
+        """
+        now_str = datetime.datetime.now().isoformat()
+        self.status = "ONLINE" if probe_reachable(self.endpoint) else "OFFLINE (fallback active)"
+        self.last_heartbeat = now_str
         return {
             "connector": "CWC-Hydrology-Connector",
             "status": self.status,

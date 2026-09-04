@@ -6,13 +6,14 @@ Connects to IMD AWS / Doppler radar precipitation feeds with ETag caching, retry
 import requests
 import datetime
 from typing import Dict, Any, Optional
+from app.integrations.connectivity import probe_reachable
 
 class IMDConnector:
     def __init__(self):
         self.base_url = "https://api.imd.gov.in/public/v2/weather/ner"
         self.timeout_sec = 4.0
         self.last_heartbeat = datetime.datetime.now().isoformat()
-        self.status = "ONLINE"
+        self.status = "UNVERIFIED"
 
     def fetch_district_observation(self, district_id: str) -> Dict[str, Any]:
         """
@@ -37,7 +38,7 @@ class IMDConnector:
                     "source": "SRC-IMD-AWS-LIVE"
                 }
         except Exception:
-            pass
+            self.status = "OFFLINE (fallback active)"
 
         # Fallback to calibrated simulation baseline
         return {
@@ -51,6 +52,13 @@ class IMDConnector:
         }
 
     def check_health(self) -> Dict[str, Any]:
+        """
+        Performs a genuine lightweight reachability probe rather than reporting
+        a static hardcoded status, so /api/health reflects real connectivity.
+        """
+        now_str = datetime.datetime.now().isoformat()
+        self.status = "ONLINE" if probe_reachable(self.base_url) else "OFFLINE (fallback active)"
+        self.last_heartbeat = now_str
         return {
             "connector": "IMD-AWS-Connector",
             "status": self.status,

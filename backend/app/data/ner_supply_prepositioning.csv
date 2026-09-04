@@ -1,0 +1,24 @@
+advisory_id,target_district_id,target_district_name,source_depot_id,source_depot_name,monsoon_risk_pct,vaccines_units,blood_units,food_grains_quintals,diesel_reserve_kl,water_purification_packs,convoy_lead_time_hrs,days_of_autonomy_gained,urgency_tier,transit_corridor_id
+PRE-POS-001,AS-KAM,Kamrup Metropolitan (Guwahati),DEP-05,Tengapani / Tinsukia Transshipment Point,77.8,5969,54,630,295,5740,22.9,21,CRITICAL,SEG-12
+PRE-POS-002,AS-CACH,Cachar (Silchar),DEP-06,Jiribam Railhead Reserve Depot,56.0,1564,245,1506,390,3561,11.7,10,HIGH,SEG-09
+PRE-POS-003,AS-NC,Dima Hasao (Haflong),DEP-01,Guwahati Central Logistics Hub (Amingaon),69.3,2984,185,415,246,5417,10.2,17,HIGH,SEG-15
+PRE-POS-004,AS-DIB,Dibrugarh,DEP-04,Dimapur Railhead Supply Yard,74.3,4277,132,1170,422,6781,36.0,18,HIGH,SEG-07
+PRE-POS-005,ML-EKH,East Khasi Hills (Shillong),DEP-06,Jiribam Railhead Reserve Depot,70.6,3899,182,843,101,2104,12.8,10,HIGH,SEG-08
+PRE-POS-006,ML-EJH,East Jaintia Hills (Khliehriat),DEP-08,Agartala Integrated Checkpost Depot,48.0,4581,191,1787,365,2799,21.9,13,NORMAL,SEG-16
+PRE-POS-007,ML-SOH,Sohra / Cherrapunjee Basin,DEP-02,Tezpur Forward Logistics Base,63.5,3915,161,1401,212,3078,19.4,23,HIGH,SEG-06
+PRE-POS-008,AR-TAW,Tawang,DEP-03,Silchar Barak Valley Strategic Depot,53.4,5816,59,520,368,7852,19.3,16,NORMAL,SEG-04
+PRE-POS-009,AR-WKA,West Kameng (Bomdila),DEP-07,Gangtok / Ranipool Reserve Hub,50.1,4194,133,708,382,5629,5.8,20,NORMAL,SEG-06
+PRE-POS-010,AR-PAP,Papum Pare (Itanagar),DEP-06,Jiribam Railhead Reserve Depot,59.2,5292,76,660,121,6421,30.8,13,HIGH,SEG-06
+PRE-POS-011,SK-GAN,East Sikkim (Gangtok),DEP-08,Agartala Integrated Checkpost Depot,82.5,2934,151,1857,420,7888,26.7,15,CRITICAL,SEG-01
+PRE-POS-012,SK-MANG,North Sikkim (Mangan),DEP-07,Gangtok / Ranipool Reserve Hub,87.4,2198,94,1451,443,2474,4.9,15,CRITICAL,SEG-09
+PRE-POS-013,SK-NAM,South Sikkim (Namchi),DEP-07,Gangtok / Ranipool Reserve Hub,80.7,2397,185,1292,182,2431,10.4,14,CRITICAL,SEG-16
+PRE-POS-014,NL-KOH,Kohima,DEP-07,Gangtok / Ranipool Reserve Hub,91.9,1934,161,1382,223,6481,24.3,27,CRITICAL,SEG-07
+PRE-POS-015,NL-DIM,Dimapur,DEP-03,Silchar Barak Valley Strategic Depot,64.7,3908,135,687,423,2737,28.7,28,HIGH,SEG-04
+PRE-POS-016,NL-MON,Mon,DEP-08,Agartala Integrated Checkpost Depot,57.4,4726,62,2178,203,3881,16.9,16,HIGH,SEG-16
+PRE-POS-017,MN-IMP,Imphal West,DEP-07,Gangtok / Ranipool Reserve Hub,61.9,2739,107,880,97,4366,23.1,18,HIGH,SEG-01
+PRE-POS-018,MN-SEN,Senapati,DEP-01,Guwahati Central Logistics Hub (Amingaon),58.7,3589,114,939,177,8017,7.3,12,HIGH,SEG-11
+PRE-POS-019,MN-CCP,Churachandpur,DEP-05,Tengapani / Tinsukia Transshipment Point,87.1,3316,156,1565,286,6261,6.5,22,CRITICAL,SEG-16
+PRE-POS-020,MZ-AIZ,Aizawl,DEP-06,Jiribam Railhead Reserve Depot,58.5,2673,218,1316,125,5940,21.6,17,HIGH,SEG-08
+PRE-POS-021,MZ-LUN,Lunglei,DEP-05,Tengapani / Tinsukia Transshipment Point,64.2,4090,164,1040,162,4300,25.6,25,HIGH,SEG-11
+PRE-POS-022,TR-WTR,West Tripura (Agartala),DEP-07,Gangtok / Ranipool Reserve Hub,82.8,4053,110,1058,97,7404,22.7,25,CRITICAL,SEG-11
+PRE-POS-023,TR-DHA,Dhalai (Ambassa),DEP-07,Gangtok / Ranipool Reserve Hub,84.3,4994,160,1703,174,3654,11.5,20,CRITICAL,SEG-06

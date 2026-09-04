@@ -122,7 +122,6 @@ const waypointIcon = (index: number) => L.divIcon({
   iconSize: [24, 24],
   iconAnchor: [0, 0]
 });
-
 export interface NerGisMapProps {
   height?: string;
   highlightRoute?: any;

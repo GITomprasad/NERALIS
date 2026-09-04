@@ -167,7 +167,6 @@ export const FieldReportingApp: React.FC = () => {
 
     const resolvedRole = currentUser?.role || currentUser?.frontend_role || reporterRole || 'FIELD_INSPECTOR';
     const resolvedName = currentUser?.name || reporterName || 'Field Surveyor';
-
     const payload = {
       reporter_name: resolvedName,
       reporter_role: resolvedRole,

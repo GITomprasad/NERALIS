@@ -7,7 +7,10 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import Response
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
+from sqlalchemy.orm import Session
 
+from app.db.database import get_db
+from app.db.models import DisasterAlertModel, AuditLogModel
 from app.services.alert_dispatcher import alert_dispatcher
 from app.db.repository import repository
 from app.core.logging_config import log_event
@@ -28,6 +31,9 @@ class AlertCreateRequest(BaseModel):
 
 class AlertDispatchRequest(BaseModel):
     channels: Optional[List[str]] = None
+
+class AlertAckRequest(BaseModel):
+    acknowledged_by: Optional[str] = "Operator"
 
 @router.get("/alerts")
 def get_alerts():
@@ -56,6 +62,41 @@ def dispatch_alert(alert_id: str, req: Optional[AlertDispatchRequest] = None):
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     return result
+
+@router.put("/alerts/{alert_id}/ack")
+@router.post("/alerts/{alert_id}/ack")
+def acknowledge_alert(alert_id: str, req: Optional[AlertAckRequest] = None, db: Session = Depends(get_db)):
+    acknowledged_by = req.acknowledged_by if req and req.acknowledged_by else "Operator"
+    res = alert_dispatcher.acknowledge_alert(alert_id, acknowledged_by=acknowledged_by)
+    if res.get("status") == "NOT_FOUND":
+        raise HTTPException(status_code=404, detail=f"Alert {alert_id} not found")
+
+    # Reflect acknowledgement in the persisted record, if present
+    try:
+        db_alert = db.query(DisasterAlertModel).filter(DisasterAlertModel.id == alert_id).first()
+        if db_alert:
+            db_alert.acknowledged = True
+            db_alert.acknowledged_by = acknowledged_by
+
+        audit = AuditLogModel(
+            event_type="ALERT_ACKNOWLEDGED",
+            actor=acknowledged_by,
+            role="DISASTER_OPS",
+            endpoint=f"/api/alerts/{alert_id}/ack",
+            payload_summary=res,
+            outcome="SUCCESS"
+        )
+        db.add(audit)
+        db.commit()
+    except Exception:
+        db.rollback()
+
+    log_event(
+        event_type="ALERT_ACKNOWLEDGED",
+        action="acknowledge_alert",
+        details=res
+    )
+    return res
 
 @router.get("/alerts/{alert_id}/cap-xml")
 def export_cap_xml(alert_id: str):

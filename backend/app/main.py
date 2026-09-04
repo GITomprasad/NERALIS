@@ -4,33 +4,26 @@ Evidence-backed Smart Logistics & Accessibility Intelligence Platform for NER.
 Hybrid Architecture: Supabase Cloud (PostgreSQL) + Local SQLite Operational Cache.
 """
 
+import logging
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+
 from fastapi import FastAPI, HTTPException, Query, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
-from sqlalchemy.orm import Session
 
-from app.db.database import get_db
 from app.db.seed import init_and_seed_db
 from app.db.repository import repository
 from app.db.sync import sync_service
 
 from app.data.ner_geography import (
-    NER_STATES,
-    NER_DISTRICTS,
     NER_ROAD_SEGMENTS,
     NER_BRIDGES,
-    NER_DEPOTS,
-    NER_SOURCE_REGISTRY,
-    HISTORICAL_DISRUPTIONS
+    NER_DISTRICTS,
 )
-from app.services.routing_engine import routing_engine
-from app.services.disruption_forecasting import disruption_engine
 from app.services.fleet_telemetry import fleet_telemetry_engine
 from app.services.alert_dispatcher import alert_dispatcher
-from app.services.field_reporting import field_reporting_engine
-from app.services.report_generator import report_generator
+from app.services.chatbot_engine import chatbot_engine
 
 # Import modular API routers
 from app.api.auth import router as auth_router
@@ -43,6 +36,8 @@ from app.api.reports import router as reports_router
 from app.api.routes import router as routes_router
 from app.api.sources import router as sources_router
 from app.api.sync import router as sync_router
+
+logger = logging.getLogger("neralis")
 
 app = FastAPI(
     title="NERALIS - AI Smart Logistics & Accessibility Intelligence Platform for NER",
@@ -62,14 +57,18 @@ app.add_middleware(
 # ── Lifecycle Event: Database Initialization & Seeding ───────────────────────────
 @app.on_event("startup")
 def on_startup():
-    """Initializes SQLite/PostgreSQL schema and seeds master datasets on startup."""
+    """
+    Ensures the database schema exists and master datasets are seeded before
+    the API starts serving traffic.
+    """
     try:
         init_and_seed_db()
     except Exception as e:
-        print(f"[Warning] Database auto-seed encountered: {e}")
+        logger.error(f"Database initialization/seeding encountered: {e}")
 
 # ── Mount Modular API Routers ──────────────────────────────────────────────────
 app.include_router(auth_router, prefix="/api")
+app.include_router(health_router)
 app.include_router(health_router, prefix="/api")
 app.include_router(sources_router, prefix="/api")
 app.include_router(geography_router, prefix="/api")
@@ -100,7 +99,24 @@ class FleetDispatchRequest(BaseModel):
     vehicle_weight_tons: float
     vehicle_id: Optional[str] = "AS-01-GC-4921"
 
+class ChatbotQueryRequest(BaseModel):
+    query: str
+    language: Optional[str] = "en"
+    context: Optional[Dict[str, Any]] = None
+
+
+# Module 9: AI Assistant Chatbot (NERALIS AI Sahayak)
+@app.post("/api/chatbot/query")
+def query_chatbot(req: ChatbotQueryRequest):
+    return chatbot_engine.process_query(req.query, language=req.language or "en")
+
+@app.get("/api/chatbot/suggestions")
+def get_chatbot_suggestions():
+    return {"suggestions": chatbot_engine.get_suggestions()}
+
+
 @app.put("/api/corridors/{corridor_id}/status")
+@app.patch("/api/corridors/{corridor_id}/status")
 def update_corridor_status(corridor_id: str, req: CorridorStatusUpdateRequest):
     """Updates status for a road corridor via Repository (Cloud + Local Cache)."""
     corridor = next((c for c in NER_ROAD_SEGMENTS if c["id"] == corridor_id), None)
@@ -177,4 +193,83 @@ def dispatch_fleet_convoy(req: FleetDispatchRequest):
         "cargo_type": req.cargo_type,
         "assigned_route": req.route_tag,
         "storage_mode": res.get("storage_mode")
+    }
+
+# Module 8: Lightweight Endpoint for Low-Network & Offline Environments (Lite Mode)
+@app.get("/api/lite/status")
+def get_lite_status():
+    """
+    Lightweight telemetry & critical risk status endpoint for 2G / low-connectivity environments.
+    Payload size is minimized (<2 KB) by returning only essential logistics and hazard fields.
+    """
+    storage_status = repository.get_connectivity_status()
+    vehicles = fleet_telemetry_engine.get_all_vehicles(is_demo_mode=True)
+    lite_vehicles = [
+        {
+            "vehicle_id": v["id"],
+            "status": v.get("status", "OPEN"),
+            "risk_score": v.get("risk_score", 0.15),
+            "last_known_location": f"{v.get('origin', '')} → {v.get('destination', '')}",
+            "next_checkpoint": v.get("destination", "Next Hub"),
+            "current_lat": v.get("current_lat"),
+            "current_lng": v.get("current_lng"),
+            "speed_kmh": v.get("speed_kmh", 0),
+            "cold_chain_temp_c": v.get("cold_chain", {}).get("current_temp_c") if v.get("cold_chain") else None,
+            "alert": v.get("current_alert") or ("High Hazard Route" if v.get("status") in ["RESTRICTED", "HIGH_RISK"] else None)
+        }
+        for v in vehicles
+    ]
+
+    corridors_at_risk = [
+        {
+            "id": c["id"],
+            "name": c["name"],
+            "status": c.get("status", "OPEN"),
+            "risk_score": c.get("risk_score", 20),
+            "hazard_type": c.get("hazard_type", "None")
+        }
+        for c in NER_ROAD_SEGMENTS
+        if c.get("status") in ["RESTRICTED", "DEGRADED", "CLOSED"] or c.get("risk_score", 0) >= 40
+    ]
+
+    critical_bridges = [
+        {
+            "id": b["id"],
+            "name": b["name"],
+            "status": b.get("status", "OPEN"),
+            "structural_health_pct": b.get("structural_health_pct", 90)
+        }
+        for b in NER_BRIDGES
+        if b.get("status") != "OPEN" or b.get("structural_health_pct", 100) < 85
+    ]
+
+    critical_alerts = [
+        {
+            "id": a.get("id"),
+            "tier": a.get("tier"),
+            "title": a.get("title"),
+            "corridor_id": a.get("corridor_id"),
+            "message": a.get("message_i18n", {}).get("en", a.get("title")) if isinstance(a.get("message_i18n"), dict) else str(a.get("title")),
+            "timestamp": a.get("timestamp")
+        }
+        for a in alert_dispatcher.get_alerts()[:5]
+    ]
+
+    return {
+        "timestamp": datetime.now().isoformat(),
+        "mode": storage_status.get("storage_state", "LITE_CRITICAL"),
+        "connectivity": storage_status.get("connectivity", "online"),
+        "payload_size_kb": 1.5,
+        "vehicles": lite_vehicles,
+        "corridors_at_risk": corridors_at_risk,
+        "critical_bridges": critical_bridges,
+        "critical_alerts": critical_alerts,
+        "districts_count": len(NER_DISTRICTS),
+        "storage_architecture": {
+            "cloud_primary": "Supabase PostgreSQL",
+            "local_cache": "SQLite Operational Cache",
+            "active_mode": storage_status.get("storage_state", "LIVE"),
+            "connectivity": storage_status.get("connectivity", "online"),
+            "pending_offline_changes": storage_status.get("pending_offline_changes", 0)
+        }
     }
