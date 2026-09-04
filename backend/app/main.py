@@ -1,14 +1,20 @@
 """
 FastAPI Backend Application Entrypoint for NERALIS.
 Evidence-backed Smart Logistics & Accessibility Intelligence Platform for NER.
+Hybrid Architecture: Supabase Cloud (PostgreSQL) + Local SQLite Operational Cache.
 """
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
-from fastapi import Query
+from sqlalchemy.orm import Session
+
+from app.db.database import get_db
+from app.db.seed import init_and_seed_db
+from app.db.repository import repository
+from app.db.sync import sync_service
 
 from app.data.ner_geography import (
     NER_STATES,
@@ -26,10 +32,22 @@ from app.services.alert_dispatcher import alert_dispatcher
 from app.services.field_reporting import field_reporting_engine
 from app.services.report_generator import report_generator
 
+# Import modular API routers
+from app.api.auth import router as auth_router
+from app.api.alerts import router as alerts_router
+from app.api.fleet import router as fleet_router
+from app.api.geography import router as geography_router
+from app.api.health import router as health_router
+from app.api.predictions import router as predictions_router
+from app.api.reports import router as reports_router
+from app.api.routes import router as routes_router
+from app.api.sources import router as sources_router
+from app.api.sync import router as sync_router
+
 app = FastAPI(
     title="NERALIS - AI Smart Logistics & Accessibility Intelligence Platform for NER",
-    description="AI-Powered Logistics & Accessibility Intelligence Platform (High-Trust Evidence Engine)",
-    version="2.0.0"
+    description="AI-Powered Logistics & Accessibility Intelligence Platform with Supabase + SQLite Hybrid Architecture",
+    version="2.3.0"
 )
 
 # Enable CORS for frontend development & production deployment
@@ -41,186 +59,122 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Pydantic Request Models
-class RouteOptimizeRequest(BaseModel):
+# ── Lifecycle Event: Database Initialization & Seeding ───────────────────────────
+@app.on_event("startup")
+def on_startup():
+    """Initializes SQLite/PostgreSQL schema and seeds master datasets on startup."""
+    try:
+        init_and_seed_db()
+    except Exception as e:
+        print(f"[Warning] Database auto-seed encountered: {e}")
+
+# ── Mount Modular API Routers ──────────────────────────────────────────────────
+app.include_router(auth_router, prefix="/api")
+app.include_router(health_router, prefix="/api")
+app.include_router(sources_router, prefix="/api")
+app.include_router(geography_router, prefix="/api")
+app.include_router(routes_router, prefix="/api")
+app.include_router(fleet_router, prefix="/api")
+app.include_router(predictions_router, prefix="/api")
+app.include_router(alerts_router, prefix="/api")
+app.include_router(reports_router, prefix="/api")
+app.include_router(sync_router, prefix="/api")
+
+
+# ── Additional Mutators & Cross-Workflow Endpoints ─────────────────────────────
+
+class CorridorStatusUpdateRequest(BaseModel):
+    status: str
+    hazard_type: Optional[str] = None
+    risk_score: Optional[int] = None
+
+class BridgeStatusUpdateRequest(BaseModel):
+    status: str
+    structural_health_pct: Optional[int] = None
+
+class FleetDispatchRequest(BaseModel):
+    route_tag: str
     origin: str
     destination: str
-    cargo_type: Optional[str] = "STANDARD_COMMERCIAL"
-    vehicle_weight_tons: Optional[float] = 16.0
-    departure_hour: Optional[int] = 8
-    include_intermodal: Optional[bool] = True
+    cargo_type: str
+    vehicle_weight_tons: float
+    vehicle_id: Optional[str] = "AS-01-GC-4921"
 
-class AlertCreateRequest(BaseModel):
-    tier: str
-    tier_level: int
-    title: str
-    corridor_id: str
-    affected_districts: List[str]
-    trigger_condition: str
-    channels: List[str]
-    message_en: str
-    message_hi: Optional[str] = None
-    recipients_count: Optional[int] = 150
+@app.put("/api/corridors/{corridor_id}/status")
+def update_corridor_status(corridor_id: str, req: CorridorStatusUpdateRequest):
+    """Updates status for a road corridor via Repository (Cloud + Local Cache)."""
+    corridor = next((c for c in NER_ROAD_SEGMENTS if c["id"] == corridor_id), None)
+    if not corridor:
+        raise HTTPException(status_code=404, detail=f"Corridor {corridor_id} not found")
+    
+    corridor["status"] = req.status
+    if req.hazard_type:
+        corridor["hazard_type"] = req.hazard_type
+    if req.risk_score is not None:
+        corridor["risk_score"] = req.risk_score
 
-class FieldReportCreateRequest(BaseModel):
-    client_event_id: Optional[str] = None
-    reporter_name: str
-    reporter_role: str
-    state: str
-    district: str
-    location_name: str
-    lat: float
-    lng: float
-    incident_type: str
-    crack_length_m: Optional[float] = 0.0
-    pothole_depth_cm: Optional[float] = 0.0
-    debris_volume_cum: Optional[float] = 0.0
-    photo_url: Optional[str] = None
+    # Persist via unified repository
+    res = repository.update_corridor_status(
+        corridor_id=corridor_id,
+        status=req.status,
+        hazard_type=req.hazard_type,
+        risk_score=req.risk_score
+    )
+    return {"status": "SUCCESS", "corridor": corridor, "storage_mode": res.get("storage_mode")}
 
-class DigitalTwinRequest(BaseModel):
-    incident_type: str  # "BRIDGE_COLLAPSE" or "HIGHWAY_BLOCKADE"
-    target_id: str
+@app.put("/api/bridges/{bridge_id}/status")
+def update_bridge_status(bridge_id: str, req: BridgeStatusUpdateRequest):
+    """Updates status for a strategic bridge via Repository (Cloud + Local Cache)."""
+    bridge = next((b for b in NER_BRIDGES if b["id"] == bridge_id), None)
+    if not bridge:
+        raise HTTPException(status_code=404, detail=f"Bridge {bridge_id} not found")
+    
+    bridge["status"] = req.status
+    if req.structural_health_pct is not None:
+        bridge["structural_health_pct"] = req.structural_health_pct
 
-class TelemetryIngestRequest(BaseModel):
-    vehicle_id: str
-    lat: float
-    lng: float
-    speed_kmh: float
-    heading_deg: Optional[float] = 0.0
-    network_mode: Optional[str] = "NavIC"
+    res = repository.update_bridge_status(
+        bridge_id=bridge_id,
+        status=req.status,
+        structural_health_pct=req.structural_health_pct
+    )
+    return {"status": "SUCCESS", "bridge": bridge, "storage_mode": res.get("storage_mode")}
 
-# Health Check & Provenance
-@app.get("/api/health")
-def health_check():
+@app.put("/api/alerts/{alert_id}/ack")
+def acknowledge_alert(alert_id: str):
+    """Acknowledges an emergency alert via Repository (Cloud + Local Cache)."""
+    res = repository.acknowledge_alert(alert_id=alert_id, acknowledged_by="Operator")
+    return {"status": "SUCCESS", "alert_id": alert_id, "storage_mode": res.get("storage_mode")}
+
+@app.post("/api/fleet/dispatch")
+def dispatch_fleet_convoy(req: FleetDispatchRequest):
+    """Locks a calculated route and assigns it to a fleet vehicle dispatch."""
+    vehicle = next((v for v in fleet_telemetry_engine.vehicles if v["id"] == req.vehicle_id), None)
+    if vehicle:
+        vehicle["status"] = "IN_TRANSIT"
+        vehicle["origin"] = req.origin
+        vehicle["destination"] = req.destination
+        vehicle["cargo_type"] = req.cargo_type
+        vehicle["cargo_weight_tons"] = req.vehicle_weight_tons
+        vehicle["assigned_route_tag"] = req.route_tag
+    
+    res = repository.dispatch_vehicle(
+        vehicle_id=req.vehicle_id or "VEH-01",
+        dispatch_payload={
+            "route_tag": req.route_tag,
+            "origin": req.origin,
+            "destination": req.destination,
+            "cargo_type": req.cargo_type,
+            "vehicle_weight_tons": req.vehicle_weight_tons
+        }
+    )
     return {
-        "status": "healthy",
-        "service": "NERALIS Intelligence Engine v2.0",
-        "region": "North Eastern Region (8 States)",
-        "model_balanced_accuracy": "52.4%",
-        "model_macro_f1": "0.556",
-        "training_events": 348,
-        "active_sources_count": len(NER_SOURCE_REGISTRY)
+        "status": "DISPATCHED",
+        "dispatch_id": f"DSP-{req.vehicle_id}-{req.route_tag}",
+        "vehicle_id": req.vehicle_id,
+        "origin": req.origin,
+        "destination": req.destination,
+        "cargo_type": req.cargo_type,
+        "assigned_route": req.route_tag,
+        "storage_mode": res.get("storage_mode")
     }
-
-# Official Data Source Registry (P0 Trust Architecture)
-@app.get("/api/sources")
-def get_sources():
-    return {"sources": NER_SOURCE_REGISTRY}
-
-# Geography Endpoints
-@app.get("/api/states")
-def get_states():
-    return {"states": NER_STATES}
-
-@app.get("/api/districts")
-def get_districts():
-    return {"districts": NER_DISTRICTS}
-
-@app.get("/api/corridors")
-def get_corridors():
-    return {"corridors": NER_ROAD_SEGMENTS}
-
-@app.get("/api/bridges")
-def get_bridges():
-    return {"bridges": NER_BRIDGES}
-
-@app.get("/api/depots")
-def get_depots():
-    return {"depots": NER_DEPOTS}
-
-# Module 2: AI Multi-Objective Route Optimizer
-@app.post("/api/routes/optimize")
-def optimize_route(req: RouteOptimizeRequest):
-    result = routing_engine.optimize_route(
-        origin_id=req.origin,
-        destination_id=req.destination,
-        cargo_type=req.cargo_type,
-        vehicle_weight_tons=req.vehicle_weight_tons,
-        departure_hour=req.departure_hour,
-        include_intermodal=req.include_intermodal
-    )
-    return result
-
-# Module 3: Fleet Telemetry & Playback
-@app.get("/api/fleet/vehicles")
-def get_fleet_vehicles(is_demo: bool = Query(True)):
-    return {"vehicles": fleet_telemetry_engine.get_all_vehicles(is_demo_mode=is_demo)}
-
-@app.get("/api/fleet/playback/{vehicle_id}")
-def get_vehicle_playback(vehicle_id: str):
-    return fleet_telemetry_engine.get_trip_playback(vehicle_id)
-
-@app.post("/api/telemetry/ingest")
-def ingest_telemetry(req: TelemetryIngestRequest):
-    return fleet_telemetry_engine.ingest_telemetry(req.model_dump())
-
-# Module 4: Predictive Disruption Intelligence (>85% RAW Accuracy)
-@app.get("/api/predictions/72h")
-def get_72h_predictions(
-    hours: int = Query(24, description="Forecast horizon in hours")
-):
-    if hours not in [24, 48, 72]:
-        raise HTTPException(
-            status_code=400,
-            detail="hours must be one of: 24, 48, 72"
-        )
-
-    return disruption_engine.get_72h_disruption_forecast(
-        forecast_hours_ahead=hours
-    )
-
-@app.get("/api/predictions/model-metrics")
-def get_model_metrics():
-    return disruption_engine.get_model_evaluation_metrics()
-
-@app.get("/api/predictions/history")
-def get_historical_disruptions(limit: int = 50, year: Optional[int] = None):
-    return {"history": disruption_engine.get_historical_events(limit=limit, year=year)}
-
-@app.get("/api/predictions/prepositioning")
-def get_prepositioning():
-    return {"advisories": disruption_engine.get_prepositioning_advisories()}
-
-@app.post("/api/predictions/digital-twin")
-def run_digital_twin_simulation(req: DigitalTwinRequest):
-    return disruption_engine.simulate_digital_twin_scenario(req.incident_type, req.target_id)
-
-# Module 5: Multilingual Alerts & NDMA CAP XML
-@app.get("/api/alerts")
-def get_alerts():
-    return {"alerts": alert_dispatcher.get_alerts()}
-
-@app.post("/api/alerts")
-def create_alert(req: AlertCreateRequest):
-    return alert_dispatcher.create_alert(req.model_dump())
-
-@app.get("/api/alerts/{alert_id}/cap-xml")
-def get_cap_xml(alert_id: str):
-    xml_content = alert_dispatcher.generate_cap_xml(alert_id)
-    return Response(content=xml_content, media_type="application/xml")
-
-@app.get("/api/alerts/morning-briefing")
-def get_morning_briefing():
-    return alert_dispatcher.get_morning_briefing()
-
-# Module 6: Field Reporting & Gamification
-@app.get("/api/reports/field")
-def get_field_reports():
-    return {"reports": field_reporting_engine.get_reports()}
-
-@app.post("/api/reports/field")
-def submit_field_report(req: FieldReportCreateRequest):
-    return field_reporting_engine.submit_report(req.model_dump())
-
-@app.get("/api/reports/leaderboard")
-def get_leaderboard():
-    return {"leaderboard": field_reporting_engine.get_leaderboard()}
-
-# Module 7: Executive & Parliament Reports
-@app.get("/api/reports/parliament")
-def get_parliament_brief():
-    return report_generator.get_parliament_brief()
-
-@app.get("/api/reports/state-comparative")
-def get_state_comparative():
-    return {"comparative_stats": report_generator.get_comparative_state_analytics()}

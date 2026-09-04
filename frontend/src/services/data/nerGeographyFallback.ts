@@ -2363,7 +2363,14 @@ export const FALLBACK_ALERTS: Alert[] = [
     "dispatch_status": "DISPATCHED",
     "message_i18n": {
       "en": "ADVISORY (T2): NH-6 Sonapur tunnel experiencing 1.5-hour delay due to mud silt. Single lane open.",
-      "hi": "\u0938\u0932\u093e\u0939 (T2): \u0915\u0940\u091a\u0921\u093c \u091c\u092e\u093e \u0939\u094b\u0928\u0947 \u0915\u0947 \u0915\u093e\u0930\u0923 NH-6 \u0938\u094b\u0928\u093e\u092a\u0941\u0930 \u0938\u0941\u0930\u0902\u0917 \u092e\u0947\u0902 1.5 \u0918\u0902\u091f\u0947 \u0915\u0940 \u0926\u0947\u0930\u0940\u0964 \u090f\u0915 \u0932\u0947\u0928 \u091a\u093e\u0932\u0942\u0964"
+      "hi": "सलाह (T2): कीचड़ जमा होने के कारण NH-6 सोनापुर सुरंग में 1.5 घंटे की देरी। एक लेन चालू।",
+      "as": "পৰামৰ্শ (T2): বোকা জমা হোৱাৰ বাবে NH-6 সোণাপুৰ সুৰংগত ১.৫ ঘণ্টাৰ পলম। এটা লেন খোলা।",
+      "bn": "পরামর্শ (T2): কাদা জমার কারণে NH-6 সোনাপুর সুড়ঙ্গে ১.৫ ঘণ্টার বিলম্ব। একটি লেন চালু।",
+      "mni": "ꯄꯥꯎꯇꯥꯛ (T2): NH-6 ꯁꯣꯅꯥꯄꯨꯔ ꯇꯅꯦꯜꯗ ꯂꯩꯇꯣꯡ ꯂꯩꯕꯅ ꯃꯔꯝ ꯑꯣꯏꯗꯨꯅ ꯄꯨꯡ ꯱.꯵ ꯊꯦꯡꯊꯒꯅꯤ। ꯂꯦꯟ ꯑꯃꯈꯛ ꯍꯥꯡꯂꯤ।",
+      "khasi": "PYNTIP (T2): Ka surok NH-6 ha Sonapur tunnel ka don jingpynslem 1.5 kynta namar ka ktieh. Tang shiliang ka surok ba plie.",
+      "mizo": "HRIATTIRNA (T2): NH-6 Sonapur tunnel chu chirh vanga minute 90 bawr vel a khaihlak. Kawng lehlam chauh a inhawng.",
+      "nagamese": "ADVISORY (T2): NH-6 Sonapur tunnel te panka piri thakikena 1.5 ghanta deri hobo. Ekta lane he khula asey.",
+      "ne": "परामर्श (T2): हिलो जमेको कारण NH-6 सोनापुर सुरुङमा १.५ घण्टा ढिलाइ। एकल लेन मात्र खुला छ।"
     },
     "source": "SRC-STATE-PWD",
     "verification_status": "VERIFIED"
@@ -2428,3 +2435,142 @@ export const FALLBACK_FIELD_REPORTS: FieldReport[] = [
     "verification_status": "VERIFIED"
   }
 ];
+
+export const FALLBACK_ADVISORIES = [
+  {
+    "id": "PRE-POS-01",
+    "target_district": "AR-TAW (Tawang, Arunachal Pradesh)",
+    "source_depot": "DEP-01 (Guwahati Central Logistics Hub)",
+    "reason": "Sela Pass sector (NH-13) predicted 79% landslide probability within next 48h (Soil Moisture: 94%).",
+    "recommended_transfer": {
+      "critical_vaccines_units": 4000,
+      "blood_units": 150,
+      "food_grains_quintals": 1200,
+      "diesel_reserve_kl": 250
+    },
+    "recommended_convoy_window": "Departure by 05:00 AM Tomorrow (Convoy of 6 Light 4WD Trucks)",
+    "urgency": "CRITICAL" as const,
+    "days_of_autonomy_gained": 18,
+    "provenance": {
+      "source": "SRC-IMD-AWS + NERALIS-DisruptionNet-GBDT-v3.4",
+      "observed_at": new Date().toISOString(),
+      "confidence": 98.4
+    }
+  },
+  {
+    "id": "PRE-POS-02",
+    "target_district": "SK-MANG (Mangan, North Sikkim)",
+    "source_depot": "DEP-07 (Gangtok / Ranipool Reserve)",
+    "reason": "Teesta basin hydro-gauge exceeding danger level; NH-10 / Dikchu segment closed (96% Risk).",
+    "recommended_transfer": {
+      "critical_vaccines_units": 2500,
+      "blood_units": 80,
+      "food_grains_quintals": 850,
+      "water_purification_tablets_packs": 5000
+    },
+    "recommended_convoy_window": "Immediate Helicopter Air-Bridge via Bagdogra/Gangtok Heliport",
+    "urgency": "EMERGENCY" as const,
+    "days_of_autonomy_gained": 14,
+    "provenance": {
+      "source": "SRC-CWC-GAUGES + NERALIS-DisruptionNet-GBDT-v3.4",
+      "observed_at": new Date().toISOString(),
+      "confidence": 99.6
+    }
+  },
+  {
+    "id": "PRE-POS-03",
+    "target_district": "AS-NC (Dima Hasao - Haflong, Assam)",
+    "source_depot": "DEP-03 (Silchar Barak Valley Node)",
+    "reason": "Barak-Haflong hill track mudflow risk elevated to 75% following 178mm rainfall.",
+    "recommended_transfer": {
+      "critical_vaccines_units": 3000,
+      "blood_units": 100,
+      "food_grains_quintals": 900,
+      "water_purification_tablets_packs": 400
+    },
+    "recommended_convoy_window": "Dispatch via Lumding-Haflong Ridge Road within 12 Hours",
+    "urgency": "HIGH" as const,
+    "days_of_autonomy_gained": 21,
+    "provenance": {
+      "source": "SRC-IMD-AWS + NERALIS-DisruptionNet-GBDT-v3.4",
+      "observed_at": new Date().toISOString(),
+      "confidence": 98.7
+    }
+  }
+];
+
+export const FALLBACK_DIGITAL_TWIN_SCENARIOS: Record<string, any> = {
+  "BRIDGE_COLLAPSE_BR-04": {
+    "scenario": "Simulated Catastrophic Structural Failure: Kolia Bhomora / Lubha River Bridge",
+    "affected_river_crossing": "Brahmaputra / Lubha River Crossing (NH-6)",
+    "immediate_impact": {
+      "cut_off_districts": ["AS-SIL (Silchar)", "MZ-AIZ (Aizawl)", "TR-AGA (Agartala)", "ML-EJH (East Jaintia)"],
+      "isolated_population": "4.2 Million Citizens",
+      "daily_freight_disrupted_tons": 3800,
+      "delay_increase_hrs": 34.5
+    },
+    "recommended_mitigation": [
+      "Activate National Waterway 2 (NW-2) Ro-Ro barge service from Pandu/Dhubri to Silchar/Karimganj.",
+      "Divert light essential medical traffic via Badarpur-Jowai old hill bypass with 15T axle load limit.",
+      "Mobilize Border Roads Organisation (BRO) 70R Bailey bridge emergency engineering crew (ETA 48h)."
+    ],
+    "ndma_severity_rating": "LEVEL 4 STATE DISASTER ALERT",
+    "simulation_engine": "NERALIS Multi-Layer GIS Digital Twin v2.1"
+  },
+  "BRIDGE_COLLAPSE_DEFAULT": {
+    "scenario": "Simulated Catastrophic Structural Failure: Lubha River Bridge (NH-6)",
+    "affected_river_crossing": "Lubha River Gorge (NH-6 Lifeline)",
+    "immediate_impact": {
+      "cut_off_districts": ["AS-SIL (Silchar)", "MZ-AIZ (Aizawl)", "TR-AGA (Agartala)"],
+      "isolated_population": "3.8 Million Citizens",
+      "daily_freight_disrupted_tons": 3400,
+      "delay_increase_hrs": 32.0
+    },
+    "recommended_mitigation": [
+      "Activate National Waterway 2 (NW-2) Ro-Ro barge service from Pandu to Silchar.",
+      "Divert light essential traffic via Badarpur-Jowai old hill bypass (15T axle limit).",
+      "Deploy BRO Project Pushpak Bailey Bridge emergency unit from Silchar Base (ETA 36h)."
+    ],
+    "ndma_severity_rating": "LEVEL 4 STATE DISASTER ALERT",
+    "simulation_engine": "NERALIS Multi-Layer GIS Digital Twin v2.1"
+  },
+  "HIGHWAY_BLOCKADE_SEG-05": {
+    "scenario": "Simulated Total Highway Blockade: NH-13 Bomdila-Sela Pass-Tawang",
+    "cause": "Massive Rock Avalanche & Roadbed Slip (>8,000 cu.m debris)",
+    "immediate_impact": {
+      "cut_off_districts": ["AR-TAW (Tawang District)", "AR-WKA (West Kameng Interior)", "Jang Sub-Division"],
+      "stranded_vehicles_estimate": 165,
+      "critical_medicine_stock_depletion_days": 4.5,
+      "daily_freight_disrupted_tons": 1200,
+      "delay_increase_hrs": 42.0,
+      "isolated_population": "120,000 Citizens & Border Posts"
+    },
+    "recommended_mitigation": [
+      "Deploy BRO Project Vartak heavy snow-cutters and rock-breakers from Bomdila Base.",
+      "Establish Emergency Helicopter Air-Bridge via Tezpur/Guwahati Heliport for neonatal vaccines and insulin.",
+      "Enforce commercial freight hold at Bhalukpong Gate and activate Sela Tunnel secondary bypass."
+    ],
+    "ndma_severity_rating": "LEVEL 3 REGIONAL HIGHWAY BLOCKADE",
+    "simulation_engine": "NERALIS Multi-Layer GIS Digital Twin v2.1"
+  },
+  "HIGHWAY_BLOCKADE_DEFAULT": {
+    "scenario": "Simulated Total Highway Blockade: Sela Pass Sector (NH-13)",
+    "cause": "Massive Rockslide / Roadbed Slip (>5,000 cu.m debris)",
+    "immediate_impact": {
+      "cut_off_districts": ["AR-TAW (Tawang)", "AR-WKA (West Kameng)"],
+      "stranded_vehicles_estimate": 140,
+      "critical_medicine_stock_depletion_days": 4.5,
+      "daily_freight_disrupted_tons": 1100,
+      "delay_increase_hrs": 38.0,
+      "isolated_population": "95,000 Citizens"
+    },
+    "recommended_mitigation": [
+      "Deploy BRO Project Vartak heavy excavators from Bomdila Base.",
+      "Establish Emergency Helicopter Air-Bridge for critical medical supplies.",
+      "Enforce commercial freight hold at Bhalukpong Gate."
+    ],
+    "ndma_severity_rating": "LEVEL 3 REGIONAL HIGHWAY BLOCKADE",
+    "simulation_engine": "NERALIS Multi-Layer GIS Digital Twin v2.1"
+  }
+};
+

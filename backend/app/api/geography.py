@@ -1,62 +1,51 @@
 """
 NERALIS Geospatial & Master Infrastructure Endpoints.
+Uses Repository Layer (Supabase Cloud with local SQLite operational cache fallback).
 """
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from app.db.database import get_db
-from app.db.models import StateModel, DistrictModel, RoadSegmentModel, BridgeModel, SupplyDepotModel
+from fastapi import APIRouter
+from app.db.repository import repository
 from app.data.states import NER_STATES, NER_DISTRICTS
 from app.data.infrastructure import NER_ROAD_SEGMENTS, NER_BRIDGES, NER_DEPOTS
 
 router = APIRouter(tags=["Geospatial & Infrastructure"])
 
 @router.get("/states")
-def get_states(db: Session = Depends(get_db)):
-    try:
-        states = db.query(StateModel).all()
-        if states:
-            return {"states": [s.__dict__ for s in states]}
-    except Exception:
-        pass
-    return {"states": NER_STATES}
+def get_states():
+    states, mode = repository.get_states()
+    return {
+        "states": states if states else NER_STATES,
+        "storage_mode": mode
+    }
 
 @router.get("/districts")
-def get_districts(db: Session = Depends(get_db)):
-    try:
-        districts = db.query(DistrictModel).all()
-        if districts:
-            return {"districts": [{k: v for k, v in d.__dict__.items() if not k.startswith("_")} for d in districts]}
-    except Exception:
-        pass
-    return {"districts": NER_DISTRICTS}
+def get_districts():
+    districts, mode = repository.get_districts()
+    return {
+        "districts": districts if districts else NER_DISTRICTS,
+        "storage_mode": mode
+    }
 
 @router.get("/corridors")
-def get_corridors(db: Session = Depends(get_db)):
-    try:
-        corridors = db.query(RoadSegmentModel).all()
-        if corridors:
-            return {"corridors": [{k: v for k, v in c.__dict__.items() if not k.startswith("_")} for c in corridors]}
-    except Exception:
-        pass
-    return {"corridors": NER_ROAD_SEGMENTS}
+def get_corridors():
+    corridors, mode = repository.get_corridors()
+    return {
+        "corridors": corridors if corridors else NER_ROAD_SEGMENTS,
+        "storage_mode": mode
+    }
 
 @router.get("/bridges")
-def get_bridges(db: Session = Depends(get_db)):
-    try:
-        bridges = db.query(BridgeModel).all()
-        if bridges:
-            return {"bridges": [{k: v for k, v in b.__dict__.items() if not k.startswith("_")} for b in bridges]}
-    except Exception:
-        pass
-    return {"bridges": NER_BRIDGES}
+def get_bridges():
+    bridges, mode = repository.get_bridges()
+    return {
+        "bridges": bridges if bridges else NER_BRIDGES,
+        "storage_mode": mode
+    }
 
 @router.get("/depots")
-def get_depots(db: Session = Depends(get_db)):
-    try:
-        depots = db.query(SupplyDepotModel).all()
-        if depots:
-            return {"depots": [{k: v for k, v in d.__dict__.items() if not k.startswith("_")} for d in depots]}
-    except Exception:
-        pass
-    return {"depots": NER_DEPOTS}
+def get_depots():
+    depots, mode = repository.get_depots()
+    return {
+        "depots": depots if depots else NER_DEPOTS,
+        "storage_mode": mode
+    }

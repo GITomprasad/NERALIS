@@ -66,7 +66,15 @@ export const AccessibilityMonitor: React.FC = () => {
       {activeTab === 'MAP' && (
         <div className="relative w-full flex-1 h-[calc(100vh-108px)] sm:h-[calc(100vh-112px)] min-h-[400px] sm:min-h-[580px] overflow-hidden bg-slate-900">
           {/* Main Map Edge-to-Edge */}
-          <NerGisMap height="100%" className="h-full w-full" />
+          <NerGisMap
+            height="100%"
+            className="h-full w-full"
+            initialShowRoads={true}
+            initialShowBridges={true}
+            initialShowDepots={true}
+            initialShowVehicles={true}
+            initialShowDistricts={true}
+          />
 
           {/* Floating Top Glassmorphism HUD Controls */}
           <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 z-[1000] flex flex-wrap items-center justify-between gap-1.5 sm:gap-2.5 pointer-events-none">
@@ -218,8 +226,9 @@ export const AccessibilityMonitor: React.FC = () => {
                       <span className="text-[10px] font-bold text-purple-800 uppercase flex items-center gap-1">
                         <Sparkles className="w-3 h-3 text-purple-600" /> 24h AI Risk Forecast
                       </span>
-                      <span className="text-[9px] text-purple-700 font-bold">98.4% Baseline</span>
+                      <span className="text-[9px] text-purple-700 font-bold">NASA + IMD Baseline</span>
                     </div>
+
                     <div className="text-[11px] font-bold text-gray-800">
                       Sela Pass Sector (NH-13): 86% Landslide Probability
                     </div>

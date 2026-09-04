@@ -1,5 +1,6 @@
 """
 NERALIS Evaluated ML Disruption Forecasting & Digital Twin Endpoints.
+Caches predictions in local SQLite cache for offline availability.
 """
 
 from fastapi import APIRouter
@@ -7,6 +8,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 from app.services.disruption_forecasting import disruption_engine
+from app.db.repository import repository
 from app.core.logging_config import log_event
 
 router = APIRouter(tags=["Predictive Intelligence"])
@@ -16,13 +18,18 @@ class DigitalTwinRequest(BaseModel):
     target_id: str
 
 @router.get("/predictions/forecast")
-def get_predictions_forecast(hours: int = 24):
-    return disruption_engine.get_forecast(forecast_hours_ahead=hours)
-
-# Legacy alias for backwards compatibility
 @router.get("/predictions/72h")
-def get_72h_predictions(hours: int = 24):
-    return disruption_engine.get_forecast(forecast_hours_ahead=hours)
+def get_predictions_forecast(hours: int = 24):
+    try:
+        data = disruption_engine.get_forecast(forecast_hours_ahead=hours)
+        # Cache for offline resilience
+        repository.cache_prediction(hours, data)
+        return data
+    except Exception:
+        cached = repository.get_cached_prediction(hours)
+        if cached:
+            return cached
+        raise
 
 @router.get("/predictions/model-metrics")
 def get_model_metrics():
@@ -34,7 +41,8 @@ def get_historical_disruptions(limit: int = 50, year: Optional[int] = None):
 
 @router.get("/predictions/prepositioning")
 def get_prepositioning():
-    return {"advisories": disruption_engine.get_prepositioning_advisories()}
+    advisories = disruption_engine.get_prepositioning_advisories()
+    return {"advisories": advisories}
 
 @router.post("/predictions/digital-twin")
 def run_digital_twin_simulation(req: DigitalTwinRequest):

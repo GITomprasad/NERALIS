@@ -44,8 +44,9 @@ export const ProvenanceBadge: React.FC<ProvenanceBadgeProps> = ({
           label: confidence ? `AI PREDICTED (${confidence.toFixed(1)}%)` : 'AI PREDICTED',
           bg: 'bg-purple-500/15 text-purple-700 border-purple-500/30',
           icon: <Sparkles className="w-3 h-3 text-purple-600" />,
-          desc: 'Evaluated Baseline Model (98.4% Accuracy)'
+          desc: 'Authentic NASA + IMD ML Disruption Model'
         };
+
       case 'REPORTED':
         return {
           label: 'REPORTED',

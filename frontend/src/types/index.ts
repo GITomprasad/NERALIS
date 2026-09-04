@@ -203,17 +203,21 @@ export interface FieldReport {
 export interface MLModelMetrics {
   model_version: string;
   algorithm: string;
+  dataset?: string;
   training_samples_count: number;
   test_samples_count: number;
   validation_method: string;
   accuracy_pct: number;
+  balanced_accuracy?: number;
+  macro_f1?: number;
+  f1_score: number;
   roc_auc: number;
   pr_auc: number;
-  f1_score: number;
   precision_pct: number;
   recall_pct: number;
   brier_score: number;
   lead_time_accuracy_pct: number;
+  metric_note?: string;
   confusion_matrix: {
     true_negative: number;
     false_positive: number;
@@ -222,8 +226,10 @@ export interface MLModelMetrics {
   };
   roc_curve_points: Array<{ fpr: number; tpr: number }>;
   calibration_curve: Array<{ predicted_prob: number; actual_frequency: number }>;
+  class_distribution?: Record<string, number>;
   feature_importance: Array<{ feature: string; weight: number; category: string }>;
 }
+
 
 export interface CorridorPrediction {
   corridor_id: string;
@@ -304,4 +310,59 @@ export interface AuthResponse {
   token: string;
   user: UserProfile;
 }
+
+// Connectivity & Low-Network Lite Mode Types
+export type ConnectivityClassification = 'GOOD' | 'LIMITED' | 'CRITICAL';
+export type EffectiveConnectionType = '4g' | '3g' | '2g' | 'slow-2g' | 'offline' | 'unknown';
+export type NetworkOverrideMode = 'AUTO' | 'GOOD' | 'LIMITED' | 'CRITICAL' | 'OFFLINE';
+
+export interface LiteVehicle {
+  vehicle_id: string;
+  status: string;
+  risk_score: number;
+  last_known_location: string;
+  next_checkpoint: string;
+  current_lat?: number;
+  current_lng?: number;
+  speed_kmh: number;
+  cold_chain_temp_c?: number | null;
+  alert?: string | null;
+}
+
+export interface LiteCorridor {
+  id: string;
+  name: string;
+  status: string;
+  risk_score: number;
+  hazard_type: string;
+}
+
+export interface LiteBridge {
+  id: string;
+  name: string;
+  status: string;
+  structural_health_pct: number;
+}
+
+export interface LiteAlert {
+  id: string;
+  tier: string;
+  title: string;
+  corridor_id: string;
+  message: string;
+  timestamp: string;
+}
+
+export interface LiteStatusResponse {
+  timestamp: string;
+  mode: string;
+  payload_size_kb: number;
+  vehicles: LiteVehicle[];
+  corridors_at_risk: LiteCorridor[];
+  critical_bridges: LiteBridge[];
+  critical_alerts: LiteAlert[];
+  districts_count: number;
+  is_cached?: boolean;
+}
+
 

@@ -56,6 +56,28 @@ MONTHLY_RAINFALL: Dict[str, List[float]] = {
 # Forecast horizon rainfall scale factor
 HORIZON_SCALE = {6: 0.25, 24: 1.0, 48: 1.8, 72: 2.4}
 
+# Explicit corridor-to-state mapping (all NER_ROAD_SEGMENTS IDs)
+CORRIDOR_STATE_MAP: Dict[str, str] = {
+    "SEG-01": "Assam",
+    "SEG-02": "Meghalaya",
+    "SEG-03": "Meghalaya",
+    "SEG-04": "Arunachal Pradesh",
+    "SEG-05": "Arunachal Pradesh",
+    "SEG-06": "Assam",
+    "SEG-07": "Arunachal Pradesh",
+    "SEG-08": "Nagaland",
+    "SEG-09": "Manipur",
+    "SEG-10": "Mizoram",
+    "SEG-11": "Mizoram",
+    "SEG-12": "Sikkim",
+    "SEG-13": "Sikkim",
+    "SEG-14": "Tripura",
+    "SEG-15": "Nagaland",
+    "SEG-16": "Assam",
+    "SEG-17": "Manipur",
+    "SEG-18": "Arunachal Pradesh",
+}
+
 
 class RealDisruptionMLModel:
     """
@@ -149,20 +171,42 @@ class RealDisruptionMLModel:
     # ── Internal helpers ──────────────────────────────────────────────────────
 
     def _infer_state(self, corridor: Dict) -> str:
-        """Best-effort state extraction from corridor metadata."""
-        text = corridor.get("name", "") + " " + corridor.get("to_district", "")
+        """Resolve corridor state using explicit corridor ID mapping first."""
+        # Primary: deterministic corridor → state mapping
+        corridor_id = corridor.get("id")
+        if corridor_id in CORRIDOR_STATE_MAP:
+            return CORRIDOR_STATE_MAP[corridor_id]
+
+        # Fallback: existing metadata-based detection
+        text = (
+            corridor.get("name", "")
+            + " "
+            + corridor.get("to_district", "")
+        )
+
         for state in NER_STATE_DEFAULTS:
             if state in text or state[:4] in text:
                 return state
-        # Abbreviation fallback (e.g. "AS-" → Assam)
+
+        # Abbreviation fallback
         abbrevs = {
-            "AS": "Assam", "ML": "Meghalaya", "MN": "Manipur",
-            "NL": "Nagaland", "AR": "Arunachal Pradesh",
-            "TR": "Tripura",  "MZ": "Mizoram",  "SK": "Sikkim",
+            "AS": "Assam",
+            "ML": "Meghalaya",
+            "MN": "Manipur",
+            "NL": "Nagaland",
+            "AR": "Arunachal Pradesh",
+            "TR": "Tripura",
+            "MZ": "Mizoram",
+            "SK": "Sikkim",
         }
+
         for abbr, state in abbrevs.items():
-            if text.upper().startswith(abbr + "-") or f"-{abbr}-" in text.upper():
+            if (
+                text.upper().startswith(abbr + "-")
+                or f"-{abbr}-" in text.upper()
+            ):
                 return state
+
         return "Assam"
 
     def _build_feature_vector(

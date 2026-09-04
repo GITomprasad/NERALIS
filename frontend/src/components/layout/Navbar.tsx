@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ArrowLeft,
   Sparkles,
+  Bot,
   FlaskConical,
   Radio,
   ShieldCheck,
@@ -32,12 +33,14 @@ import {
   RefreshCw,
   LogIn,
   LogOut,
-  UserPlus
+  UserPlus,
+  ChevronRight
 } from 'lucide-react';
 
 export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobileMenuToggle }) => {
   const {
     activeModule,
+    navigateToModule,
     goToLanding,
     userRole,
     setUserRole,
@@ -47,6 +50,9 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
     quickSwitchRole,
     networkMode,
     setNetworkMode,
+    networkOverride,
+    setNetworkOverride,
+    isLiteMode,
     isDemoMode,
     toggleDemoMode,
     setIsModelMetricsModalOpen,
@@ -54,15 +60,19 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
     setSearchQuery,
     setIsUSSDModalOpen,
     setIsParliamentModalOpen,
+    isChatbotOpen,
+    toggleChatbot,
     toasts,
     notifications,
     unreadNotifCount,
+    markNotificationAsRead,
     markAllNotificationsAsRead,
     clearAllNotifications,
     alerts,
     districts,
     corridors,
     bridges,
+    vehicles,
     openDrawer,
     addToast,
     refreshData,
@@ -175,8 +185,19 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
         )}
       </div>
 
+      {/* Mobile Search Trigger Button */}
+      <div className="md:hidden relative ml-1">
+        <button
+          onClick={() => setShowSearchSuggestions(!showSearchSuggestions)}
+          className="p-1.5 sm:p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/15 cursor-pointer flex items-center justify-center"
+          title="Search Districts & Road Nodes"
+        >
+          <Search className="w-4 h-4 text-sky-200" />
+        </button>
+      </div>
+
       {/* Center: Search with Smart District Suggestions Dropdown */}
-      <div className="hidden md:flex items-center gap-4 flex-1 max-w-lg mx-4 relative">
+      <div className="hidden md:flex items-center flex-1 min-w-[200px] max-w-md mx-2 lg:mx-4 relative">
         <div className="relative w-full">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
           <input
@@ -213,20 +234,41 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
               onClick={() => setShowSearchSuggestions(false)}
             />
 
-            <div className="absolute left-0 right-0 top-full mt-2 bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-3 z-[2500] text-xs space-y-2.5 max-h-[480px] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute left-0 top-full mt-2 w-[340px] xs:w-[420px] sm:w-[480px] md:w-[540px] max-w-[92vw] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-3.5 z-[2500] text-xs space-y-2.5 max-h-[500px] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
               {/* Header & State Filter Pills */}
-              <div className="space-y-1.5 border-b border-gray-100 pb-2 shrink-0">
+              <div className="space-y-2 border-b border-gray-100 pb-2.5 shrink-0">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-blue-600" /> NER Districts & Highway Nodes
+                  <span className="text-[11px] font-bold text-[#1E3A5F] uppercase tracking-wider flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-blue-600" /> NER Districts & Highway Nodes
                   </span>
-                  <span className="text-[9px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.2 rounded font-mono">
-                    89 Districts Available
+                  <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full font-mono">
+                    89 Districts
                   </span>
                 </div>
 
+                {/* Mobile Search Input inside Dropdown */}
+                <div className="md:hidden relative">
+                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    autoFocus
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search district, state, corridor..."
+                    className="w-full bg-slate-100 text-gray-900 text-xs rounded-lg pl-8 pr-7 py-1.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
                 {/* State Filter Pills */}
-                <div className="flex flex-wrap items-center gap-1 overflow-x-auto py-0.5 scrollbar-none">
+                <div className="flex flex-wrap items-center gap-1.5 py-0.5">
                   {[
                     { id: 'ALL', label: 'All (89)' },
                     { id: 'AS', label: 'Assam' },
@@ -241,10 +283,10 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                     <button
                       key={st.id}
                       onClick={() => setSearchStateFilter(st.id)}
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-colors ${
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all cursor-pointer ${
                         searchStateFilter === st.id
-                          ? 'bg-[#17365D] text-white shadow-2xs'
-                          : 'bg-slate-100 text-gray-600 hover:bg-slate-200'
+                          ? 'bg-[#1E3A5F] text-white shadow-xs ring-2 ring-blue-300'
+                          : 'bg-slate-100 text-gray-700 hover:bg-slate-200'
                       }`}
                     >
                       {st.label}
@@ -438,6 +480,20 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
           )}
         </button>
 
+        {/* AI Assistant Sahayak Quick Trigger */}
+        <button
+          onClick={toggleChatbot}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs ${
+            isChatbotOpen
+              ? 'bg-amber-400 text-slate-900 shadow-amber-400/20'
+              : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-amber-400/50'
+          }`}
+          title="Open NERALIS AI Sahayak Assistant"
+        >
+          <Bot className={`w-3.5 h-3.5 ${isChatbotOpen ? 'text-slate-900' : 'text-amber-400 animate-pulse'}`} />
+          <span className="hidden sm:inline">AI Sahayak</span>
+        </button>
+
         {/* More Tools Dropdown (USSD, Parliament, AI Metrics, Demo switch) */}
         <div className="relative">
           <button
@@ -466,6 +522,21 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                   <span>Advanced Operations Tools</span>
                   <span className="text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">HQ & Field</span>
                 </div>
+
+                {/* 0. NERALIS AI Sahayak Assistant */}
+                <button
+                  onClick={() => {
+                    toggleChatbot();
+                    setShowToolsDropdown(false);
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-lg flex items-center gap-2.5 hover:bg-amber-50 text-gray-800 transition-colors"
+                >
+                  <Bot className="w-4 h-4 text-amber-600 shrink-0" />
+                  <div>
+                    <div className="font-bold text-gray-900">NERALIS AI Sahayak</div>
+                    <div className="text-[10px] text-gray-500">Ask questions, routing logic & live status</div>
+                  </div>
+                </button>
 
                 {/* 1. Parliament Star Question Report */}
                 <button
@@ -507,9 +578,10 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                 >
                   <Sparkles className="w-4 h-4 text-purple-700 shrink-0" />
                   <div>
-                    <div className="font-bold text-gray-900">AI Model Performance (98.4%)</div>
-                    <div className="text-[10px] text-gray-500">ROC-AUC, calibration & test confusion matrix</div>
+                    <div className="font-bold text-gray-900">AI Model Benchmark (NASA + IMD)</div>
+                    <div className="text-[10px] text-gray-500">Confusion matrix, ROC curve & feature importance</div>
                   </div>
+
                 </button>
 
                 {/* 4. Demo Simulation Switch */}
@@ -538,32 +610,42 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
           )}
         </div>
 
-        {/* Network Mode Switcher (5G / 2G / Offline) */}
+        {/* Network Mode Switcher (4G / 3G / 2G / Offline) */}
         <div className="flex items-center bg-black/20 rounded-lg p-0.5 border border-white/10 text-[11px]">
           <button
-            onClick={() => setNetworkMode('ONLINE')}
+            onClick={() => setNetworkOverride('GOOD')}
             className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkMode === 'ONLINE' ? 'bg-emerald-500 text-white font-bold' : 'text-sky-200 hover:text-white'
+              networkOverride === 'GOOD' || (networkOverride === 'AUTO' && networkMode === 'ONLINE') ? 'bg-emerald-500 text-white font-bold' : 'text-sky-200 hover:text-white'
             }`}
-            title="Full 5G / Broadband Online Mode"
+            title="Full 4G / Broadband Online Mode"
           >
             <Wifi className="w-3 h-3" />
-            <span className="hidden 2xl:inline">5G</span>
+            <span className="hidden 2xl:inline">4G</span>
           </button>
           <button
-            onClick={() => setNetworkMode('LOW_2G')}
+            onClick={() => setNetworkOverride('LIMITED')}
             className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkMode === 'LOW_2G' ? 'bg-amber-500 text-black font-bold' : 'text-sky-200 hover:text-white'
+              networkOverride === 'LIMITED' ? 'bg-amber-500 text-black font-bold' : 'text-sky-200 hover:text-white'
             }`}
-            title="Simulate Remote 2G Low Bandwidth Payload Mode"
+            title="Simulate 3G Limited Lite Mode"
           >
             <SignalLow className="w-3 h-3" />
+            <span className="hidden 2xl:inline">3G</span>
+          </button>
+          <button
+            onClick={() => setNetworkOverride('CRITICAL')}
+            className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
+              networkOverride === 'CRITICAL' || networkMode === 'LOW_2G' ? 'bg-rose-600 text-white font-bold' : 'text-sky-200 hover:text-white'
+            }`}
+            title="Simulate 2G Critical Bandwidth Mode"
+          >
+            <SignalLow className="w-3 h-3 text-rose-200" />
             <span className="hidden 2xl:inline">2G</span>
           </button>
           <button
-            onClick={() => setNetworkMode('OFFLINE')}
+            onClick={() => setNetworkOverride('OFFLINE')}
             className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkMode === 'OFFLINE' ? 'bg-red-600 text-white font-bold' : 'text-sky-200 hover:text-white'
+              networkOverride === 'OFFLINE' || networkMode === 'OFFLINE' ? 'bg-red-600 text-white font-bold' : 'text-sky-200 hover:text-white'
             }`}
             title="Simulate Zero Connectivity Offline Storage Mode"
           >
@@ -607,6 +689,7 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                       onClick={() => {
                         setLanguage(l.code);
                         setShowLangDropdown(false);
+                        addToast('Language Switched', `Interface language set to ${l.native} (${l.label}).`, 'INFO');
                       }}
                       className={`w-full text-left px-3 py-2 rounded-lg flex items-center justify-between hover:bg-[#EBF3FB] transition-colors ${
                         currentLanguage === l.code ? 'bg-[#EBF3FB] text-[#1E3A5F] font-bold border border-blue-200' : ''
@@ -923,11 +1006,89 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                     const isWarning = n.tier === 'WARNING';
                     const isSuccess = n.tier === 'SUCCESS';
 
+                    const getTargetLabel = () => {
+                      if (n.targetModule === 'ACCESSIBILITY') return '01 GIS Map';
+                      if (n.targetModule === 'ROUTE') return '02 Route Optimizer';
+                      if (n.targetModule === 'FLEET') return '03 Fleet Tracking';
+                      if (n.targetModule === 'PREDICTION') return '04 Predictive AI';
+                      if (n.targetModule === 'ALERT') return '05 Alert Center';
+                      if (n.targetModule === 'FIELD_APP') return '06 Field PWA';
+
+                      const txt = `${n.title} ${n.message}`.toLowerCase();
+                      if (txt.includes('route') || txt.includes('dispatch') || txt.includes('itinerary')) return '02 Route Optimizer';
+                      if (txt.includes('vehicle') || txt.includes('fleet') || txt.includes('truck')) return '03 Fleet Tracking';
+                      if (txt.includes('prediction') || txt.includes('landslide')) return '04 Predictive AI';
+                      if (txt.includes('field') || txt.includes('inspector') || txt.includes('damage')) return '06 Field PWA';
+                      if (txt.includes('bridge') || txt.includes('corridor') || txt.includes('nh-')) return '01 GIS Map';
+                      return '05 Alert Center';
+                    };
+
+                    const handleItemClick = () => {
+                      markNotificationAsRead(n.id);
+                      setShowNotifDropdown(false);
+
+                      // 1. Determine destination module
+                      let targetMod = n.targetModule;
+                      if (!targetMod) {
+                        const txt = `${n.title} ${n.message}`.toLowerCase();
+                        if (txt.includes('route') || txt.includes('dispatch') || txt.includes('itinerary') || txt.includes('dijkstra')) {
+                          targetMod = 'ROUTE';
+                        } else if (txt.includes('vehicle') || txt.includes('fleet') || txt.includes('truck') || txt.includes('navic') || txt.includes('cold-chain')) {
+                          targetMod = 'FLEET';
+                        } else if (txt.includes('prediction') || txt.includes('landslide') || txt.includes('rainfall') || txt.includes('disruption')) {
+                          targetMod = 'PREDICTION';
+                        } else if (txt.includes('field') || txt.includes('inspector') || txt.includes('damage report') || txt.includes('pwa')) {
+                          targetMod = 'FIELD_APP';
+                        } else if (txt.includes('bridge') || txt.includes('saraighat') || txt.includes('coronation') || txt.includes('bogibeel') || txt.includes('sensor') || txt.includes('corridor') || txt.includes('nh-')) {
+                          targetMod = 'ACCESSIBILITY';
+                        } else {
+                          targetMod = 'ALERT';
+                        }
+                      }
+
+                      if (targetMod && activeModule !== targetMod) {
+                        navigateToModule(targetMod);
+                      }
+
+                      // 2. Open contextual drawer if matching entity is found
+                      if (n.targetDrawer) {
+                        openDrawer(n.targetDrawer.type, n.targetDrawer.data);
+                      } else {
+                        const txt = `${n.title} ${n.message}`.toLowerCase();
+                        const matchedCorridor = corridors.find((c) =>
+                          txt.includes(c.name.toLowerCase()) || txt.includes(c.id.toLowerCase())
+                        );
+                        if (matchedCorridor) {
+                          openDrawer('CORRIDOR', matchedCorridor);
+                          return;
+                        }
+
+                        const matchedBridge = bridges.find((b) =>
+                          txt.includes(b.name.toLowerCase()) || txt.includes(b.id.toLowerCase())
+                        );
+                        if (matchedBridge) {
+                          openDrawer('BRIDGE', matchedBridge);
+                          return;
+                        }
+
+                        const matchedAlert = alerts.find((a) =>
+                          txt.includes(a.title.toLowerCase()) || txt.includes(a.id.toLowerCase())
+                        );
+                        if (matchedAlert) {
+                          openDrawer('ALERT', matchedAlert);
+                          return;
+                        }
+                      }
+                    };
+
                     return (
-                      <div
+                      <button
                         key={n.id}
-                        className={`p-2 rounded-lg transition-colors flex items-start gap-2.5 ${
-                          !n.isRead ? 'bg-blue-50/60 border-l-2 border-l-blue-600' : 'hover:bg-gray-50'
+                        onClick={handleItemClick}
+                        className={`w-full text-left p-2.5 rounded-lg transition-all flex items-start gap-2.5 group cursor-pointer border ${
+                          !n.isRead
+                            ? 'bg-blue-50/70 border-blue-200 hover:bg-blue-100/70 hover:border-blue-300'
+                            : 'bg-white border-transparent hover:bg-gray-50 hover:border-gray-200'
                         }`}
                       >
                         <div className="shrink-0 mt-0.5">
@@ -938,33 +1099,51 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-1">
-                            <span className="font-bold text-gray-900 text-xs truncate">{n.title}</span>
+                            <span className="font-bold text-gray-900 text-xs truncate group-hover:text-blue-700 transition-colors">
+                              {n.title}
+                            </span>
                             <span className="text-[9px] text-gray-400 shrink-0">{n.timestamp}</span>
                           </div>
                           <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{n.message}</p>
+                          <div className="flex items-center justify-between mt-1.5 pt-1 border-t border-gray-100">
+                            <span className="text-[9px] font-bold text-blue-700 uppercase tracking-wider flex items-center gap-0.5 group-hover:underline">
+                              <span>Go to {getTargetLabel()}</span>
+                              <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                            </span>
+                            {!n.isRead && (
+                              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" title="Unread notification" />
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      </button>
                     );
                   })
                 ) : alerts.length > 0 ? (
                   alerts.slice(0, 4).map((a) => (
-                    <div
+                    <button
                       key={a.id}
                       onClick={() => {
+                        navigateToModule('ALERT');
                         openDrawer('ALERT', a);
                         setShowNotifDropdown(false);
                       }}
-                      className="p-2 rounded-lg hover:bg-red-50/70 cursor-pointer transition-colors flex items-start gap-2.5"
+                      className="w-full text-left p-2.5 rounded-lg hover:bg-red-50/70 border border-transparent hover:border-red-200 cursor-pointer transition-colors flex items-start gap-2.5 group"
                     >
                       <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-1">
-                          <span className="font-bold text-gray-900 text-xs truncate">{a.title}</span>
+                          <span className="font-bold text-gray-900 text-xs truncate group-hover:text-red-700">{a.title}</span>
                           <span className="text-[9px] text-gray-400 shrink-0">{a.timestamp}</span>
                         </div>
                         <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{a.message_i18n?.en || a.title}</p>
+                        <div className="flex items-center justify-between mt-1.5 pt-1 border-t border-red-100">
+                          <span className="text-[9px] font-bold text-red-700 uppercase tracking-wider flex items-center gap-0.5 group-hover:underline">
+                            <span>Open in 05 Alert Center</span>
+                            <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </button>
                   ))
                 ) : (
                   <div className="py-6 text-center text-gray-400 text-xs">

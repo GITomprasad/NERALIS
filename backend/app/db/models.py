@@ -162,6 +162,7 @@ class VehicleModel(Base):
     cold_chain = Column(JSON, nullable=True)
     cold_chain_profile = Column(String(50), default="STANDARD_VACCINES")
     fuel_monitor = Column(JSON, default=dict)
+    trip_waypoints = Column(JSON, default=list)
     eta_destination = Column(String(50), nullable=True)
     status = Column(String(50), default="IN_TRANSIT")
     is_simulated = Column(Boolean, default=False)
@@ -278,4 +279,39 @@ class UserModel(Base):
     phone = Column(String(30), nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class SyncQueueModel(Base):
+    __tablename__ = "sync_queue"
+
+    id = Column(String(60), primary_key=True)
+    entity_type = Column(String(50), nullable=False)   # CORRIDOR, ALERT, VEHICLE, FIELD_REPORT, BRIDGE
+    entity_id = Column(String(100), nullable=False)
+    operation_type = Column(String(30), nullable=False) # INSERT, UPDATE, DELETE, ACKNOWLEDGE, DISPATCH
+    payload = Column(JSON, default=dict)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    synced_at = Column(DateTime, nullable=True)
+    retry_count = Column(Integer, default=0)
+    sync_status = Column(String(30), default="PENDING") # PENDING, SYNCED, FAILED
+    error_message = Column(Text, nullable=True)
+
+
+class PredictionCacheModel(Base):
+    __tablename__ = "predictions_cache"
+
+    id = Column(String(50), primary_key=True)  # e.g., FORECAST_6H, FORECAST_24H, FORECAST_48H, FORECAST_72H, ADVISORIES
+    forecast_horizon_hours = Column(Integer, default=24)
+    data = Column(JSON, default=dict)
+    model_version = Column(String(100), default="NERALIS-RF-NER-Landslide-v1.0")
+    cached_at = Column(DateTime, default=datetime.datetime.utcnow)
+    expires_at = Column(DateTime, nullable=True)
+
+
+class SystemMetadataModel(Base):
+    __tablename__ = "system_metadata"
+
+    key = Column(String(100), primary_key=True)
+    value = Column(Text, nullable=False)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
 

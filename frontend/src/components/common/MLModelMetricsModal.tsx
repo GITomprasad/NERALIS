@@ -28,13 +28,13 @@ export const MLModelMetricsModal: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-black text-sm text-white">AI DisruptionNet Evaluation Baseline</h3>
+                <h3 className="font-black text-sm text-white">AI Disruption Model Evaluation Baseline</h3>
                 <span className="bg-emerald-400 text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full">
-                  Accuracy: 98.4%
+                  Accuracy: {metrics?.accuracy_pct || 85.1}%
                 </span>
               </div>
               <p className="text-[11px] text-sky-200">
-                Calibrated GBDT Model • Time & Spatial Cross-Validation Benchmark
+                {metrics?.algorithm || 'Tuned Balanced Random Forest (NASA + IMD Historical)'} • Out-of-Fold Cross Validation
               </p>
             </div>
           </div>
@@ -58,7 +58,7 @@ export const MLModelMetricsModal: React.FC = () => {
             onClick={() => setActiveTab('CONFUSION')}
             className={`px-3 py-1.5 rounded-lg transition-all ${activeTab === 'CONFUSION' ? 'bg-white text-[#1E3A5F] shadow-xs' : 'hover:bg-gray-200'}`}
           >
-            Confusion Matrix (240 Test Set)
+            Confusion Matrix ({metrics?.test_samples_count || 348} Historical Events)
           </button>
           <button
             onClick={() => setActiveTab('FEATURES')}
@@ -81,24 +81,26 @@ export const MLModelMetricsModal: React.FC = () => {
               {/* Primary KPI Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
-                  <div className="text-[10px] font-bold text-emerald-800 uppercase">Test Accuracy</div>
+                  <div className="text-[10px] font-bold text-emerald-800 uppercase">Raw Accuracy</div>
                   <div className="text-xl font-black text-emerald-700 mt-0.5">{metrics.accuracy_pct}%</div>
-                  <div className="text-[9px] text-emerald-600 font-semibold mt-0.5">&gt;98% Target Met</div>
+                  <div className="text-[9px] text-emerald-600 font-semibold mt-0.5">84% Medium Base</div>
                 </div>
                 <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-center">
-                  <div className="text-[10px] font-bold text-purple-800 uppercase">ROC-AUC</div>
-                  <div className="text-xl font-black text-purple-700 mt-0.5">{metrics.roc_auc}</div>
-                  <div className="text-[9px] text-purple-600 font-semibold mt-0.5">High Discriminative Power</div>
+                  <div className="text-[10px] font-bold text-purple-800 uppercase">Balanced Acc</div>
+                  <div className="text-xl font-black text-purple-700 mt-0.5">
+                    {metrics.balanced_accuracy ? `${(metrics.balanced_accuracy * 100).toFixed(1)}%` : '52.4%'}
+                  </div>
+                  <div className="text-[9px] text-purple-600 font-semibold mt-0.5">Honest Multi-Class</div>
                 </div>
                 <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-center">
-                  <div className="text-[10px] font-bold text-blue-800 uppercase">F1-Score</div>
-                  <div className="text-xl font-black text-blue-700 mt-0.5">{metrics.f1_score}</div>
-                  <div className="text-[9px] text-blue-600 font-semibold mt-0.5">Precision/Recall Balanced</div>
+                  <div className="text-[10px] font-bold text-blue-800 uppercase">Macro F1</div>
+                  <div className="text-xl font-black text-blue-700 mt-0.5">{metrics.macro_f1 || metrics.f1_score}</div>
+                  <div className="text-[9px] text-blue-600 font-semibold mt-0.5">Macro Averaged</div>
                 </div>
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-center">
-                  <div className="text-[10px] font-bold text-amber-800 uppercase">Brier Score</div>
-                  <div className="text-xl font-black text-amber-700 mt-0.5">{metrics.brier_score}</div>
-                  <div className="text-[9px] text-amber-600 font-semibold mt-0.5">Well-Calibrated Risk</div>
+                  <div className="text-[10px] font-bold text-amber-800 uppercase">ROC-AUC</div>
+                  <div className="text-xl font-black text-amber-700 mt-0.5">{metrics.roc_auc}</div>
+                  <div className="text-[9px] text-amber-600 font-semibold mt-0.5">Out-of-Fold Split</div>
                 </div>
               </div>
 
@@ -108,8 +110,8 @@ export const MLModelMetricsModal: React.FC = () => {
                   <ShieldCheck className="w-3.5 h-3.5 text-teal-600" /> Validation & Audit Provenance
                 </div>
                 <p className="text-[11px] leading-relaxed text-gray-600">
-                  {metrics.validation_method}. Evaluated across 1,200 historical landslide/flood disaster records (2021-2026).
-                  Features include IMD Doppler Radar 72h precipitation, ISRO Bhuvan DEM slope gradients, CWC hydro-gauges, and 3-year historical landslide frequencies.
+                  {metrics.validation_method}. Evaluated on {metrics.dataset || 'NASA Global Landslide Catalog & IMD Historical Precipitation (NER Subdivisions)'}.
+                  Features include settlement gazeteer proximity, IMD monsoon rainfall normals, event month seasonality, geospatial coordinates, and macro annual baseline climate.
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
                   <span className="bg-gray-200 text-gray-800 font-bold px-2 py-0.5 rounded text-[10px]">
@@ -121,6 +123,9 @@ export const MLModelMetricsModal: React.FC = () => {
                   <span className="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]">
                     Lead-Time Accuracy: {metrics.lead_time_accuracy_pct}%
                   </span>
+                  <span className="bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded text-[10px]">
+                    PR-AUC: {metrics.pr_auc}
+                  </span>
                 </div>
               </div>
             </div>
@@ -129,7 +134,7 @@ export const MLModelMetricsModal: React.FC = () => {
           {activeTab === 'CONFUSION' && metrics && (
             <div className="space-y-4">
               <div className="bg-slate-50 p-4 rounded-xl border border-gray-200">
-                <h4 className="font-black text-xs text-[#1E3A5F] mb-3">Confusion Matrix (240 Out-of-Time Test Records)</h4>
+                <h4 className="font-black text-xs text-[#1E3A5F] mb-3">Confusion Matrix ({metrics.test_samples_count} Out-of-Time Test Records)</h4>
                 <div className="grid grid-cols-2 gap-3 text-center">
                   <div className="bg-emerald-100/70 border border-emerald-300 p-3 rounded-lg">
                     <div className="text-[10px] font-bold text-emerald-900">True Negatives (No Disruption Correctly Identified)</div>
@@ -151,6 +156,7 @@ export const MLModelMetricsModal: React.FC = () => {
               </div>
             </div>
           )}
+
 
           {activeTab === 'FEATURES' && metrics && (
             <div className="space-y-3">

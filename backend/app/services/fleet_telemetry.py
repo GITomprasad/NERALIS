@@ -66,52 +66,48 @@ class FleetTelemetryEngine:
         origin_name = veh.get("origin", "Guwahati Logistics Hub")
         dest_name = veh.get("destination", "Tawang / Imphal")
 
-        waypoints = [
-            {
-                "checkpoint": f"Origin Departure: {origin_name}",
-                "timestamp": "06:00 IST",
-                "lat": veh["current_lat"] - 0.5,
-                "lng": veh["current_lng"] - 0.4,
-                "speed_kmh": 45,
-                "temp_c": veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None,
-                "fuel_pct": 98,
-                "network": "4G LTE",
-                "status": "CLEAR"
-            },
-            {
-                "checkpoint": "Inter-State Border Checkgate (RFID Auto-Scanned)",
-                "timestamp": "09:15 IST",
-                "lat": veh["current_lat"] - 0.25,
-                "lng": veh["current_lng"] - 0.2,
-                "speed_kmh": 15,
-                "temp_c": veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None,
-                "fuel_pct": 89,
-                "network": "NavIC Satellite Active",
-                "status": "INSPECTED_VALID"
-            },
-            {
-                "checkpoint": "Mandatory Hill Driver Rest Stop (Fatigue Compliance)",
-                "timestamp": "12:30 IST",
-                "lat": veh["current_lat"] - 0.1,
-                "lng": veh["current_lng"] - 0.08,
-                "speed_kmh": 0,
-                "temp_c": veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None,
-                "fuel_pct": 81,
-                "network": "NavIC Satellite Active",
-                "status": "REST_LOGGED"
-            },
-            {
-                "checkpoint": f"Current Position ({veh['status']})",
-                "timestamp": "18:45 IST",
-                "lat": veh["current_lat"],
-                "lng": veh["current_lng"],
-                "speed_kmh": veh["speed_kmh"],
-                "temp_c": veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None,
-                "fuel_pct": veh["fuel_monitor"]["tank_level_pct"],
-                "network": veh["network_mode"],
-                "status": veh["status"]
-            }
-        ]
+        # Prioritize vehicle-specific logged trip waypoints
+        trip_wps = veh.get("trip_waypoints", [])
+        if trip_wps:
+            waypoints = [
+                {
+                    "checkpoint": wp.get("location", "Checkpoint"),
+                    "timestamp": wp.get("time", "12:00 IST"),
+                    "lat": veh["current_lat"],
+                    "lng": veh["current_lng"],
+                    "speed_kmh": wp.get("speed", veh["speed_kmh"]),
+                    "temp_c": wp.get("temp", veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None),
+                    "fuel_pct": veh.get("fuel_monitor", {}).get("tank_level_pct", 75),
+                    "network": veh.get("network_mode", "NavIC"),
+                    "status": wp.get("event", "Normal Transit")
+                }
+                for wp in trip_wps
+            ]
+        else:
+            waypoints = [
+                {
+                    "checkpoint": f"Origin Departure: {origin_name}",
+                    "timestamp": "06:00 IST",
+                    "lat": veh["current_lat"] - 0.5,
+                    "lng": veh["current_lng"] - 0.4,
+                    "speed_kmh": 45,
+                    "temp_c": veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None,
+                    "fuel_pct": 98,
+                    "network": "4G LTE",
+                    "status": "CLEAR"
+                },
+                {
+                    "checkpoint": f"Current Position ({veh['status']})",
+                    "timestamp": "18:45 IST",
+                    "lat": veh["current_lat"],
+                    "lng": veh["current_lng"],
+                    "speed_kmh": veh["speed_kmh"],
+                    "temp_c": veh["cold_chain"]["current_temp_c"] if veh.get("cold_chain") else None,
+                    "fuel_pct": veh["fuel_monitor"]["tank_level_pct"],
+                    "network": veh["network_mode"],
+                    "status": veh["status"]
+                }
+            ]
 
         return {
             "vehicle_id": veh["id"],
@@ -121,6 +117,7 @@ class FleetTelemetryEngine:
             "origin": origin_name,
             "destination": dest_name,
             "waypoints": waypoints,
+            "trip_waypoints": trip_wps,
             "cold_chain_profile": veh.get("cold_chain_profile", "STANDARD_VACCINES"),
             "cold_chain_compliance_pct": 99.4 if veh.get("cold_chain") else None,
             "driver_safety_score": veh["driver_score"]

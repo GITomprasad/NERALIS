@@ -2,6 +2,7 @@ import React from 'react';
 import { LanguageProvider } from './context/LanguageContext';
 import { PlatformProvider, usePlatform } from './context/PlatformContext';
 import { Navbar } from './components/layout/Navbar';
+import { ConnectivityBanner } from './components/common/ConnectivityBanner';
 import { Sidebar } from './components/layout/Sidebar';
 import { KPIBar } from './components/layout/KPIBar';
 import { InfoDrawer } from './components/layout/InfoDrawer';
@@ -11,6 +12,7 @@ import { ParliamentReportModal } from './components/reports/ParliamentReportModa
 import { DataProvenanceModal } from './components/common/DataProvenanceModal';
 import { MLModelMetricsModal } from './components/common/MLModelMetricsModal';
 import { AuthModal } from './components/common/AuthModal';
+import { ChatbotWidget } from './components/common/ChatbotWidget';
 
 // Module Components
 import { AccessibilityMonitor } from './components/modules/AccessibilityMonitor';
@@ -58,6 +60,9 @@ const MainLayout: React.FC = () => {
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       {/* Top Navbar */}
       <Navbar onMobileMenuToggle={() => setMobileMenuOpen((v) => !v)} />
+
+      {/* Connectivity & Low-Network Lite Mode Banner */}
+      <ConnectivityBanner />
 
       {/* KPI Status Chips Bar */}
       <KPIBar />
@@ -143,12 +148,13 @@ const MainLayout: React.FC = () => {
       {/* Slide-out Entity Inspector Drawer (480px) */}
       <InfoDrawer />
 
-      {/* Global Modals & Toasts */}
+      {/* Global Modals, Chatbot & Toasts */}
       <USSDPhoneModal />
       <ParliamentReportModal />
       <DataProvenanceModal />
       <MLModelMetricsModal />
       <AuthModal />
+      <ChatbotWidget />
       <ToastContainer />
     </div>
   );
