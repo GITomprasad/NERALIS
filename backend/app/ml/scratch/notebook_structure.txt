@@ -1,0 +1,4641 @@
+Number of cells: 148
+
+--- Cell 0 (code) ---
+from pathlib import Path
+import os
+
+print("Current folder:", os.getcwd())
+print("Data path exists:", Path("../app/data").exists())
+
+print("\nFiles inside data:")
+for file in Path("../app/data").iterdir():
+    print(file)
+
+--- Cell 1 (code) ---
+import pandas as pd
+import numpy as np
+from pathlib import Path
+
+DATA_DIR = Path("../app/data")
+
+nasa = pd.read_csv(
+    DATA_DIR / "Global_Landslide_Catalog_Export_rows.csv"
+)
+
+rainfall = pd.read_csv(
+    DATA_DIR / "rainfall in india 1901-2015.csv"
+)
+
+district_rainfall = pd.read_csv(
+    DATA_DIR / "district wise rainfall normal.csv"
+)
+
+print("NASA:", nasa.shape)
+print("Rainfall:", rainfall.shape)
+print("District rainfall:", district_rainfall.shape)
+
+--- Cell 2 (code) ---
+print("=== NASA COLUMNS ===")
+print(nasa.columns.tolist())
+
+print("\n=== RAINFALL COLUMNS ===")
+print(rainfall.columns.tolist())
+
+print("\n=== DISTRICT RAINFALL COLUMNS ===")
+print(district_rainfall.columns.tolist())
+
+--- Cell 3 (code) ---
+nasa.head()
+
+--- Cell 4 (code) ---
+rainfall.head()
+
+--- Cell 5 (code) ---
+district_rainfall.head()
+
+--- Cell 6 (code) ---
+print("NASA:", nasa.shape)
+print("Rainfall:", rainfall.shape)
+print("District rainfall:", district_rainfall.shape)
+
+--- Cell 7 (code) ---
+print("=== NASA ===")
+print(nasa.dtypes)
+
+
+
+--- Cell 8 (code) ---
+print("\n=== Rainfall ===")
+print(rainfall.dtypes)
+
+
+
+--- Cell 9 (code) ---
+print("\n=== District Rainfall ===")
+print(district_rainfall.dtypes)
+
+--- Cell 10 (code) ---
+print("=== NASA Missing Values ===")
+print(nasa.isnull().sum())
+
+
+
+--- Cell 11 (code) ---
+print("\n=== Rainfall Missing Values ===")
+print(rainfall.isnull().sum())
+
+
+
+--- Cell 12 (code) ---
+print("\n=== District Rainfall Missing Values ===")
+print(district_rainfall.isnull().sum())
+
+--- Cell 13 (code) ---
+print("Rainfall years:")
+print(rainfall["YEAR"].min(), rainfall["YEAR"].max())
+print("Unique years:", rainfall["YEAR"].nunique())
+
+
+
+--- Cell 14 (code) ---
+print("\nRainfall subdivisions:")
+print(rainfall["SUBDIVISION"].nunique())
+print(rainfall["SUBDIVISION"].unique())
+
+
+
+--- Cell 15 (code) ---
+print("\nDistrict states:")
+print(district_rainfall["STATE_UT_NAME"].nunique())
+
+print("\nDistricts:")
+print(district_rainfall["DISTRICT"].nunique())
+
+--- Cell 16 (code) ---
+print("NASA date range:")
+print(nasa["event_date"].min())
+print(nasa["event_date"].max())
+
+--- Cell 17 (code) ---
+nasa["event_year"] = pd.to_datetime(
+    nasa["event_date"]
+).dt.year
+
+print("Min year:", nasa["event_year"].min())
+print("Max year:", nasa["event_year"].max())
+print("Unique years:", nasa["event_year"].nunique())
+
+--- Cell 18 (code) ---
+print(nasa["event_year"].value_counts().sort_index())
+
+--- Cell 19 (code) ---
+print("=== Category ===")
+print(nasa["landslide_category"].value_counts(dropna=False))
+
+
+
+--- Cell 20 (code) ---
+print("\n=== Trigger ===")
+print(nasa["landslide_trigger"].value_counts(dropna=False))
+
+
+
+--- Cell 21 (code) ---
+print("\n=== Size ===")
+print(nasa["landslide_size"].value_counts(dropna=False))
+
+
+
+--- Cell 22 (code) ---
+print("\n=== Setting ===")
+print(nasa["landslide_setting"].value_counts(dropna=False))
+
+--- Cell 23 (code) ---
+print(nasa["country_name"].value_counts().head(15))
+
+
+
+--- Cell 24 (code) ---
+print("\nTop admin divisions:")
+print(nasa["admin_division_name"].value_counts().head(20))
+
+--- Cell 25 (code) ---
+ner_states = [
+    "Arunachal Pradesh",
+    "Assam",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Tripura",
+    "Sikkim"
+]
+
+ner_data = nasa[
+    nasa["admin_division_name"].isin(ner_states)
+]
+
+print("NER landslide events:", len(ner_data))
+
+print("\nEvents by state:")
+print(ner_data["admin_division_name"].value_counts())
+
+--- Cell 26 (code) ---
+print(
+    ner_data["event_year"]
+    .value_counts()
+    .sort_index()
+)
+
+--- Cell 27 (code) ---
+print("NASA duplicates:", nasa.duplicated().sum())
+
+print("Rainfall duplicates:", rainfall.duplicated().sum())
+
+print("District rainfall duplicates:", district_rainfall.duplicated().sum())
+
+--- Cell 28 (code) ---
+print(nasa.columns.tolist())
+
+--- Cell 29 (code) ---
+print(nasa["location_accuracy"].value_counts(dropna=False))
+
+--- Cell 30 (code) ---
+print("Latitude:")
+print(nasa["latitude"].min(), nasa["latitude"].max())
+
+print("\nLongitude:")
+print(nasa["longitude"].min(), nasa["longitude"].max())
+
+--- Cell 31 (code) ---
+india = nasa[nasa["country_name"] == "India"]
+
+print("India events:", len(india))
+
+
+
+--- Cell 32 (code) ---
+print("\nIndian states/divisions:")
+print(india["admin_division_name"].value_counts(dropna=False))
+
+--- Cell 33 (code) ---
+for state, count in india["admin_division_name"].value_counts(dropna=False).items():
+    print(repr(state), ":", count)
+
+--- Cell 34 (code) ---
+print(
+    india[india["admin_division_name"].str.contains(
+        "Tripura", case=False, na=False
+    )]["admin_division_name"].value_counts()
+)
+
+--- Cell 35 (code) ---
+ner_states = [
+    "Assam",
+    "Manipur",
+    "Sikkim",
+    "Mizoram",
+    "Arunachal Pradesh",
+    "Arunāchal Pradesh",
+    "Meghalaya",
+    "Meghālaya",
+    "Nagaland",
+    "Nāgāland",
+    "Tripura"
+]
+
+ner_data = nasa[
+    nasa["admin_division_name"].isin(ner_states)
+]
+
+print("NER events:", len(ner_data))
+
+print("\nNER events by year:")
+print(ner_data["event_year"].value_counts().sort_index())
+
+--- Cell 36 (code) ---
+ner_data.head()
+
+--- Cell 37 (code) ---
+ner_data.isnull().sum().sort_values(ascending=False)
+
+--- Cell 38 (code) ---
+print("Landslide categories:")
+print(ner_data["landslide_category"].value_counts())
+
+
+
+--- Cell 39 (code) ---
+print("\nLandslide settings:")
+print(ner_data["landslide_setting"].value_counts())
+
+--- Cell 40 (code) ---
+print("\nLandslide triggers:")
+print(ner_data["landslide_trigger"].value_counts())
+
+
+
+
+
+--- Cell 41 (code) ---
+print("\nLandslide sizes:")
+print(ner_data["landslide_size"].value_counts())
+
+--- Cell 42 (code) ---
+print(ner_data["admin_division_name"].value_counts())
+
+--- Cell 43 (code) ---
+categorical_cols = [
+    "admin_division_name",
+    "landslide_category",
+    "landslide_trigger",
+    "landslide_size",
+    "landslide_setting"
+]
+
+for col in categorical_cols:
+    print(f"\n{col}: {ner_data[col].nunique()} unique values")
+
+--- Cell 44 (code) ---
+numeric_cols = ner_data.select_dtypes(include=["int64", "float64"]).columns
+
+print(numeric_cols.tolist())
+
+
+
+--- Cell 45 (code) ---
+print("\nSummary:")
+print(ner_data[numeric_cols].describe().T)
+
+--- Cell 46 (code) ---
+ner_data["event_date_dt"] = pd.to_datetime(
+    ner_data["event_date"],
+    errors="coerce"
+)
+
+print(ner_data["event_date_dt"].dt.month.value_counts().sort_index())
+
+--- Cell 47 (code) ---
+rainfall.head()
+
+--- Cell 48 (code) ---
+print("Shape:", rainfall.shape)
+
+print("\nColumns:")
+print(rainfall.columns.tolist())
+
+print("\nMissing values:")
+print(rainfall.isnull().sum())
+
+--- Cell 49 (code) ---
+print("Number of subdivisions:", rainfall["SUBDIVISION"].nunique())
+
+print("\nSubdivisions:")
+print(sorted(rainfall["SUBDIVISION"].unique()))
+
+--- Cell 50 (code) ---
+print("Year range:", rainfall["YEAR"].min(), "to", rainfall["YEAR"].max())
+
+print("\nYears around NASA period:")
+print(
+    rainfall[
+        rainfall["YEAR"].between(2007, 2016)
+    ]["YEAR"].unique()
+)
+
+--- Cell 51 (code) ---
+print("Shape:", district_rainfall.shape)
+
+print("\nColumns:")
+print(district_rainfall.columns.tolist())
+
+print("\nMissing values:")
+print(district_rainfall.isnull().sum())
+
+--- Cell 52 (code) ---
+print("States:", district_rainfall["STATE_UT_NAME"].nunique())
+
+print("\nStates:")
+print(sorted(district_rainfall["STATE_UT_NAME"].unique()))
+
+--- Cell 53 (code) ---
+ner_states_district = [
+    "ARUNACHAL PRADESH",
+    "ASSAM",
+    "MANIPUR",
+    "MEGHALAYA",
+    "MIZORAM",
+    "NAGALAND",
+    "SIKKIM",
+    "TRIPURA"
+]
+
+ner_district_rainfall = district_rainfall[
+    district_rainfall["STATE_UT_NAME"].isin(ner_states_district)
+]
+
+print("NER district rainfall rows:", len(ner_district_rainfall))
+
+print("\nDistricts by state:")
+print(
+    ner_district_rainfall
+    .groupby("STATE_UT_NAME")["DISTRICT"]
+    .count()
+)
+
+--- Cell 54 (code) ---
+for state in ner_states_district:
+    print(f"\n--- {state} ---")
+    print(
+        sorted(
+            ner_district_rainfall[
+                ner_district_rainfall["STATE_UT_NAME"] == state
+            ]["DISTRICT"].tolist()
+        )
+    )
+
+--- Cell 55 (code) ---
+print("Unique NASA closest points:", ner_data["gazeteer_closest_point"].nunique())
+
+print("\nSample closest points:")
+print(
+    sorted(
+        ner_data["gazeteer_closest_point"]
+        .dropna()
+        .astype(str)
+        .unique()
+    )[:100]
+)
+
+--- Cell 56 (code) ---
+import unicodedata
+import re
+
+def normalize_name(x):
+    x = str(x)
+    x = unicodedata.normalize("NFKD", x)
+    x = "".join(c for c in x if not unicodedata.combining(c))
+    x = x.upper()
+    x = re.sub(r"[^A-Z0-9 ]", " ", x)
+    x = re.sub(r"\s+", " ", x).strip()
+    return x
+
+ner_data["closest_normalized"] = (
+    ner_data["gazeteer_closest_point"].apply(normalize_name)
+)
+
+ner_district_rainfall["district_normalized"] = (
+    ner_district_rainfall["DISTRICT"].apply(normalize_name)
+)
+
+district_names = set(
+    ner_district_rainfall["district_normalized"]
+)
+
+matched = ner_data[
+    ner_data["closest_normalized"].isin(district_names)
+]
+
+print("NASA events:", len(ner_data))
+print("Direct district matches:", len(matched))
+print("Unique matched locations:", matched["closest_normalized"].nunique())
+
+print("\nMatched locations:")
+print(sorted(matched["closest_normalized"].unique()))
+
+--- Cell 57 (code) ---
+unmatched = ner_data[
+    ~ner_data["closest_normalized"].isin(district_names)
+]
+
+print("Unmatched events:", len(unmatched))
+print("Unique unmatched locations:", unmatched["closest_normalized"].nunique())
+
+print("\nUnmatched locations:")
+print(sorted(unmatched["closest_normalized"].unique()))
+
+--- Cell 58 (code) ---
+unmatched_counts = (
+    unmatched["closest_normalized"]
+    .value_counts()
+    .sort_values(ascending=False)
+)
+
+print(unmatched_counts)
+
+--- Cell 59 (code) ---
+unmatched_counts = (
+    unmatched["closest_normalized"]
+    .value_counts()
+    .sort_values(ascending=False)
+)
+
+print(unmatched_counts)
+
+--- Cell 60 (code) ---
+print(unmatched_counts.to_string())
+
+--- Cell 61 (code) ---
+print(
+    ner_district_rainfall
+    .groupby("STATE_UT_NAME")["ANNUAL"]
+    .agg(["count", "min", "mean", "max"])
+)
+
+--- Cell 62 (code) ---
+ner_ml = ner_data.copy()
+
+print("Shape:", ner_ml.shape)
+print("Columns:", ner_ml.columns.tolist())
+
+--- Cell 63 (code) ---
+severity_map = {
+    "small": "LOW",
+    "medium": "MEDIUM",
+    "large": "HIGH",
+    "very_large": "HIGH"
+}
+
+ner_ml["severity_target"] = (
+    ner_ml["landslide_size"]
+    .map(severity_map)
+)
+
+print("Before removing unknown:")
+print(ner_ml["severity_target"].value_counts(dropna=False))
+
+# Remove rows where landslide_size was unknown
+ner_ml = ner_ml.dropna(subset=["severity_target"]).copy()
+
+print("\nAfter removing unknown:")
+print(ner_ml["severity_target"].value_counts())
+
+print("\nFinal training rows:", len(ner_ml))
+
+--- Cell 64 (code) ---
+state_map = {
+    "Assam": "ASSAM",
+    
+    "Manipur": "MANIPUR",
+    
+    "Sikkim": "SIKKIM",
+    
+    "Mizoram": "MIZORAM",
+    
+    "Arunachal Pradesh": "ARUNACHAL PRADESH",
+    "Arunāchal Pradesh": "ARUNACHAL PRADESH",
+    
+    "Meghalaya": "MEGHALAYA",
+    "Meghālaya": "MEGHALAYA",
+    
+    "Nagaland": "NAGALAND",
+    "Nāgāland": "NAGALAND",
+    
+    "Tripura": "TRIPURA"
+}
+
+ner_ml["state"] = (
+    ner_ml["admin_division_name"]
+    .map(state_map)
+)
+
+print(ner_ml["state"].value_counts())
+
+print("\nMissing normalized states:")
+print(ner_ml["state"].isna().sum())
+
+--- Cell 65 (code) ---
+subdivision_map = {
+    "ARUNACHAL PRADESH": "ARUNACHAL PRADESH",
+
+    "ASSAM": "ASSAM & MEGHALAYA",
+    "MEGHALAYA": "ASSAM & MEGHALAYA",
+
+    "MANIPUR": "NAGA MANI MIZO TRIPURA",
+    "MIZORAM": "NAGA MANI MIZO TRIPURA",
+    "NAGALAND": "NAGA MANI MIZO TRIPURA",
+    "TRIPURA": "NAGA MANI MIZO TRIPURA",
+
+    "SIKKIM": "SUB HIMALAYAN WEST BENGAL & SIKKIM"
+}
+
+ner_ml["rainfall_subdivision"] = (
+    ner_ml["state"]
+    .map(subdivision_map)
+)
+
+print(
+    ner_ml[
+        ["state", "rainfall_subdivision"]
+    ]
+    .drop_duplicates()
+    .sort_values("state")
+)
+
+print("\nMissing subdivision mappings:")
+print(ner_ml["rainfall_subdivision"].isna().sum())
+
+--- Cell 66 (code) ---
+ner_subdivisions = ner_ml["rainfall_subdivision"].unique()
+
+rainfall_ner = rainfall[
+    rainfall["SUBDIVISION"].isin(ner_subdivisions)
+].copy()
+
+print("Rainfall NER shape:", rainfall_ner.shape)
+
+print("\nSubdivisions found:")
+print(
+    rainfall_ner["SUBDIVISION"]
+    .value_counts()
+)
+
+print("\nYear range:")
+print(
+    rainfall_ner["YEAR"].min(),
+    "to",
+    rainfall_ner["YEAR"].max()
+)
+
+print("\nYears available for each subdivision:")
+print(
+    rainfall_ner
+    .groupby("SUBDIVISION")["YEAR"]
+    .agg(["min", "max", "count"])
+)
+
+--- Cell 67 (code) ---
+# Create merge keys from the rainfall dataset
+rainfall_keys = set(
+    zip(
+        rainfall_ner["SUBDIVISION"],
+        rainfall_ner["YEAR"]
+    )
+)
+
+# Check whether every NASA event has a rainfall match
+ner_ml["rainfall1_match"] = ner_ml.apply(
+    lambda row: (
+        row["rainfall_subdivision"],
+        row["event_year"]
+    ) in rainfall_keys,
+    axis=1
+)
+
+print("Rainfall Dataset 1 match status:")
+print(ner_ml["rainfall1_match"].value_counts())
+
+print("\nUnmatched events by year:")
+print(
+    ner_ml.loc[
+        ~ner_ml["rainfall1_match"]
+    ]
+    ["event_year"]
+    .value_counts()
+    .sort_index()
+)
+
+print("\nUnmatched events by state:")
+print(
+    ner_ml.loc[
+        ~ner_ml["rainfall1_match"]
+    ]
+    ["state"]
+    .value_counts()
+)
+
+--- Cell 68 (code) ---
+rainfall1 = rainfall_ner.copy()
+
+# Rename join columns to match our ML dataset
+rainfall1 = rainfall1.rename(
+    columns={
+        "SUBDIVISION": "rainfall_subdivision",
+        "YEAR": "event_year"
+    }
+)
+
+print("Rainfall Dataset 1 shape:", rainfall1.shape)
+
+print("\nColumns:")
+print(rainfall1.columns.tolist())
+
+print("\nDuplicate merge keys:")
+print(
+    rainfall1.duplicated(
+        subset=["rainfall_subdivision", "event_year"]
+    ).sum()
+)
+
+print("\nSample:")
+print(
+    rainfall1[
+        [
+            "rainfall_subdivision",
+            "event_year",
+            "JAN",
+            "JUN",
+            "JUL",
+            "AUG",
+            "SEP",
+            "ANNUAL"
+        ]
+    ].head()
+)
+
+--- Cell 69 (code) ---
+# Keep the original row count for validation
+before_rows = len(ner_ml)
+
+# Merge yearly/subdivision rainfall
+ner_ml = ner_ml.merge(
+    rainfall1,
+    on=["rainfall_subdivision", "event_year"],
+    how="left",
+    validate="many_to_one"
+)
+
+print("Rows before merge:", before_rows)
+print("Rows after merge:", len(ner_ml))
+
+print("\n2016 / rainfall availability check:")
+print(
+    ner_ml.groupby("event_year")["ANNUAL"]
+    .agg(["count", "size"])
+    .tail(10)
+)
+
+print("\nEvents with missing ANNUAL rainfall:")
+print(ner_ml["ANNUAL"].isna().sum())
+
+--- Cell 70 (code) ---
+# Extract event month from the already parsed date
+ner_ml["event_month"] = ner_ml["event_date_dt"].dt.month
+
+# Map month number to rainfall column
+month_to_rainfall = {
+    1: "JAN",
+    2: "FEB",
+    3: "MAR",
+    4: "APR",
+    5: "MAY",
+    6: "JUN",
+    7: "JUL",
+    8: "AUG",
+    9: "SEP",
+    10: "OCT",
+    11: "NOV",
+    12: "DEC"
+}
+
+ner_ml["event_month_rainfall"] = ner_ml.apply(
+    lambda row: row[month_to_rainfall[row["event_month"]]],
+    axis=1
+)
+
+print(
+    ner_ml[
+        [
+            "event_date",
+            "event_year",
+            "event_month",
+            "event_month_rainfall",
+            "ANNUAL"
+        ]
+    ].head(10)
+)
+
+print("\nMissing event-month rainfall:")
+print(ner_ml["event_month_rainfall"].isna().sum())
+
+--- Cell 71 (code) ---
+def get_season(month):
+    if month in [12, 1, 2]:
+        return "WINTER"
+    elif month in [3, 4, 5]:
+        return "PRE_MONSOON"
+    elif month in [6, 7, 8, 9]:
+        return "MONSOON"
+    else:
+        return "POST_MONSOON"
+
+
+ner_ml["season"] = ner_ml["event_month"].apply(get_season)
+
+ner_ml["is_monsoon"] = (
+    ner_ml["event_month"]
+    .isin([6, 7, 8, 9])
+    .astype(int)
+)
+
+print("Season distribution:")
+print(ner_ml["season"].value_counts())
+
+print("\nMonsoon flag:")
+print(ner_ml["is_monsoon"].value_counts())
+
+--- Cell 72 (code) ---
+season_to_rainfall = {
+    "WINTER": "Jan-Feb",
+    "PRE_MONSOON": "Mar-May",
+    "MONSOON": "Jun-Sep",
+    "POST_MONSOON": "Oct-Dec"
+}
+
+ner_ml["seasonal_rainfall"] = ner_ml.apply(
+    lambda row: row[season_to_rainfall[row["season"]]],
+    axis=1
+)
+
+print(
+    ner_ml[
+        [
+            "event_month",
+            "season",
+            "event_month_rainfall",
+            "seasonal_rainfall",
+            "ANNUAL"
+        ]
+    ].head(15)
+)
+
+print("\nMissing seasonal rainfall:")
+print(ner_ml["seasonal_rainfall"].isna().sum())
+
+--- Cell 73 (code) ---
+# Create a clean working copy of the NER district rainfall dataset
+district_rainfall_ner = ner_district_rainfall.copy()
+
+print("Shape:", district_rainfall_ner.shape)
+
+print("\nDuplicate state-district pairs:")
+print(
+    district_rainfall_ner.duplicated(
+        subset=["STATE_UT_NAME", "DISTRICT"]
+    ).sum()
+)
+
+print("\nSample:")
+print(
+    district_rainfall_ner[
+        [
+            "STATE_UT_NAME",
+            "DISTRICT",
+            "JUN",
+            "JUL",
+            "AUG",
+            "SEP",
+            "Jun-Sep",
+            "ANNUAL"
+        ]
+    ].head()
+)
+
+--- Cell 74 (code) ---
+import re
+import unicodedata
+
+def normalize_text(text):
+    if pd.isna(text):
+        return None
+    
+    text = str(text)
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(
+        char for char in text
+        if not unicodedata.combining(char)
+    )
+    text = text.upper()
+    text = re.sub(r"[^A-Z0-9 ]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    
+    return text
+
+
+# Normalize district names
+district_rainfall_ner["district_normalized"] = (
+    district_rainfall_ner["DISTRICT"]
+    .apply(normalize_text)
+)
+
+# Re-normalize NASA closest locations for consistency
+ner_ml["closest_normalized"] = (
+    ner_ml["gazeteer_closest_point"]
+    .apply(normalize_text)
+)
+
+# Build state + location keys
+ner_ml["district_match_key"] = (
+    ner_ml["state"] + " | " + ner_ml["closest_normalized"]
+)
+
+district_rainfall_ner["district_match_key"] = (
+    district_rainfall_ner["STATE_UT_NAME"] + " | " +
+    district_rainfall_ner["district_normalized"]
+)
+
+# Check direct match coverage
+district_keys = set(
+    district_rainfall_ner["district_match_key"]
+)
+
+ner_ml["district_direct_match"] = (
+    ner_ml["district_match_key"]
+    .isin(district_keys)
+)
+
+print("Direct district match coverage:")
+print(ner_ml["district_direct_match"].value_counts())
+
+print("\nMatched events:", ner_ml["district_direct_match"].sum())
+print(
+    "Unmatched events:",
+    (~ner_ml["district_direct_match"]).sum()
+)
+
+--- Cell 75 (code) ---
+print("Current closest_normalized sample:")
+print(
+    ner_ml[
+        ["gazeteer_closest_point", "closest_normalized"]
+    ]
+    .drop_duplicates()
+    .head(20)
+)
+
+print("\nCurrent normalized district sample:")
+print(
+    district_rainfall_ner[
+        ["DISTRICT", "district_normalized"]
+    ]
+    .drop_duplicates()
+    .head(30)
+)
+
+--- Cell 76 (code) ---
+print("Old-style direct match locations currently found:")
+print(
+    ner_ml.loc[
+        ner_ml["district_direct_match"],
+        "closest_normalized"
+    ]
+    .value_counts()
+    .sort_index()
+)
+
+--- Cell 77 (code) ---
+print("NASA DIMAPUR rows:")
+print(
+    ner_ml.loc[
+        ner_ml["closest_normalized"] == "DIMAPUR",
+        ["state", "gazeteer_closest_point", "closest_normalized"]
+    ]
+    .value_counts()
+)
+
+print("\nDistrict rainfall DIMAPUR row:")
+print(
+    district_rainfall_ner.loc[
+        district_rainfall_ner["district_normalized"] == "DIMAPUR",
+        ["STATE_UT_NAME", "DISTRICT", "district_normalized"]
+    ]
+)
+
+--- Cell 78 (code) ---
+print("District rows containing partial/truncated names:")
+print(
+    district_rainfall_ner[
+        district_rainfall_ner["DISTRICT"].str.contains(
+            r"\(|\.",
+            regex=True,
+            na=False
+        )
+    ][["STATE_UT_NAME", "DISTRICT", "district_normalized"]]
+)
+
+--- Cell 79 (code) ---
+# Match by location name only
+district_names_only = set(
+    district_rainfall_ner["district_normalized"]
+)
+
+ner_ml["location_only_match"] = (
+    ner_ml["closest_normalized"]
+    .isin(district_names_only)
+)
+
+print("Location-only matches:")
+print(ner_ml["location_only_match"].value_counts())
+
+print("\nState + location matches:")
+print(ner_ml["district_direct_match"].value_counts())
+
+print("\nLocation matches but state mismatch:")
+state_mismatch = ner_ml[
+    ner_ml["location_only_match"] &
+    ~ner_ml["district_direct_match"]
+].copy()
+
+print(
+    state_mismatch[
+        [
+            "state",
+            "gazeteer_closest_point",
+            "closest_normalized"
+        ]
+    ]
+    .value_counts()
+)
+
+--- Cell 80 (code) ---
+# Prepare district rainfall columns for merging
+district_features = district_rainfall_ner[
+    [
+        "STATE_UT_NAME",
+        "district_normalized",
+        "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+        "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+        "ANNUAL", "Jan-Feb", "Mar-May", "Jun-Sep", "Oct-Dec"
+    ]
+].copy()
+
+# Rename columns so they don't collide with Dataset 1 rainfall columns
+district_features = district_features.rename(
+    columns={
+        "STATE_UT_NAME": "state",
+        "district_normalized": "closest_normalized",
+
+        "JAN": "district_JAN",
+        "FEB": "district_FEB",
+        "MAR": "district_MAR",
+        "APR": "district_APR",
+        "MAY": "district_MAY",
+        "JUN": "district_JUN",
+        "JUL": "district_JUL",
+        "AUG": "district_AUG",
+        "SEP": "district_SEP",
+        "OCT": "district_OCT",
+        "NOV": "district_NOV",
+        "DEC": "district_DEC",
+
+        "ANNUAL": "district_ANNUAL",
+        "Jan-Feb": "district_Jan-Feb",
+        "Mar-May": "district_Mar-May",
+        "Jun-Sep": "district_Jun-Sep",
+        "Oct-Dec": "district_Oct-Dec"
+    }
+)
+
+before_rows = len(ner_ml)
+
+ner_ml = ner_ml.merge(
+    district_features,
+    on=["state", "closest_normalized"],
+    how="left",
+    validate="many_to_one"
+)
+
+print("Rows before merge:", before_rows)
+print("Rows after merge:", len(ner_ml))
+
+print("\nEvents with district climate profile:")
+print(ner_ml["district_ANNUAL"].notna().sum())
+
+print("\nEvents without district climate profile:")
+print(ner_ml["district_ANNUAL"].isna().sum())
+
+--- Cell 81 (code) ---
+print("Current ner_ml shape:", ner_ml.shape)
+
+print("\nCurrent columns:")
+for i, col in enumerate(ner_ml.columns, 1):
+    print(i, col)
+
+--- Cell 82 (code) ---
+for i, col in enumerate(ner_ml.columns, 1):
+    print(f"{i:2}. {col}")
+
+--- Cell 83 (code) ---
+candidate_features = [
+    "latitude",
+    "longitude",
+    "admin_division_population",
+    "gazeteer_distance",
+    "event_year",
+    "event_month",
+    "is_monsoon",
+    "event_month_rainfall",
+    "seasonal_rainfall",
+    "ANNUAL",
+    "district_Jun-Sep",
+    "district_ANNUAL"
+]
+
+print("Available candidate features:\n")
+
+for col in candidate_features:
+    print(
+        f"{col:30} → "
+        f"{'YES' if col in ner_ml.columns else 'NO'}"
+    )
+
+--- Cell 84 (code) ---
+candidate_features = [
+    "latitude",
+    "longitude",
+    "admin_division_population",
+    "gazeteer_distance",
+    "event_year",
+    "event_month",
+    "is_monsoon",
+    "event_month_rainfall",
+    "seasonal_rainfall",
+    "ANNUAL",
+    "district_Jun-Sep",
+    "district_ANNUAL"
+]
+
+X = ner_ml[candidate_features].copy()
+y = ner_ml["severity_target"].copy()
+
+print("X shape:", X.shape)
+print("y shape:", y.shape)
+
+print("\nTarget distribution:")
+print(y.value_counts())
+
+print("\nMissing values in X:")
+print(X.isna().sum())
+
+--- Cell 85 (code) ---
+# Add availability indicators BEFORE imputation
+X["rainfall1_available"] = (
+    X["ANNUAL"].notna().astype(int)
+)
+
+X["district_rainfall_available"] = (
+    X["district_ANNUAL"].notna().astype(int)
+)
+
+print("Rainfall 1 availability:")
+print(X["rainfall1_available"].value_counts())
+
+print("\nDistrict rainfall availability:")
+print(X["district_rainfall_available"].value_counts())
+
+print("\nNew X shape:", X.shape)
+
+--- Cell 86 (code) ---
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42,
+    stratify=y
+)
+
+print("X_train:", X_train.shape)
+print("X_test :", X_test.shape)
+
+print("\nTraining target distribution:")
+print(y_train.value_counts())
+
+print("\nTest target distribution:")
+print(y_test.value_counts())
+
+--- Cell 87 (code) ---
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+
+model = Pipeline([
+    (
+        "imputer",
+        SimpleImputer(strategy="median")
+    ),
+    (
+        "classifier",
+        RandomForestClassifier(
+            n_estimators=300,
+            class_weight="balanced",
+            random_state=42,
+            n_jobs=-1
+        )
+    )
+])
+
+model.fit(X_train, y_train)
+
+print("Model trained successfully!")
+
+--- Cell 88 (code) ---
+from sklearn.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
+    f1_score,
+    classification_report,
+    confusion_matrix
+)
+
+# Predictions
+y_pred = model.predict(X_test)
+
+# Metrics
+accuracy = accuracy_score(y_test, y_pred)
+balanced_acc = balanced_accuracy_score(y_test, y_pred)
+macro_f1 = f1_score(y_test, y_pred, average="macro")
+
+print("Accuracy:", round(accuracy, 4))
+print("Balanced Accuracy:", round(balanced_acc, 4))
+print("Macro F1:", round(macro_f1, 4))
+
+print("\nClassification Report:")
+print(
+    classification_report(
+        y_test,
+        y_pred,
+        labels=["LOW", "MEDIUM", "HIGH"],
+        zero_division=0
+    )
+)
+
+print("\nConfusion Matrix:")
+print(
+    confusion_matrix(
+        y_test,
+        y_pred,
+        labels=["LOW", "MEDIUM", "HIGH"]
+    )
+)
+
+--- Cell 89 (code) ---
+import pandas as pd
+
+rf = model.named_steps["classifier"]
+
+feature_importance = pd.DataFrame({
+    "feature": X_train.columns,
+    "importance": rf.feature_importances_
+}).sort_values(
+    "importance",
+    ascending=False
+)
+
+print(feature_importance)
+
+--- Cell 90 (code) ---
+from sklearn.model_selection import StratifiedKFold, cross_validate
+
+cv = StratifiedKFold(
+    n_splits=5,
+    shuffle=True,
+    random_state=42
+)
+
+scoring = {
+    "accuracy": "accuracy",
+    "balanced_accuracy": "balanced_accuracy",
+    "macro_f1": "f1_macro"
+}
+
+cv_results = cross_validate(
+    model,
+    X,
+    y,
+    cv=cv,
+    scoring=scoring,
+    n_jobs=-1
+)
+
+print("5-Fold Cross-Validation Results")
+
+print(
+    "\nAccuracy:",
+    round(cv_results["test_accuracy"].mean(), 4),
+    "+/-",
+    round(cv_results["test_accuracy"].std(), 4)
+)
+
+print(
+    "Balanced Accuracy:",
+    round(cv_results["test_balanced_accuracy"].mean(), 4),
+    "+/-",
+    round(cv_results["test_balanced_accuracy"].std(), 4)
+)
+
+print(
+    "Macro F1:",
+    round(cv_results["test_macro_f1"].mean(), 4),
+    "+/-",
+    round(cv_results["test_macro_f1"].std(), 4)
+)
+
+--- Cell 91 (code) ---
+print([col for col in ner_ml.columns if "rainfall" in col.lower()])
+
+--- Cell 92 (code) ---
+from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+
+# ============================================================
+# BASE FEATURES
+# ============================================================
+
+features_without_district = [
+    "latitude",
+    "longitude",
+    "admin_division_population",
+    "gazeteer_distance",
+    "event_year",
+    "event_month",
+    "is_monsoon",
+    "event_month_rainfall",
+    "seasonal_rainfall",
+    "ANNUAL",
+    "rainfall1_match"
+]
+
+
+# ============================================================
+# FIND DISTRICT COLUMNS
+# ============================================================
+
+district_columns = [
+    col for col in ner_ml.columns
+    if col.startswith("district_")
+]
+
+print("All district columns:")
+print(district_columns)
+
+
+# ============================================================
+# KEEP ONLY NUMERIC DISTRICT FEATURES
+# ============================================================
+
+district_features = [
+    col for col in district_columns
+    if ner_ml[col].dtype.kind in "biufc"
+]
+
+print("\nNumeric district features:")
+print(district_features)
+
+
+# ============================================================
+# CREATE FEATURE SETS
+# ============================================================
+
+features_with_district = (
+    features_without_district + district_features
+)
+
+
+# ============================================================
+# CHECK FEATURES
+# ============================================================
+
+missing_base = [
+    col for col in features_without_district
+    if col not in ner_ml.columns
+]
+
+if missing_base:
+    raise KeyError(
+        f"Missing base features: {missing_base}"
+    )
+
+
+# ============================================================
+# CREATE DATASETS
+# ============================================================
+
+X_base = ner_ml[features_without_district]
+
+X_full = ner_ml[features_with_district]
+
+
+# ============================================================
+# VERIFY DATA TYPES
+# ============================================================
+
+print("\n==============================================")
+print("BASE FEATURE TYPES")
+print("==============================================")
+
+print(X_base.dtypes)
+
+print("\n==============================================")
+print("FULL FEATURE TYPES")
+print("==============================================")
+
+print(X_full.dtypes)
+
+
+# ============================================================
+# STRATIFIED 5-FOLD CROSS VALIDATION
+# ============================================================
+
+cv = StratifiedKFold(
+    n_splits=5,
+    shuffle=True,
+    random_state=42
+)
+
+
+# ============================================================
+# EVALUATION FUNCTION
+# ============================================================
+
+def evaluate_features(X_data):
+
+    pipeline = Pipeline([
+        (
+            "imputer",
+            SimpleImputer(strategy="median")
+        ),
+        (
+            "classifier",
+            RandomForestClassifier(
+                n_estimators=300,
+                class_weight="balanced",
+                random_state=42,
+                n_jobs=-1
+            )
+        )
+    ])
+
+    results = cross_validate(
+        pipeline,
+        X_data,
+        y,
+        cv=cv,
+        scoring={
+            "balanced_accuracy": "balanced_accuracy",
+            "macro_f1": "f1_macro"
+        },
+        n_jobs=-1
+    )
+
+    return (
+        results["test_balanced_accuracy"].mean(),
+        results["test_macro_f1"].mean()
+    )
+
+
+# ============================================================
+# EVALUATE BASE FEATURES
+# ============================================================
+
+base_bal_acc, base_f1 = evaluate_features(X_base)
+
+
+# ============================================================
+# EVALUATE DISTRICT FEATURES
+# ============================================================
+
+full_bal_acc, full_f1 = evaluate_features(X_full)
+
+
+# ============================================================
+# RESULTS
+# ============================================================
+
+print("\n==============================================")
+print("FEATURE COMPARISON")
+print("==============================================")
+
+print("\nWITHOUT district rainfall:")
+print("Number of features:", len(features_without_district))
+print("Balanced Accuracy:", round(base_bal_acc, 4))
+print("Macro F1:", round(base_f1, 4))
+
+print("\nWITH district rainfall:")
+print("Number of features:", len(features_with_district))
+print("Balanced Accuracy:", round(full_bal_acc, 4))
+print("Macro F1:", round(full_f1, 4))
+
+
+# ============================================================
+# IMPROVEMENT
+# ============================================================
+
+bal_acc_change = full_bal_acc - base_bal_acc
+f1_change = full_f1 - base_f1
+
+print("\n==============================================")
+print("IMPROVEMENT")
+print("==============================================")
+
+print(
+    "Balanced Accuracy change:",
+    round(bal_acc_change, 4)
+)
+
+print(
+    "Macro F1 change:",
+    round(f1_change, 4)
+)
+
+
+# ============================================================
+# FINAL DECISION
+# ============================================================
+
+print("\n==============================================")
+print("DECISION")
+print("==============================================")
+
+if bal_acc_change > 0 and f1_change > 0:
+    print("KEEP district rainfall features.")
+    print("Both Balanced Accuracy and Macro F1 improved.")
+
+elif bal_acc_change < 0 and f1_change < 0:
+    print("DO NOT keep district rainfall features.")
+    print("Both metrics decreased.")
+
+else:
+    print("DISTRICT RAINFALL HAS A MIXED EFFECT.")
+    print("Check which metric is more important for the final model.")
+
+--- Cell 93 (code) ---
+print("==============================================")
+print("FINAL DISTRICT RAINFALL COMPARISON")
+print("==============================================")
+
+print("\nWITHOUT district rainfall")
+print("Balanced Accuracy:", round(base_bal_acc, 4))
+print("Macro F1:", round(base_f1, 4))
+
+print("\nWITH district rainfall")
+print("Balanced Accuracy:", round(full_bal_acc, 4))
+print("Macro F1:", round(full_f1, 4))
+
+print("\nCHANGE")
+print(
+    "Balanced Accuracy:",
+    round(full_bal_acc - base_bal_acc, 4)
+)
+print(
+    "Macro F1:",
+    round(full_f1 - base_f1, 4)
+)
+
+--- Cell 94 (code) ---
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+import pandas as pd
+
+# ============================================================
+# FINAL BASE FEATURE SET
+# ============================================================
+
+X = ner_ml[features_without_district]
+
+# ============================================================
+# RANDOM FOREST PIPELINE
+# ============================================================
+
+rf_pipeline = Pipeline([
+    (
+        "imputer",
+        SimpleImputer(strategy="median")
+    ),
+    (
+        "classifier",
+        RandomForestClassifier(
+            n_estimators=500,
+            class_weight="balanced",
+            random_state=42,
+            n_jobs=-1
+        )
+    )
+])
+
+# ============================================================
+# TRAIN ON ALL AVAILABLE TRAINING DATA
+# ============================================================
+
+rf_pipeline.fit(X, y)
+
+# ============================================================
+# EXTRACT FEATURE IMPORTANCE
+# ============================================================
+
+feature_importance = pd.DataFrame({
+    "feature": features_without_district,
+    "importance": rf_pipeline.named_steps[
+        "classifier"
+    ].feature_importances_
+})
+
+feature_importance = feature_importance.sort_values(
+    by="importance",
+    ascending=False
+).reset_index(drop=True)
+
+print("==============================================")
+print("RANDOM FOREST FEATURE IMPORTANCE")
+print("==============================================")
+
+print(feature_importance)
+
+--- Cell 95 (code) ---
+# ============================================================
+# FEATURE ABLATION EXPERIMENT
+# ============================================================
+
+# Model 1: All base features
+features_all = [
+    "latitude",
+    "longitude",
+    "admin_division_population",
+    "gazeteer_distance",
+    "event_year",
+    "event_month",
+    "is_monsoon",
+    "event_month_rainfall",
+    "seasonal_rainfall",
+    "ANNUAL",
+    "rainfall1_match"
+]
+
+# Model 2: Remove rainfall1_match
+features_without_match = [
+    feature
+    for feature in features_all
+    if feature != "rainfall1_match"
+]
+
+# Model 3: Remove both weakest features
+features_reduced = [
+    feature
+    for feature in features_all
+    if feature not in [
+        "rainfall1_match",
+        "is_monsoon"
+    ]
+]
+
+
+# ============================================================
+# CREATE DATASETS
+# ============================================================
+
+X_all = ner_ml[features_all]
+
+X_without_match = ner_ml[features_without_match]
+
+X_reduced = ner_ml[features_reduced]
+
+
+# ============================================================
+# EVALUATE ALL FEATURE SETS
+# ============================================================
+
+all_bal_acc, all_f1 = evaluate_features(X_all)
+
+match_removed_bal_acc, match_removed_f1 = evaluate_features(
+    X_without_match
+)
+
+reduced_bal_acc, reduced_f1 = evaluate_features(
+    X_reduced
+)
+
+
+# ============================================================
+# RESULTS TABLE
+# ============================================================
+
+ablation_results = pd.DataFrame({
+    "Feature Set": [
+        "All 11 features",
+        "Without rainfall1_match",
+        "Without rainfall1_match + is_monsoon"
+    ],
+    "Number of Features": [
+        len(features_all),
+        len(features_without_match),
+        len(features_reduced)
+    ],
+    "Balanced Accuracy": [
+        all_bal_acc,
+        match_removed_bal_acc,
+        reduced_bal_acc
+    ],
+    "Macro F1": [
+        all_f1,
+        match_removed_f1,
+        reduced_f1
+    ]
+})
+
+ablation_results = ablation_results.sort_values(
+    by="Macro F1",
+    ascending=False
+).reset_index(drop=True)
+
+
+# ============================================================
+# PRINT RESULTS
+# ============================================================
+
+print("==============================================")
+print("FEATURE ABLATION RESULTS")
+print("==============================================")
+
+print(
+    ablation_results.to_string(
+        index=False,
+        float_format=lambda x: f"{x:.4f}"
+    )
+)
+
+--- Cell 96 (code) ---
+from sklearn.model_selection import cross_validate
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import (
+    RandomForestClassifier,
+    ExtraTreesClassifier,
+    GradientBoostingClassifier,
+    HistGradientBoostingClassifier
+)
+from sklearn.linear_model import LogisticRegression
+import pandas as pd
+
+# ============================================================
+# FINAL 9 FEATURES
+# ============================================================
+
+final_features = [
+    "latitude",
+    "longitude",
+    "admin_division_population",
+    "gazeteer_distance",
+    "event_year",
+    "event_month",
+    "event_month_rainfall",
+    "seasonal_rainfall",
+    "ANNUAL"
+]
+
+X_final = ner_ml[final_features]
+
+
+# ============================================================
+# MODELS
+# ============================================================
+
+models = {
+
+    "Random Forest": Pipeline([
+        ("imputer", SimpleImputer(strategy="median")),
+        (
+            "model",
+            RandomForestClassifier(
+                n_estimators=300,
+                class_weight="balanced",
+                random_state=42,
+                n_jobs=-1
+            )
+        )
+    ]),
+
+    "Extra Trees": Pipeline([
+        ("imputer", SimpleImputer(strategy="median")),
+        (
+            "model",
+            ExtraTreesClassifier(
+                n_estimators=300,
+                class_weight="balanced",
+                random_state=42,
+                n_jobs=-1
+            )
+        )
+    ]),
+
+    "Gradient Boosting": Pipeline([
+        ("imputer", SimpleImputer(strategy="median")),
+        (
+            "model",
+            GradientBoostingClassifier(
+                random_state=42
+            )
+        )
+    ]),
+
+    "HistGradientBoosting": Pipeline([
+        ("imputer", SimpleImputer(strategy="median")),
+        (
+            "model",
+            HistGradientBoostingClassifier(
+                random_state=42
+            )
+        )
+    ]),
+
+    "Logistic Regression": Pipeline([
+        ("imputer", SimpleImputer(strategy="median")),
+        ("scaler", StandardScaler()),
+        (
+            "model",
+            LogisticRegression(
+                class_weight="balanced",
+                max_iter=2000,
+                random_state=42
+            )
+        )
+    ])
+}
+
+
+# ============================================================
+# EVALUATE MODELS
+# ============================================================
+
+results_list = []
+
+for model_name, model in models.items():
+
+    print(f"Evaluating {model_name}...")
+
+    scores = cross_validate(
+        model,
+        X_final,
+        y,
+        cv=cv,
+        scoring={
+            "balanced_accuracy": "balanced_accuracy",
+            "macro_f1": "f1_macro"
+        },
+        n_jobs=-1
+    )
+
+    results_list.append({
+        "Model": model_name,
+        "Balanced Accuracy": scores[
+            "test_balanced_accuracy"
+        ].mean(),
+        "Macro F1": scores[
+            "test_macro_f1"
+        ].mean()
+    })
+
+
+# ============================================================
+# RESULTS
+# ============================================================
+
+model_results = pd.DataFrame(results_list)
+
+model_results = model_results.sort_values(
+    by="Macro F1",
+    ascending=False
+).reset_index(drop=True)
+
+print("\n==============================================")
+print("MODEL COMPARISON RESULTS")
+print("==============================================")
+
+print(
+    model_results.to_string(
+        index=False,
+        float_format=lambda x: f"{x:.4f}"
+    )
+)
+
+--- Cell 97 (code) ---
+from sklearn.model_selection import cross_val_predict
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    balanced_accuracy_score,
+    f1_score
+)
+import pandas as pd
+
+# ============================================================
+# CLASS DISTRIBUTION
+# ============================================================
+
+print("==============================================")
+print("TARGET CLASS DISTRIBUTION")
+print("==============================================")
+
+class_counts = y.value_counts().sort_index()
+class_percentages = (
+    y.value_counts(normalize=True)
+    .sort_index()
+    .mul(100)
+)
+
+class_distribution = pd.DataFrame({
+    "Count": class_counts,
+    "Percentage": class_percentages
+})
+
+print(class_distribution.to_string(
+    float_format=lambda x: f"{x:.2f}%"
+))
+
+
+# ============================================================
+# FINAL RANDOM FOREST MODEL
+# ============================================================
+
+rf_model = Pipeline([
+    (
+        "imputer",
+        SimpleImputer(strategy="median")
+    ),
+    (
+        "classifier",
+        RandomForestClassifier(
+            n_estimators=300,
+            class_weight="balanced",
+            random_state=42,
+            n_jobs=-1
+        )
+    )
+])
+
+
+# ============================================================
+# CROSS-VALIDATED PREDICTIONS
+# ============================================================
+
+y_pred = cross_val_predict(
+    rf_model,
+    X_final,
+    y,
+    cv=cv,
+    n_jobs=-1
+)
+
+
+# ============================================================
+# OVERALL METRICS
+# ============================================================
+
+print("\n==============================================")
+print("CROSS-VALIDATED PERFORMANCE")
+print("==============================================")
+
+print(
+    "Balanced Accuracy:",
+    round(
+        balanced_accuracy_score(y, y_pred),
+        4
+    )
+)
+
+print(
+    "Macro F1:",
+    round(
+        f1_score(
+            y,
+            y_pred,
+            average="macro"
+        ),
+        4
+    )
+)
+
+
+# ============================================================
+# CLASSIFICATION REPORT
+# ============================================================
+
+print("\n==============================================")
+print("CLASSIFICATION REPORT")
+print("==============================================")
+
+print(
+    classification_report(
+        y,
+        y_pred,
+        digits=4
+    )
+)
+
+
+# ============================================================
+# CONFUSION MATRIX
+# ============================================================
+
+print("\n==============================================")
+print("CONFUSION MATRIX")
+print("==============================================")
+
+labels = sorted(y.unique())
+
+cm = confusion_matrix(
+    y,
+    y_pred,
+    labels=labels
+)
+
+cm_df = pd.DataFrame(
+    cm,
+    index=[
+        f"Actual {label}"
+        for label in labels
+    ],
+    columns=[
+        f"Predicted {label}"
+        for label in labels
+    ]
+)
+
+print(cm_df)
+
+--- Cell 98 (code) ---
+from sklearn.model_selection import cross_validate
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+import pandas as pd
+
+# ============================================================
+# CLASS WEIGHT EXPERIMENT
+# ============================================================
+
+class_weight_options = {
+    "Balanced": "balanced",
+
+    "Moderate Minority Weight": {
+        "LOW": 3,
+        "MEDIUM": 1,
+        "HIGH": 3
+    },
+
+    "Strong Minority Weight": {
+        "LOW": 5,
+        "MEDIUM": 1,
+        "HIGH": 5
+    },
+
+    "Very Strong Minority Weight": {
+        "LOW": 8,
+        "MEDIUM": 1,
+        "HIGH": 8
+    }
+}
+
+
+# ============================================================
+# EVALUATE EACH WEIGHTING STRATEGY
+# ============================================================
+
+weight_results = []
+
+for weight_name, class_weight in class_weight_options.items():
+
+    print(f"Evaluating: {weight_name}...")
+
+    model = Pipeline([
+        (
+            "imputer",
+            SimpleImputer(strategy="median")
+        ),
+        (
+            "classifier",
+            RandomForestClassifier(
+                n_estimators=500,
+                class_weight=class_weight,
+                random_state=42,
+                n_jobs=-1
+            )
+        )
+    ])
+
+    scores = cross_validate(
+        model,
+        X_final,
+        y,
+        cv=cv,
+        scoring={
+            "balanced_accuracy": "balanced_accuracy",
+            "macro_f1": "f1_macro"
+        },
+        n_jobs=-1
+    )
+
+    weight_results.append({
+        "Class Weight Strategy": weight_name,
+        "Balanced Accuracy": scores[
+            "test_balanced_accuracy"
+        ].mean(),
+        "Macro F1": scores[
+            "test_macro_f1"
+        ].mean()
+    })
+
+
+# ============================================================
+# RESULTS
+# ============================================================
+
+weight_results_df = pd.DataFrame(weight_results)
+
+weight_results_df = weight_results_df.sort_values(
+    by="Macro F1",
+    ascending=False
+).reset_index(drop=True)
+
+print("\n==============================================")
+print("CLASS WEIGHT EXPERIMENT RESULTS")
+print("==============================================")
+
+print(
+    weight_results_df.to_string(
+        index=False,
+        float_format=lambda x: f"{x:.4f}"
+    )
+)
+
+--- Cell 99 (code) ---
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+
+# ============================================================
+# RANDOM FOREST HYPERPARAMETER SEARCH
+# ============================================================
+
+rf_pipeline_tuning = Pipeline([
+    (
+        "imputer",
+        SimpleImputer(strategy="median")
+    ),
+    (
+        "classifier",
+        RandomForestClassifier(
+            class_weight="balanced",
+            random_state=42,
+            n_jobs=-1
+        )
+    )
+])
+
+
+# ============================================================
+# HYPERPARAMETER SEARCH SPACE
+# ============================================================
+
+param_distributions = {
+    "classifier__n_estimators": [
+        200,
+        300,
+        500,
+        700,
+        1000
+    ],
+
+    "classifier__max_depth": [
+        None,
+        5,
+        10,
+        15,
+        20,
+        30
+    ],
+
+    "classifier__min_samples_split": [
+        2,
+        5,
+        10,
+        15
+    ],
+
+    "classifier__min_samples_leaf": [
+        1,
+        2,
+        4,
+        6
+    ],
+
+    "classifier__max_features": [
+        "sqrt",
+        "log2",
+        None
+    ],
+
+    "classifier__bootstrap": [
+        True,
+        False
+    ]
+}
+
+
+# ============================================================
+# RANDOMIZED SEARCH
+# ============================================================
+
+rf_search = RandomizedSearchCV(
+    estimator=rf_pipeline_tuning,
+    param_distributions=param_distributions,
+    n_iter=40,
+    scoring="f1_macro",
+    cv=cv,
+    random_state=42,
+    n_jobs=-1,
+    verbose=1,
+    return_train_score=True
+)
+
+
+# ============================================================
+# RUN SEARCH
+# ============================================================
+
+print("Starting Random Forest hyperparameter tuning...\n")
+
+rf_search.fit(
+    X_final,
+    y
+)
+
+
+# ============================================================
+# BEST RESULT
+# ============================================================
+
+print("\n==============================================")
+print("BEST RANDOM FOREST MODEL")
+print("==============================================")
+
+print(
+    "Best CV Macro F1:",
+    round(rf_search.best_score_, 4)
+)
+
+print("\nBest Parameters:")
+
+for parameter, value in rf_search.best_params_.items():
+    print(f"{parameter}: {value}")
+
+--- Cell 100 (code) ---
+from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    balanced_accuracy_score,
+    f1_score
+)
+import pandas as pd
+
+# ============================================================
+# BEST TUNED RANDOM FOREST MODEL
+# ============================================================
+
+best_rf_model = rf_search.best_estimator_
+
+
+# ============================================================
+# CROSS-VALIDATED PREDICTIONS
+# ============================================================
+
+print("Generating cross-validated predictions...")
+
+y_pred_tuned = cross_val_predict(
+    best_rf_model,
+    X_final,
+    y,
+    cv=cv,
+    n_jobs=-1
+)
+
+
+# ============================================================
+# OVERALL METRICS
+# ============================================================
+
+tuned_balanced_accuracy = balanced_accuracy_score(
+    y,
+    y_pred_tuned
+)
+
+tuned_macro_f1 = f1_score(
+    y,
+    y_pred_tuned,
+    average="macro"
+)
+
+print("\n==============================================")
+print("TUNED RANDOM FOREST PERFORMANCE")
+print("==============================================")
+
+print(
+    "Balanced Accuracy:",
+    round(tuned_balanced_accuracy, 4)
+)
+
+print(
+    "Macro F1:",
+    round(tuned_macro_f1, 4)
+)
+
+
+# ============================================================
+# CLASSIFICATION REPORT
+# ============================================================
+
+print("\n==============================================")
+print("CLASSIFICATION REPORT")
+print("==============================================")
+
+print(
+    classification_report(
+        y,
+        y_pred_tuned,
+        digits=4
+    )
+)
+
+
+# ============================================================
+# CONFUSION MATRIX
+# ============================================================
+
+print("\n==============================================")
+print("CONFUSION MATRIX")
+print("==============================================")
+
+labels = sorted(y.unique())
+
+cm_tuned = confusion_matrix(
+    y,
+    y_pred_tuned,
+    labels=labels
+)
+
+cm_tuned_df = pd.DataFrame(
+    cm_tuned,
+    index=[
+        f"Actual {label}"
+        for label in labels
+    ],
+    columns=[
+        f"Predicted {label}"
+        for label in labels
+    ]
+)
+
+print(cm_tuned_df)
+
+--- Cell 101 (code) ---
+%pip install imbalanced-learn
+
+--- Cell 102 (code) ---
+from imblearn.pipeline import Pipeline as ImbPipeline
+from imblearn.over_sampling import RandomOverSampler
+from sklearn.model_selection import cross_validate, cross_val_predict
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (
+    balanced_accuracy_score,
+    f1_score,
+    classification_report,
+    confusion_matrix
+)
+import pandas as pd
+
+# ============================================================
+# OVERSAMPLING + TUNED RANDOM FOREST
+# ============================================================
+
+ros_rf_model = ImbPipeline([
+    (
+        "imputer",
+        SimpleImputer(strategy="median")
+    ),
+    
+    (
+        "oversampler",
+        RandomOverSampler(
+            random_state=42
+        )
+    ),
+    
+    (
+        "classifier",
+        RandomForestClassifier(
+            n_estimators=500,
+            max_depth=10,
+            min_samples_split=2,
+            min_samples_leaf=1,
+            max_features="log2",
+            bootstrap=False,
+            class_weight="balanced",
+            random_state=42,
+            n_jobs=-1
+        )
+    )
+])
+
+
+# ============================================================
+# CROSS-VALIDATION SCORES
+# ============================================================
+
+print("Running RandomOverSampler + Random Forest...\n")
+
+ros_scores = cross_validate(
+    ros_rf_model,
+    X_final,
+    y,
+    cv=cv,
+    scoring={
+        "balanced_accuracy": "balanced_accuracy",
+        "macro_f1": "f1_macro"
+    },
+    n_jobs=-1
+)
+
+ros_balanced_accuracy = ros_scores[
+    "test_balanced_accuracy"
+].mean()
+
+ros_macro_f1 = ros_scores[
+    "test_macro_f1"
+].mean()
+
+
+# ============================================================
+# CROSS-VALIDATED PREDICTIONS
+# ============================================================
+
+y_pred_ros = cross_val_predict(
+    ros_rf_model,
+    X_final,
+    y,
+    cv=cv,
+    n_jobs=-1
+)
+
+
+# ============================================================
+# RESULTS
+# ============================================================
+
+print("==============================================")
+print("RANDOM OVERSAMPLING + RANDOM FOREST")
+print("==============================================")
+
+print(
+    "Mean CV Balanced Accuracy:",
+    round(ros_balanced_accuracy, 4)
+)
+
+print(
+    "Mean CV Macro F1:",
+    round(ros_macro_f1, 4)
+)
+
+print("\nOverall Balanced Accuracy:")
+print(
+    round(
+        balanced_accuracy_score(y, y_pred_ros),
+        4
+    )
+)
+
+print("\nOverall Macro F1:")
+print(
+    round(
+        f1_score(
+            y,
+            y_pred_ros,
+            average="macro"
+        ),
+        4
+    )
+)
+
+
+# ============================================================
+# CLASSIFICATION REPORT
+# ============================================================
+
+print("\n==============================================")
+print("CLASSIFICATION REPORT")
+print("==============================================")
+
+print(
+    classification_report(
+        y,
+        y_pred_ros,
+        digits=4
+    )
+)
+
+
+# ============================================================
+# CONFUSION MATRIX
+# ============================================================
+
+print("\n==============================================")
+print("CONFUSION MATRIX")
+print("==============================================")
+
+labels = sorted(y.unique())
+
+cm_ros = confusion_matrix(
+    y,
+    y_pred_ros,
+    labels=labels
+)
+
+cm_ros_df = pd.DataFrame(
+    cm_ros,
+    index=[
+        f"Actual {label}"
+        for label in labels
+    ],
+    columns=[
+        f"Predicted {label}"
+        for label in labels
+    ]
+)
+
+print(cm_ros_df)
+
+--- Cell 103 (code) ---
+from imblearn.pipeline import Pipeline as ImbPipeline
+from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import cross_validate, cross_val_predict
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (
+    balanced_accuracy_score,
+    f1_score,
+    classification_report,
+    confusion_matrix
+)
+import pandas as pd
+
+# ============================================================
+# SMOTE + TUNED RANDOM FOREST
+# ============================================================
+
+smote_rf_model = ImbPipeline([
+    (
+        "imputer",
+        SimpleImputer(strategy="median")
+    ),
+
+    (
+        "oversampler",
+        SMOTE(
+            sampling_strategy="auto",
+            k_neighbors=3,
+            random_state=42
+        )
+    ),
+
+    (
+        "classifier",
+        RandomForestClassifier(
+            n_estimators=500,
+            max_depth=10,
+            min_samples_split=2,
+            min_samples_leaf=1,
+            max_features="log2",
+            bootstrap=False,
+            class_weight="balanced",
+            random_state=42,
+            n_jobs=-1
+        )
+    )
+])
+
+
+# ============================================================
+# CROSS-VALIDATION SCORES
+# ============================================================
+
+print("Running SMOTE + Random Forest...\n")
+
+smote_scores = cross_validate(
+    smote_rf_model,
+    X_final,
+    y,
+    cv=cv,
+    scoring={
+        "balanced_accuracy": "balanced_accuracy",
+        "macro_f1": "f1_macro"
+    },
+    n_jobs=-1
+)
+
+smote_balanced_accuracy = (
+    smote_scores["test_balanced_accuracy"].mean()
+)
+
+smote_macro_f1 = (
+    smote_scores["test_macro_f1"].mean()
+)
+
+
+# ============================================================
+# CROSS-VALIDATED PREDICTIONS
+# ============================================================
+
+y_pred_smote = cross_val_predict(
+    smote_rf_model,
+    X_final,
+    y,
+    cv=cv,
+    n_jobs=-1
+)
+
+
+# ============================================================
+# RESULTS
+# ============================================================
+
+print("==============================================")
+print("SMOTE + RANDOM FOREST")
+print("==============================================")
+
+print(
+    "Mean CV Balanced Accuracy:",
+    round(smote_balanced_accuracy, 4)
+)
+
+print(
+    "Mean CV Macro F1:",
+    round(smote_macro_f1, 4)
+)
+
+print("\nOverall Balanced Accuracy:")
+print(
+    round(
+        balanced_accuracy_score(y, y_pred_smote),
+        4
+    )
+)
+
+print("\nOverall Macro F1:")
+print(
+    round(
+        f1_score(
+            y,
+            y_pred_smote,
+            average="macro"
+        ),
+        4
+    )
+)
+
+
+# ============================================================
+# CLASSIFICATION REPORT
+# ============================================================
+
+print("\n==============================================")
+print("CLASSIFICATION REPORT")
+print("==============================================")
+
+print(
+    classification_report(
+        y,
+        y_pred_smote,
+        digits=4
+    )
+)
+
+
+# ============================================================
+# CONFUSION MATRIX
+# ============================================================
+
+print("\n==============================================")
+print("CONFUSION MATRIX")
+print("==============================================")
+
+labels = sorted(y.unique())
+
+cm_smote = confusion_matrix(
+    y,
+    y_pred_smote,
+    labels=labels
+)
+
+cm_smote_df = pd.DataFrame(
+    cm_smote,
+    index=[
+        f"Actual {label}"
+        for label in labels
+    ],
+    columns=[
+        f"Predicted {label}"
+        for label in labels
+    ]
+)
+
+print(cm_smote_df)
+
+--- Cell 104 (code) ---
+%pip install xgboost
+
+--- Cell 105 (code) ---
+from xgboost import XGBClassifier
+
+from sklearn.preprocessing import LabelEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.model_selection import cross_validate
+
+# ============================================================
+# ENCODE TARGET LABELS FOR XGBOOST
+# ============================================================
+
+label_encoder = LabelEncoder()
+
+y_encoded = label_encoder.fit_transform(y)
+
+print("==============================================")
+print("XGBOOST CLASS ENCODING")
+print("==============================================")
+
+for index, class_name in enumerate(label_encoder.classes_):
+    print(f"{class_name} -> {index}")
+
+
+# ============================================================
+# BASELINE XGBOOST MODEL
+# ============================================================
+
+xgb_model = Pipeline([
+    (
+        "imputer",
+        SimpleImputer(strategy="median")
+    ),
+
+    (
+        "classifier",
+        XGBClassifier(
+            n_estimators=300,
+            max_depth=4,
+            learning_rate=0.05,
+            subsample=0.8,
+            colsample_bytree=0.8,
+
+            objective="multi:softprob",
+            num_class=3,
+            eval_metric="mlogloss",
+
+            random_state=42,
+            n_jobs=-1
+        )
+    )
+])
+
+
+# ============================================================
+# CROSS-VALIDATION
+# ============================================================
+
+print("\nRunning baseline XGBoost...\n")
+
+xgb_scores = cross_validate(
+    xgb_model,
+    X_final,
+    y_encoded,
+    cv=cv,
+    scoring={
+        "balanced_accuracy": "balanced_accuracy",
+        "macro_f1": "f1_macro"
+    },
+    n_jobs=-1
+)
+
+
+# ============================================================
+# RESULTS
+# ============================================================
+
+xgb_bal_acc = (
+    xgb_scores["test_balanced_accuracy"].mean()
+)
+
+xgb_macro_f1 = (
+    xgb_scores["test_macro_f1"].mean()
+)
+
+print("==============================================")
+print("BASELINE XGBOOST RESULTS")
+print("==============================================")
+
+print(
+    "Mean CV Balanced Accuracy:",
+    round(xgb_bal_acc, 4)
+)
+
+print(
+    "Mean CV Macro F1:",
+    round(xgb_macro_f1, 4)
+)
+
+--- Cell 106 (code) ---
+# ============================================================
+# THRESHOLD ANALYSIS FOR TUNED RANDOM FOREST
+# ============================================================
+
+import numpy as np
+import pandas as pd
+
+from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import (
+    balanced_accuracy_score,
+    f1_score,
+    classification_report,
+    confusion_matrix
+)
+
+# ============================================================
+# 1. GET OUT-OF-FOLD PROBABILITIES
+# ============================================================
+
+print("Generating out-of-fold probabilities...")
+
+y_proba = cross_val_predict(
+    best_rf_model,
+    X_final,
+    y,
+    cv=cv,
+    method="predict_proba",
+    n_jobs=-1
+)
+
+print("Probability shape:", y_proba.shape)
+
+
+# ============================================================
+# 2. CHECK CLASS ORDER
+# ============================================================
+
+classifier = best_rf_model.named_steps["classifier"]
+
+print("\n==============================================")
+print("CLASS ORDER")
+print("==============================================")
+
+print(classifier.classes_)
+
+# Expected:
+# [HIGH LOW MEDIUM]
+#
+# Probability columns:
+# column 0 -> HIGH
+# column 1 -> LOW
+# column 2 -> MEDIUM
+
+
+# ============================================================
+# 3. BASELINE PREDICTIONS
+# ============================================================
+
+class_names = np.array(
+    classifier.classes_
+)
+
+y_pred_baseline = class_names[
+    np.argmax(y_proba, axis=1)
+]
+
+baseline_bal_acc = balanced_accuracy_score(
+    y,
+    y_pred_baseline
+)
+
+baseline_macro_f1 = f1_score(
+    y,
+    y_pred_baseline,
+    average="macro"
+)
+
+print("\n==============================================")
+print("BASELINE THRESHOLD")
+print("==============================================")
+
+print(
+    "Balanced Accuracy:",
+    round(baseline_bal_acc, 4)
+)
+
+print(
+    "Macro F1:",
+    round(baseline_macro_f1, 4)
+)
+
+
+# ============================================================
+# 4. THRESHOLD PREDICTION FUNCTION
+# ============================================================
+
+def predict_with_thresholds(
+    probabilities,
+    high_threshold,
+    low_threshold
+):
+    """
+    Decision priority:
+
+    1. HIGH if P(HIGH) >= high_threshold
+    2. LOW  if P(LOW)  >= low_threshold
+    3. Otherwise MEDIUM
+    """
+
+    predictions = np.full(
+        probabilities.shape[0],
+        "MEDIUM",
+        dtype=object
+    )
+
+    high_mask = (
+        probabilities[:, 0]
+        >= high_threshold
+    )
+
+    low_mask = (
+        probabilities[:, 1]
+        >= low_threshold
+    )
+
+    predictions[low_mask] = "LOW"
+    predictions[high_mask] = "HIGH"
+
+    return predictions
+
+
+# ============================================================
+# 5. SEARCH THRESHOLDS
+# ============================================================
+
+threshold_results = []
+
+high_thresholds = np.arange(
+    0.10,
+    0.61,
+    0.05
+)
+
+low_thresholds = np.arange(
+    0.10,
+    0.61,
+    0.05
+)
+
+for high_threshold in high_thresholds:
+
+    for low_threshold in low_thresholds:
+
+        y_pred_threshold = predict_with_thresholds(
+            y_proba,
+            high_threshold,
+            low_threshold
+        )
+
+        bal_acc = balanced_accuracy_score(
+            y,
+            y_pred_threshold
+        )
+
+        macro_f1 = f1_score(
+            y,
+            y_pred_threshold,
+            average="macro"
+        )
+
+        threshold_results.append({
+            "HIGH Threshold": high_threshold,
+            "LOW Threshold": low_threshold,
+            "Balanced Accuracy": bal_acc,
+            "Macro F1": macro_f1
+        })
+
+
+# ============================================================
+# 6. RESULTS SORTED BY MACRO F1
+# ============================================================
+
+threshold_results_df = pd.DataFrame(
+    threshold_results
+)
+
+threshold_results_df = (
+    threshold_results_df
+    .sort_values(
+        by="Macro F1",
+        ascending=False
+    )
+    .reset_index(drop=True)
+)
+
+
+print("\n==============================================")
+print("TOP 15 THRESHOLD COMBINATIONS")
+print("==============================================")
+
+print(
+    threshold_results_df
+    .head(15)
+    .to_string(
+        index=False,
+        float_format=lambda x: f"{x:.4f}"
+    )
+)
+
+
+# ============================================================
+# 7. BEST MACRO F1 THRESHOLD
+# ============================================================
+
+best_threshold_row = (
+    threshold_results_df
+    .iloc[0]
+)
+
+best_high_threshold = (
+    best_threshold_row["HIGH Threshold"]
+)
+
+best_low_threshold = (
+    best_threshold_row["LOW Threshold"]
+)
+
+best_threshold_pred = predict_with_thresholds(
+    y_proba,
+    best_high_threshold,
+    best_low_threshold
+)
+
+
+# ============================================================
+# 8. BEST THRESHOLD PERFORMANCE
+# ============================================================
+
+print("\n==============================================")
+print("BEST THRESHOLD PERFORMANCE")
+print("==============================================")
+
+print(
+    "HIGH Threshold:",
+    round(best_high_threshold, 2)
+)
+
+print(
+    "LOW Threshold:",
+    round(best_low_threshold, 2)
+)
+
+print(
+    "Balanced Accuracy:",
+    round(
+        balanced_accuracy_score(
+            y,
+            best_threshold_pred
+        ),
+        4
+    )
+)
+
+print(
+    "Macro F1:",
+    round(
+        f1_score(
+            y,
+            best_threshold_pred,
+            average="macro"
+        ),
+        4
+    )
+)
+
+
+# ============================================================
+# 9. CLASSIFICATION REPORT
+# ============================================================
+
+print("\n==============================================")
+print("THRESHOLD-TUNED CLASSIFICATION REPORT")
+print("==============================================")
+
+print(
+    classification_report(
+        y,
+        best_threshold_pred,
+        digits=4
+    )
+)
+
+
+# ============================================================
+# 10. CONFUSION MATRIX
+# ============================================================
+
+print("\n==============================================")
+print("THRESHOLD-TUNED CONFUSION MATRIX")
+print("==============================================")
+
+labels = [
+    "HIGH",
+    "LOW",
+    "MEDIUM"
+]
+
+cm_threshold = confusion_matrix(
+    y,
+    best_threshold_pred,
+    labels=labels
+)
+
+cm_threshold_df = pd.DataFrame(
+    cm_threshold,
+    index=[
+        "Actual HIGH",
+        "Actual LOW",
+        "Actual MEDIUM"
+    ],
+    columns=[
+        "Predicted HIGH",
+        "Predicted LOW",
+        "Predicted MEDIUM"
+    ]
+)
+
+print(cm_threshold_df)
+
+
+# ============================================================
+# 11. COMPARE BASELINE VS THRESHOLD
+# ============================================================
+
+print("\n==============================================")
+print("BASELINE vs THRESHOLD")
+print("==============================================")
+
+comparison = pd.DataFrame({
+    "Metric": [
+        "Balanced Accuracy",
+        "Macro F1"
+    ],
+
+    "Baseline RF": [
+        baseline_bal_acc,
+        baseline_macro_f1
+    ],
+
+    "Threshold Tuned RF": [
+        balanced_accuracy_score(
+            y,
+            best_threshold_pred
+        ),
+        f1_score(
+            y,
+            best_threshold_pred,
+            average="macro"
+        )
+    ]
+})
+
+comparison["Change"] = (
+    comparison["Threshold Tuned RF"]
+    - comparison["Baseline RF"]
+)
+
+print(
+    comparison.to_string(
+        index=False,
+        float_format=lambda x: f"{x:.4f}"
+    )
+)
+
+--- Cell 107 (code) ---
+# ============================================================
+# PROPER NESTED THRESHOLD VALIDATION
+# ============================================================
+
+import numpy as np
+import pandas as pd
+
+from sklearn.base import clone
+from sklearn.metrics import (
+    balanced_accuracy_score,
+    f1_score,
+    classification_report,
+    confusion_matrix
+)
+
+# ============================================================
+# SETTINGS
+# ============================================================
+
+HIGH_THRESHOLDS = np.arange(0.10, 0.61, 0.05)
+LOW_THRESHOLDS = np.arange(0.10, 0.61, 0.05)
+
+# Inner CV used ONLY for selecting thresholds
+INNER_SPLITS = 3
+
+
+# ============================================================
+# THRESHOLD PREDICTION FUNCTION
+# ============================================================
+
+def predict_with_thresholds(
+    probabilities,
+    high_threshold,
+    low_threshold
+):
+    """
+    Decision rule:
+
+    1. HIGH if P(HIGH) >= high_threshold
+    2. LOW  if P(LOW)  >= low_threshold
+    3. Otherwise MEDIUM
+
+    HIGH gets priority if both HIGH and LOW thresholds
+    are satisfied.
+    """
+
+    predictions = np.full(
+        probabilities.shape[0],
+        "MEDIUM",
+        dtype=object
+    )
+
+    low_mask = (
+        probabilities[:, 1] >= low_threshold
+    )
+
+    high_mask = (
+        probabilities[:, 0] >= high_threshold
+    )
+
+    predictions[low_mask] = "LOW"
+    predictions[high_mask] = "HIGH"
+
+    return predictions
+
+
+# ============================================================
+# FIND BEST THRESHOLDS USING ONLY TRAINING DATA
+# ============================================================
+
+def find_best_thresholds(
+    model,
+    X_train,
+    y_train
+):
+
+    # --------------------------------------------------------
+    # Inner CV
+    # --------------------------------------------------------
+
+    from sklearn.model_selection import StratifiedKFold
+    from sklearn.model_selection import cross_val_predict
+
+    inner_cv = StratifiedKFold(
+        n_splits=INNER_SPLITS,
+        shuffle=True,
+        random_state=42
+    )
+
+    # --------------------------------------------------------
+    # Generate INNER out-of-fold probabilities
+    # --------------------------------------------------------
+
+    inner_probabilities = cross_val_predict(
+        clone(model),
+        X_train,
+        y_train,
+        cv=inner_cv,
+        method="predict_proba",
+        n_jobs=-1
+    )
+
+    # --------------------------------------------------------
+    # Search thresholds
+    # --------------------------------------------------------
+
+    best_macro_f1 = -np.inf
+    best_balanced_accuracy = -np.inf
+
+    best_high_threshold = 0.50
+    best_low_threshold = 0.50
+
+    for high_threshold in HIGH_THRESHOLDS:
+
+        for low_threshold in LOW_THRESHOLDS:
+
+            predictions = predict_with_thresholds(
+                inner_probabilities,
+                high_threshold,
+                low_threshold
+            )
+
+            macro_f1 = f1_score(
+                y_train,
+                predictions,
+                average="macro"
+            )
+
+            balanced_acc = balanced_accuracy_score(
+                y_train,
+                predictions
+            )
+
+            # Primary objective = Macro F1
+            # Tie-breaker = Balanced Accuracy
+            if (
+                macro_f1 > best_macro_f1
+                or (
+                    np.isclose(
+                        macro_f1,
+                        best_macro_f1
+                    )
+                    and balanced_acc
+                    > best_balanced_accuracy
+                )
+            ):
+
+                best_macro_f1 = macro_f1
+                best_balanced_accuracy = balanced_acc
+
+                best_high_threshold = high_threshold
+                best_low_threshold = low_threshold
+
+    return (
+        best_high_threshold,
+        best_low_threshold
+    )
+
+
+# ============================================================
+# OUTER CROSS-VALIDATION
+# ============================================================
+
+print("==============================================")
+print("PROPER NESTED THRESHOLD VALIDATION")
+print("==============================================")
+
+print("\nOuter CV folds:", cv.n_splits)
+print("Inner CV folds:", INNER_SPLITS)
+
+print("\nStarting validation...\n")
+
+
+outer_predictions_baseline = []
+outer_predictions_threshold = []
+
+outer_true_labels = []
+
+fold_results = []
+
+fold_number = 1
+
+
+# ============================================================
+# OUTER FOLD LOOP
+# ============================================================
+
+for train_idx, test_idx in cv.split(X_final, y):
+
+    print(
+        f"Processing outer fold {fold_number}/{cv.n_splits}..."
+    )
+
+    # --------------------------------------------------------
+    # Split data
+    # --------------------------------------------------------
+
+    X_train = X_final.iloc[train_idx]
+    X_test = X_final.iloc[test_idx]
+
+    y_train = y.iloc[train_idx]
+    y_test = y.iloc[test_idx]
+
+    # --------------------------------------------------------
+    # Find thresholds ONLY using outer training data
+    # --------------------------------------------------------
+
+    (
+        best_high_threshold,
+        best_low_threshold
+    ) = find_best_thresholds(
+        best_rf_model,
+        X_train,
+        y_train
+    )
+
+    # --------------------------------------------------------
+    # Train model on ENTIRE outer training fold
+    # --------------------------------------------------------
+
+    fold_model = clone(best_rf_model)
+
+    fold_model.fit(
+        X_train,
+        y_train
+    )
+
+    # --------------------------------------------------------
+    # Predict probabilities on completely unseen fold
+    # --------------------------------------------------------
+
+    test_probabilities = (
+        fold_model.predict_proba(X_test)
+    )
+
+    # --------------------------------------------------------
+    # Normal RF prediction
+    # --------------------------------------------------------
+
+    baseline_predictions = (
+        fold_model.predict(X_test)
+    )
+
+    # --------------------------------------------------------
+    # Threshold prediction
+    # --------------------------------------------------------
+
+    threshold_predictions = (
+        predict_with_thresholds(
+            test_probabilities,
+            best_high_threshold,
+            best_low_threshold
+        )
+    )
+
+    # --------------------------------------------------------
+    # Fold metrics
+    # --------------------------------------------------------
+
+    baseline_balanced_acc = (
+        balanced_accuracy_score(
+            y_test,
+            baseline_predictions
+        )
+    )
+
+    baseline_macro_f1 = (
+        f1_score(
+            y_test,
+            baseline_predictions,
+            average="macro"
+        )
+    )
+
+    threshold_balanced_acc = (
+        balanced_accuracy_score(
+            y_test,
+            threshold_predictions
+        )
+    )
+
+    threshold_macro_f1 = (
+        f1_score(
+            y_test,
+            threshold_predictions,
+            average="macro"
+        )
+    )
+
+    fold_results.append({
+        "Fold": fold_number,
+
+        "HIGH Threshold":
+            best_high_threshold,
+
+        "LOW Threshold":
+            best_low_threshold,
+
+        "Baseline Balanced Accuracy":
+            baseline_balanced_acc,
+
+        "Baseline Macro F1":
+            baseline_macro_f1,
+
+        "Threshold Balanced Accuracy":
+            threshold_balanced_acc,
+
+        "Threshold Macro F1":
+            threshold_macro_f1
+    })
+
+    # --------------------------------------------------------
+    # Store predictions
+    # --------------------------------------------------------
+
+    outer_true_labels.extend(
+        y_test.tolist()
+    )
+
+    outer_predictions_baseline.extend(
+        baseline_predictions.tolist()
+    )
+
+    outer_predictions_threshold.extend(
+        threshold_predictions.tolist()
+    )
+
+    fold_number += 1
+
+
+# ============================================================
+# FOLD RESULTS
+# ============================================================
+
+fold_results_df = pd.DataFrame(
+    fold_results
+)
+
+print("\n==============================================")
+print("FOLD-BY-FOLD RESULTS")
+print("==============================================")
+
+print(
+    fold_results_df.to_string(
+        index=False,
+        float_format=lambda x: f"{x:.4f}"
+    )
+)
+
+
+# ============================================================
+# MEAN CV PERFORMANCE
+# ============================================================
+
+mean_baseline_balanced_accuracy = (
+    fold_results_df[
+        "Baseline Balanced Accuracy"
+    ].mean()
+)
+
+mean_baseline_macro_f1 = (
+    fold_results_df[
+        "Baseline Macro F1"
+    ].mean()
+)
+
+mean_threshold_balanced_accuracy = (
+    fold_results_df[
+        "Threshold Balanced Accuracy"
+    ].mean()
+)
+
+mean_threshold_macro_f1 = (
+    fold_results_df[
+        "Threshold Macro F1"
+    ].mean()
+)
+
+
+# ============================================================
+# OVERALL OUTER-CV PERFORMANCE
+# ============================================================
+
+overall_baseline_balanced_accuracy = (
+    balanced_accuracy_score(
+        outer_true_labels,
+        outer_predictions_baseline
+    )
+)
+
+overall_baseline_macro_f1 = (
+    f1_score(
+        outer_true_labels,
+        outer_predictions_baseline,
+        average="macro"
+    )
+)
+
+overall_threshold_balanced_accuracy = (
+    balanced_accuracy_score(
+        outer_true_labels,
+        outer_predictions_threshold
+    )
+)
+
+overall_threshold_macro_f1 = (
+    f1_score(
+        outer_true_labels,
+        outer_predictions_threshold,
+        average="macro"
+    )
+)
+
+
+# ============================================================
+# FINAL RESULTS
+# ============================================================
+
+print("\n==============================================")
+print("PROPER NESTED THRESHOLD VALIDATION RESULTS")
+print("==============================================")
+
+print("\nMEAN OUTER-CV RESULTS:")
+
+print(
+    "Baseline RF Balanced Accuracy:",
+    round(
+        mean_baseline_balanced_accuracy,
+        4
+    )
+)
+
+print(
+    "Baseline RF Macro F1:",
+    round(
+        mean_baseline_macro_f1,
+        4
+    )
+)
+
+print(
+    "Threshold RF Balanced Accuracy:",
+    round(
+        mean_threshold_balanced_accuracy,
+        4
+    )
+)
+
+print(
+    "Threshold RF Macro F1:",
+    round(
+        mean_threshold_macro_f1,
+        4
+    )
+)
+
+
+# ============================================================
+# OVERALL OUTER-CV RESULTS
+# ============================================================
+
+print("\n==============================================")
+print("OVERALL OUTER-CV RESULTS")
+print("==============================================")
+
+print("\nBaseline RF:")
+
+print(
+    "Balanced Accuracy:",
+    round(
+        overall_baseline_balanced_accuracy,
+        4
+    )
+)
+
+print(
+    "Macro F1:",
+    round(
+        overall_baseline_macro_f1,
+        4
+    )
+)
+
+print("\nThreshold-Tuned RF:")
+
+print(
+    "Balanced Accuracy:",
+    round(
+        overall_threshold_balanced_accuracy,
+        4
+    )
+)
+
+print(
+    "Macro F1:",
+    round(
+        overall_threshold_macro_f1,
+        4
+    )
+)
+
+
+# ============================================================
+# IMPROVEMENT
+# ============================================================
+
+balanced_accuracy_change = (
+    mean_threshold_balanced_accuracy
+    - mean_baseline_balanced_accuracy
+)
+
+macro_f1_change = (
+    mean_threshold_macro_f1
+    - mean_baseline_macro_f1
+)
+
+print("\n==============================================")
+print("THRESHOLD IMPROVEMENT")
+print("==============================================")
+
+print(
+    "Balanced Accuracy Change:",
+    f"{balanced_accuracy_change:+.4f}"
+)
+
+print(
+    "Macro F1 Change:",
+    f"{macro_f1_change:+.4f}"
+)
+
+
+# ============================================================
+# FINAL CLASSIFICATION REPORT
+# ============================================================
+
+print("\n==============================================")
+print("BASELINE RF CLASSIFICATION REPORT")
+print("==============================================")
+
+print(
+    classification_report(
+        outer_true_labels,
+        outer_predictions_baseline,
+        digits=4
+    )
+)
+
+
+print("\n==============================================")
+print("THRESHOLD RF CLASSIFICATION REPORT")
+print("==============================================")
+
+print(
+    classification_report(
+        outer_true_labels,
+        outer_predictions_threshold,
+        digits=4
+    )
+)
+
+
+# ============================================================
+# CONFUSION MATRIX — BASELINE
+# ============================================================
+
+labels = [
+    "HIGH",
+    "LOW",
+    "MEDIUM"
+]
+
+baseline_cm = confusion_matrix(
+    outer_true_labels,
+    outer_predictions_baseline,
+    labels=labels
+)
+
+baseline_cm_df = pd.DataFrame(
+    baseline_cm,
+    index=[
+        "Actual HIGH",
+        "Actual LOW",
+        "Actual MEDIUM"
+    ],
+    columns=[
+        "Predicted HIGH",
+        "Predicted LOW",
+        "Predicted MEDIUM"
+    ]
+)
+
+print("\n==============================================")
+print("BASELINE RF CONFUSION MATRIX")
+print("==============================================")
+
+print(baseline_cm_df)
+
+
+# ============================================================
+# CONFUSION MATRIX — THRESHOLD
+# ============================================================
+
+threshold_cm = confusion_matrix(
+    outer_true_labels,
+    outer_predictions_threshold,
+    labels=labels
+)
+
+threshold_cm_df = pd.DataFrame(
+    threshold_cm,
+    index=[
+        "Actual HIGH",
+        "Actual LOW",
+        "Actual MEDIUM"
+    ],
+    columns=[
+        "Predicted HIGH",
+        "Predicted LOW",
+        "Predicted MEDIUM"
+    ]
+)
+
+print("\n==============================================")
+print("THRESHOLD RF CONFUSION MATRIX")
+print("==============================================")
+
+print(threshold_cm_df)
+
+
+# ============================================================
+# THRESHOLD STABILITY
+# ============================================================
+
+print("\n==============================================")
+print("THRESHOLD STABILITY ACROSS OUTER FOLDS")
+print("==============================================")
+
+print(
+    "Average HIGH threshold:",
+    round(
+        fold_results_df[
+            "HIGH Threshold"
+        ].mean(),
+        4
+    )
+)
+
+print(
+    "Average LOW threshold:",
+    round(
+        fold_results_df[
+            "LOW Threshold"
+        ].mean(),
+        4
+    )
+)
+
+print(
+    "HIGH threshold values:",
+    list(
+        fold_results_df[
+            "HIGH Threshold"
+        ]
+    )
+)
+
+print(
+    "LOW threshold values:",
+    list(
+        fold_results_df[
+            "LOW Threshold"
+        ]
+    )
+)
+
+
+# ============================================================
+# FINAL DECISION
+# ============================================================
+
+print("\n==============================================")
+print("DECISION")
+print("==============================================")
+
+if (
+    mean_threshold_macro_f1
+    > mean_baseline_macro_f1
+    and
+    mean_threshold_balanced_accuracy
+    >= mean_baseline_balanced_accuracy
+):
+
+    print(
+        "KEEP threshold tuning."
+    )
+
+    print(
+        "Threshold tuning improved both "
+        "Macro F1 and Balanced Accuracy."
+    )
+
+elif (
+    mean_threshold_macro_f1
+    > mean_baseline_macro_f1
+):
+
+    print(
+        "POSSIBLY KEEP threshold tuning."
+    )
+
+    print(
+        "Macro F1 improved, but Balanced "
+        "Accuracy did not improve."
+    )
+
+else:
+
+    print(
+        "REJECT threshold tuning."
+    )
+
+    print(
+        "The improvement did not survive "
+        "proper nested validation."
+    )
+
+--- Cell 108 (code) ---
+print("=== CURRENT NOTEBOOK VARIABLES ===")
+
+for name in sorted(globals()):
+    if not name.startswith("_"):
+        obj = globals()[name]
+        
+        # Show likely ML/model-related variables
+        if any(k in name.lower() for k in [
+            "model", "clf", "estimator", "pipeline",
+            "train", "test", "x_", "y_", "feature",
+            "best", "cv", "fold", "shap"
+        ]):
+            print(f"{name}: {type(obj).__name__}")
+
+--- Cell 109 (code) ---
+print("=== FINAL MODEL PIPELINE ===")
+print(best_rf_model)
+
+print("\n=== PIPELINE STEPS ===")
+for name, step in best_rf_model.named_steps.items():
+    print(f"{name}: {type(step).__name__}")
+
+--- Cell 110 (code) ---
+try:
+    import shap
+    print("SHAP version:", shap.__version__)
+except ImportError:
+    print("SHAP is NOT installed")
+
+--- Cell 111 (code) ---
+# ==============================================
+# SHAP: PREPARE FINAL RANDOM FOREST + DATA
+# ==============================================
+
+import shap
+import pandas as pd
+import numpy as np
+
+# Extract the trained Random Forest
+rf_model = best_rf_model.named_steps["classifier"]
+
+# Apply the already-fitted imputer to the test data
+X_test_imputed = best_rf_model.named_steps["imputer"].transform(X_test)
+
+# Convert back to DataFrame so feature names are preserved
+X_test_shap = pd.DataFrame(
+    X_test_imputed,
+    columns=X_test.columns,
+    index=X_test.index
+)
+
+print("Random Forest:", rf_model)
+print("\nSHAP data shape:", X_test_shap.shape)
+print("Number of features:", len(X_test_shap.columns))
+print("\nFeatures:")
+print(X_test_shap.columns.tolist())
+
+--- Cell 112 (code) ---
+# ==============================================
+# SHAP EXPLAINER
+# ==============================================
+
+explainer = shap.TreeExplainer(rf_model)
+
+shap_values = explainer.shap_values(X_test_shap)
+
+print("SHAP values type:", type(shap_values))
+
+if isinstance(shap_values, list):
+    print("Number of class outputs:", len(shap_values))
+    for i, values in enumerate(shap_values):
+        print(f"Class {i}: {values.shape}")
+else:
+    print("SHAP values shape:", shap_values.shape)
+
+print("\nClasses:", rf_model.classes_)
+
+--- Cell 113 (code) ---
+# ==============================================
+# SHAP GLOBAL FEATURE IMPORTANCE
+# ==============================================
+
+# Mean absolute SHAP value across:
+# - all 69 test samples
+# - all 3 severity classes
+
+global_shap_importance = np.mean(
+    np.abs(shap_values),
+    axis=(0, 2)
+)
+
+shap_importance_df = pd.DataFrame({
+    "feature": X_test_shap.columns,
+    "mean_abs_shap": global_shap_importance
+}).sort_values(
+    "mean_abs_shap",
+    ascending=False
+).reset_index(drop=True)
+
+print("=== GLOBAL SHAP FEATURE IMPORTANCE ===")
+print(shap_importance_df.to_string(index=False))
+
+--- Cell 114 (code) ---
+# ==============================================
+# CLASS-SPECIFIC SHAP FEATURE IMPORTANCE
+# ==============================================
+
+class_names = rf_model.classes_
+
+for class_idx, class_name in enumerate(class_names):
+
+    class_importance = np.mean(
+        np.abs(shap_values[:, :, class_idx]),
+        axis=0
+    )
+
+    class_df = pd.DataFrame({
+        "feature": X_test_shap.columns,
+        "mean_abs_shap": class_importance
+    }).sort_values(
+        "mean_abs_shap",
+        ascending=False
+    ).reset_index(drop=True)
+
+    print(f"\n{'=' * 50}")
+    print(f"{class_name} CLASS SHAP IMPORTANCE")
+    print(f"{'=' * 50}")
+    print(class_df.to_string(index=False))
+
+--- Cell 115 (code) ---
+# ==============================================
+# SAVE CLASS-SPECIFIC SHAP IMPORTANCE CLEANLY
+# ==============================================
+
+class_shap_tables = {}
+
+for class_idx, class_name in enumerate(class_names):
+
+    class_importance = np.mean(
+        np.abs(shap_values[:, :, class_idx]),
+        axis=0
+    )
+
+    class_df = pd.DataFrame({
+        "feature": X_test_shap.columns,
+        "mean_abs_shap": class_importance
+    }).sort_values(
+        "mean_abs_shap",
+        ascending=False
+    ).reset_index(drop=True)
+
+    class_shap_tables[class_name] = class_df
+
+    print(f"\n=== {class_name} ===")
+    for rank, row in class_df.iterrows():
+        print(
+            f"{rank + 1}. "
+            f"{row['feature']}: "
+            f"{row['mean_abs_shap']:.6f}"
+        )
+
+--- Cell 116 (code) ---
+# ==============================================
+# MEDIUM CLASS SHAP IMPORTANCE
+# ==============================================
+
+medium_df = class_shap_tables["MEDIUM"]
+
+print("=== MEDIUM ===")
+
+for rank, row in medium_df.iterrows():
+    print(
+        f"{rank + 1}. "
+        f"{row['feature']}: "
+        f"{row['mean_abs_shap']:.6f}"
+    )
+
+--- Cell 117 (code) ---
+# ==============================================
+# SHAP SUMMARY PLOTS — CLASS SPECIFIC
+# ==============================================
+
+for class_idx, class_name in enumerate(class_names):
+
+    print(f"\nSHAP Summary — {class_name}")
+
+    shap.summary_plot(
+        shap_values[:, :, class_idx],
+        X_test_shap,
+        show=True
+    )
+
+--- Cell 118 (code) ---
+# ==============================================
+# SHAP DEPENDENCE — EVENT YEAR FOR HIGH
+# ==============================================
+
+shap.dependence_plot(
+    "event_year",
+    shap_values[:, :, 0],
+    X_test_shap,
+    interaction_index=None
+)
+
+--- Cell 119 (code) ---
+# ==============================================
+# SHAP DEPENDENCE — EVENT YEAR FOR MEDIUM
+# ==============================================
+
+shap.dependence_plot(
+    "event_year",
+    shap_values[:, :, 1],
+    X_test_shap,
+    interaction_index=None
+)
+
+--- Cell 120 (code) ---
+# ==============================================
+# SHAP DEPENDENCE — EVENT YEAR FOR LOW
+# ==============================================
+
+shap.dependence_plot(
+    "event_year",
+    shap_values[:, :, 2],
+    X_test_shap,
+    interaction_index=None
+)
+
+--- Cell 121 (code) ---
+
+
+--- Cell 122 (code) ---
+%whos DataFrame
+
+--- Cell 123 (code) ---
+%whos y*
+
+--- Cell 124 (code) ---
+print("X columns:")
+print(X.columns.tolist())
+
+print("\nX_final columns:")
+print(X_final.columns.tolist())
+
+--- Cell 125 (code) ---
+# Find variables related to target / severity / labels
+[
+    name for name in globals()
+    if any(keyword in name.lower() for keyword in [
+        "target", "severity", "label", "encoded", "class"
+    ])
+]
+
+--- Cell 126 (code) ---
+# Check target vector
+print("y_encoded shape:", y_encoded.shape)
+print("\nClass mapping:")
+print(dict(enumerate(label_encoder.classes_)))
+
+print("\nEncoded class counts:")
+print(pd.Series(y_encoded).value_counts().sort_index())
+
+--- Cell 127 (code) ---
+# ==============================================
+# EVENT YEAR vs SEVERITY — NASA FINAL ML DATA
+# ==============================================
+
+year_severity_df = X_final[["event_year"]].copy()
+
+year_severity_df["severity_encoded"] = y_encoded
+year_severity_df["severity_target"] = label_encoder.inverse_transform(y_encoded)
+
+year_severity = pd.crosstab(
+    year_severity_df["event_year"],
+    year_severity_df["severity_target"]
+)
+
+print("COUNT DISTRIBUTION:")
+print(year_severity)
+
+--- Cell 128 (code) ---
+# ==============================================
+# PERCENTAGE DISTRIBUTION BY EVENT YEAR
+# ==============================================
+
+year_severity_pct = (
+    pd.crosstab(
+        year_severity_df["event_year"],
+        year_severity_df["severity_target"],
+        normalize="index"
+    ) * 100
+)
+
+print(year_severity_pct.round(2))
+
+--- Cell 129 (code) ---
+temp_df = X_final[["event_year"]].copy()
+
+temp_df["severity_target"] = label_encoder.inverse_transform(y_encoded)
+
+year_severity_pct = pd.crosstab(
+    temp_df["event_year"],
+    temp_df["severity_target"],
+    normalize="index"
+) * 100
+
+print(year_severity_pct.round(2))
+
+--- Cell 130 (code) ---
+# ==============================================
+# SHAP DEPENDENCE — EVENT MONTH RAINFALL FOR HIGH
+# ==============================================
+
+shap.dependence_plot(
+    "event_month_rainfall",
+    shap_values[:, :, 0],
+    X_test_shap,
+    interaction_index=None
+)
+
+--- Cell 131 (code) ---
+# ==============================================
+# SHAP DEPENDENCE — EVENT MONTH RAINFALL FOR LOW
+# ==============================================
+
+shap.dependence_plot(
+    "event_month_rainfall",
+    shap_values[:, :, 1],
+    X_test_shap,
+    interaction_index=None
+)
+
+--- Cell 132 (code) ---
+# ==============================================
+# SHAP DEPENDENCE — EVENT MONTH RAINFALL FOR MEDIUM
+# ==============================================
+
+shap.dependence_plot(
+    "event_month_rainfall",
+    shap_values[:, :, 2],
+    X_test_shap,
+    interaction_index=None
+)
+
+--- Cell 133 (code) ---
+# ==============================================
+# NUMERICAL SHAP SUMMARY — EVENT MONTH RAINFALL
+# ==============================================
+
+feature = "event_month_rainfall"
+
+temp = X_test_shap[[feature]].copy()
+
+temp["SHAP_HIGH"] = shap_values[:, :, 0][:, X_test_shap.columns.get_loc(feature)]
+temp["SHAP_LOW"] = shap_values[:, :, 1][:, X_test_shap.columns.get_loc(feature)]
+temp["SHAP_MEDIUM"] = shap_values[:, :, 2][:, X_test_shap.columns.get_loc(feature)]
+
+# Divide rainfall values into 4 ranges
+temp["rainfall_range"] = pd.qcut(
+    temp[feature],
+    q=4,
+    duplicates="drop"
+)
+
+summary = temp.groupby("rainfall_range", observed=True).agg(
+    mean_rainfall=(feature, "mean"),
+    count=(feature, "size"),
+    shap_high=("SHAP_HIGH", "mean"),
+    shap_low=("SHAP_LOW", "mean"),
+    shap_medium=("SHAP_MEDIUM", "mean")
+)
+
+print(summary.round(4))
+
+--- Cell 134 (code) ---
+# ==============================================
+# NUMERICAL SHAP SUMMARY — SEASONAL RAINFALL
+# ==============================================
+
+feature = "seasonal_rainfall"
+feature_idx = X_test_shap.columns.get_loc(feature)
+
+seasonal_temp = pd.DataFrame({
+    "seasonal_rainfall": X_test_shap[feature].values,
+    "SHAP_HIGH": shap_values[:, feature_idx, 0],
+    "SHAP_LOW": shap_values[:, feature_idx, 1],
+    "SHAP_MEDIUM": shap_values[:, feature_idx, 2]
+})
+
+seasonal_temp["rainfall_range"] = pd.qcut(
+    seasonal_temp["seasonal_rainfall"],
+    q=4,
+    duplicates="drop"
+)
+
+seasonal_summary = seasonal_temp.groupby(
+    "rainfall_range",
+    observed=True
+).agg(
+    mean_rainfall=("seasonal_rainfall", "mean"),
+    count=("seasonal_rainfall", "size"),
+    shap_high=("SHAP_HIGH", "mean"),
+    shap_low=("SHAP_LOW", "mean"),
+    shap_medium=("SHAP_MEDIUM", "mean")
+)
+
+print(seasonal_summary.round(4))
+
+--- Cell 135 (code) ---
+# ==============================================
+# NUMERICAL SHAP SUMMARY — ANNUAL RAINFALL
+# ==============================================
+
+feature = "ANNUAL"
+feature_idx = X_test_shap.columns.get_loc(feature)
+
+annual_temp = pd.DataFrame({
+    "ANNUAL": X_test_shap[feature].values,
+    "SHAP_HIGH": shap_values[:, feature_idx, 0],
+    "SHAP_LOW": shap_values[:, feature_idx, 1],
+    "SHAP_MEDIUM": shap_values[:, feature_idx, 2]
+})
+
+annual_temp["rainfall_range"] = pd.qcut(
+    annual_temp["ANNUAL"],
+    q=4,
+    duplicates="drop"
+)
+
+annual_summary = annual_temp.groupby(
+    "rainfall_range",
+    observed=True
+).agg(
+    mean_rainfall=("ANNUAL", "mean"),
+    count=("ANNUAL", "size"),
+    shap_high=("SHAP_HIGH", "mean"),
+    shap_low=("SHAP_LOW", "mean"),
+    shap_medium=("SHAP_MEDIUM", "mean")
+)
+
+print(annual_summary.round(4))
+
+--- Cell 136 (code) ---
+# ==============================================
+# NUMERICAL SHAP SUMMARY — GAZETEER DISTANCE
+# ==============================================
+
+feature = "gazeteer_distance"
+feature_idx = X_test_shap.columns.get_loc(feature)
+
+gazeteer_temp = pd.DataFrame({
+    "gazeteer_distance": X_test_shap[feature].values,
+    "SHAP_HIGH": shap_values[:, feature_idx, 0],
+    "SHAP_LOW": shap_values[:, feature_idx, 1],
+    "SHAP_MEDIUM": shap_values[:, feature_idx, 2]
+})
+
+gazeteer_temp["value_range"] = pd.qcut(
+    gazeteer_temp["gazeteer_distance"],
+    q=4,
+    duplicates="drop"
+)
+
+gazeteer_summary = gazeteer_temp.groupby(
+    "value_range",
+    observed=True
+).agg(
+    mean_distance=("gazeteer_distance", "mean"),
+    count=("gazeteer_distance", "size"),
+    shap_high=("SHAP_HIGH", "mean"),
+    shap_low=("SHAP_LOW", "mean"),
+    shap_medium=("SHAP_MEDIUM", "mean")
+)
+
+print(gazeteer_summary.round(4))
+
+--- Cell 137 (code) ---
+# ==============================================
+# NUMERICAL SHAP SUMMARY — ADMIN DIVISION POPULATION
+# ==============================================
+
+feature = "admin_division_population"
+feature_idx = X_test_shap.columns.get_loc(feature)
+
+population_temp = pd.DataFrame({
+    feature: X_test_shap[feature].values,
+    "SHAP_HIGH": shap_values[:, feature_idx, 0],
+    "SHAP_LOW": shap_values[:, feature_idx, 1],
+    "SHAP_MEDIUM": shap_values[:, feature_idx, 2]
+})
+
+population_temp["value_range"] = pd.qcut(
+    population_temp[feature],
+    q=4,
+    duplicates="drop"
+)
+
+population_summary = population_temp.groupby(
+    "value_range",
+    observed=True
+).agg(
+    mean_population=(feature, "mean"),
+    count=(feature, "size"),
+    shap_high=("SHAP_HIGH", "mean"),
+    shap_low=("SHAP_LOW", "mean"),
+    shap_medium=("SHAP_MEDIUM", "mean")
+)
+
+print(population_summary.round(4))
+
+--- Cell 138 (code) ---
+feature = "latitude"
+feature_idx = X_test_shap.columns.get_loc(feature)
+
+temp = pd.DataFrame({
+    feature: X_test_shap[feature].values,
+    "SHAP_HIGH": shap_values[:, feature_idx, 0],
+    "SHAP_LOW": shap_values[:, feature_idx, 1],
+    "SHAP_MEDIUM": shap_values[:, feature_idx, 2]
+})
+
+temp["value_range"] = pd.qcut(temp[feature], q=4, duplicates="drop")
+
+summary = temp.groupby("value_range", observed=True).agg(
+    mean_latitude=(feature, "mean"),
+    count=(feature, "size"),
+    shap_high=("SHAP_HIGH", "mean"),
+    shap_low=("SHAP_LOW", "mean"),
+    shap_medium=("SHAP_MEDIUM", "mean")
+)
+
+print(summary.round(4))
+
+--- Cell 139 (code) ---
+# ==============================================
+# NUMERICAL SHAP SUMMARY — LONGITUDE
+# ==============================================
+
+feature = "longitude"
+feature_idx = X_test_shap.columns.get_loc(feature)
+
+temp = pd.DataFrame({
+    feature: X_test_shap[feature].values,
+    "SHAP_HIGH": shap_values[:, feature_idx, 0],
+    "SHAP_LOW": shap_values[:, feature_idx, 1],
+    "SHAP_MEDIUM": shap_values[:, feature_idx, 2]
+})
+
+temp["value_range"] = pd.qcut(
+    temp[feature],
+    q=4,
+    duplicates="drop"
+)
+
+summary = temp.groupby("value_range", observed=True).agg(
+    mean_longitude=(feature, "mean"),
+    count=(feature, "size"),
+    shap_high=("SHAP_HIGH", "mean"),
+    shap_low=("SHAP_LOW", "mean"),
+    shap_medium=("SHAP_MEDIUM", "mean")
+)
+
+print(summary.round(4))
+
+--- Cell 140 (code) ---
+# ==============================================
+# NUMERICAL SHAP SUMMARY — EVENT MONTH
+# ==============================================
+
+feature = "event_month"
+feature_idx = X_test_shap.columns.get_loc(feature)
+
+temp = pd.DataFrame({
+    feature: X_test_shap[feature].values,
+    "SHAP_HIGH": shap_values[:, feature_idx, 0],
+    "SHAP_LOW": shap_values[:, feature_idx, 1],
+    "SHAP_MEDIUM": shap_values[:, feature_idx, 2]
+})
+
+summary = temp.groupby(feature).agg(
+    count=(feature, "size"),
+    shap_high=("SHAP_HIGH", "mean"),
+    shap_low=("SHAP_LOW", "mean"),
+    shap_medium=("SHAP_MEDIUM", "mean")
+)
+
+print(summary.round(4))
+
+--- Cell 141 (code) ---
+print(ablation_results)
+
+--- Cell 142 (code) ---
+print(type(classifier))
+print(classifier)
+
+--- Cell 143 (code) ---
+# ==============================================
+# ABLATION TEST — REMOVE event_year
+# ==============================================
+
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import balanced_accuracy_score, f1_score
+
+# Remove only event_year from the final 9-feature set
+X_no_year = X_final.drop(columns=["event_year"])
+
+# Use the same split configuration
+X_train_no_year, X_test_no_year, y_train_no_year, y_test_no_year = train_test_split(
+    X_no_year,
+    y_encoded,
+    test_size=0.20,
+    random_state=42,
+    stratify=y_encoded
+)
+
+# Same final Random Forest configuration
+rf_no_year = RandomForestClassifier(
+    n_estimators=500,
+    max_depth=10,
+    max_features="log2",
+    bootstrap=False,
+    class_weight="balanced",
+    n_jobs=-1,
+    random_state=42
+)
+
+rf_no_year.fit(X_train_no_year, y_train_no_year)
+
+# Predictions
+y_pred_no_year = rf_no_year.predict(X_test_no_year)
+
+# Metrics
+balanced_acc_no_year = balanced_accuracy_score(
+    y_test_no_year,
+    y_pred_no_year
+)
+
+macro_f1_no_year = f1_score(
+    y_test_no_year,
+    y_pred_no_year,
+    average="macro"
+)
+
+print("WITHOUT event_year")
+print("-" * 40)
+print("Number of features:", X_no_year.shape[1])
+print("Balanced Accuracy:", round(balanced_acc_no_year, 6))
+print("Macro F1:", round(macro_f1_no_year, 6))
+
+print("\nCURRENT 9-FEATURE BASELINE")
+print("-" * 40)
+print("Balanced Accuracy:", 0.527898)
+print("Macro F1:", 0.525273)
+
+print("\nDIFFERENCE")
+print("-" * 40)
+print(
+    "Balanced Accuracy change:",
+    round(balanced_acc_no_year - 0.527898, 6)
+)
+print(
+    "Macro F1 change:",
+    round(macro_f1_no_year - 0.525273, 6)
+)
+
+--- Cell 144 (code) ---
+print("Model fitted classes:", classifier.classes_)
+print("Feature count:", classifier.n_features_in_)
+print("Expected features:")
+print(list(X_final.columns))
+
+--- Cell 145 (code) ---
+# ==============================================
+# SAVE FINAL NERALIS SEVERITY MODEL
+# ==============================================
+
+import joblib
+
+model_bundle = {
+    "model": classifier,
+    "feature_names": list(X_final.columns),
+    "class_names": list(classifier.classes_)
+}
+
+save_path = "backend/app/ml/model.pkl"
+
+joblib.dump(model_bundle, save_path)
+import joblib
+from pathlib import Path
+
+model_bundle = {
+    "model": classifier,
+    "feature_names": list(X_final.columns),
+    "class_names": list(classifier.classes_)
+}
+
+save_path = Path("../app/ml/model.pkl")
+save_path.parent.mkdir(parents=True, exist_ok=True)
+
+joblib.dump(model_bundle, save_path)
+
+print("Model saved successfully!")
+print("Absolute path:", save_path.resolve())
+print("Features:", model_bundle["feature_names"])
+print("Classes:", model_bundle["class_names"])
+print("Model saved successfully!")
+print("Path:", save_path)
+print("Features:", model_bundle["feature_names"])
+print("Classes:", model_bundle["class_names"])
+
+--- Cell 146 (code) ---
+import joblib
+from pathlib import Path
+
+# Build the model bundle
+model_bundle = {
+    "model": classifier,
+    "feature_names": list(X_final.columns),
+    "class_names": list(classifier.classes_)
+}
+
+# Get current notebook working directory
+current_dir = Path.cwd()
+
+print("Current directory:")
+print(current_dir)
+
+# Move from backend/notebooks → backend/app/ml
+save_path = current_dir.parent / "app" / "ml" / "model.pkl"
+
+# Create folder if it doesn't exist
+save_path.parent.mkdir(parents=True, exist_ok=True)
+
+# Save model
+joblib.dump(model_bundle, save_path)
+
+print("\nModel saved successfully!")
+print("Absolute path:", save_path.resolve())
+print("File exists:", save_path.exists())
+print("Features:", model_bundle["feature_names"])
+print("Classes:", model_bundle["class_names"])
+
+--- Cell 147 (code) ---
+

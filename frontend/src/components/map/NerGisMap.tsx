@@ -82,6 +82,46 @@ const depotIcon = L.divIcon({
   iconAnchor: [14, 14]
 });
 
+const originIcon = (label: string = 'A') => L.divIcon({
+  className: 'origin-marker-pin',
+  html: `
+    <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%);">
+      <div style="position: absolute; width: 34px; height: 34px; border-radius: 50%; background: rgba(16, 185, 129, 0.35); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+      <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #059669 0%, #047857 100%); border: 2.5px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 12px; font-family: ui-sans-serif, system-ui, sans-serif;">
+        ${label}
+      </div>
+    </div>
+  `,
+  iconSize: [34, 34],
+  iconAnchor: [0, 0]
+});
+
+const destinationIcon = (label: string = '🎯') => L.divIcon({
+  className: 'destination-marker-pin',
+  html: `
+    <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%);">
+      <div style="position: absolute; width: 38px; height: 38px; border-radius: 50%; background: rgba(225, 29, 72, 0.35); animation: ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+      <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border: 2.5px solid #ffffff; box-shadow: 0 4px 12px rgba(225,29,72,0.6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 13px; font-family: ui-sans-serif, system-ui, sans-serif;">
+        ${label}
+      </div>
+    </div>
+  `,
+  iconSize: [38, 38],
+  iconAnchor: [0, 0]
+});
+
+const waypointIcon = (index: number) => L.divIcon({
+  className: 'transit-waypoint-pin',
+  html: `
+    <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%);">
+      <div style="width: 24px; height: 24px; border-radius: 50%; background: #1E3A5F; border: 2px solid #ffffff; box-shadow: 0 2px 8px rgba(30,58,95,0.5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 11px; font-family: ui-sans-serif, system-ui, sans-serif;">
+        ${index}
+      </div>
+    </div>
+  `,
+  iconSize: [24, 24],
+  iconAnchor: [0, 0]
+});
 export interface NerGisMapProps {
   height?: string;
   highlightRoute?: any;
@@ -91,6 +131,8 @@ export interface NerGisMapProps {
   initialShowDepots?: boolean;
   initialShowVehicles?: boolean;
   initialShowDistricts?: boolean;
+  originPoint?: { lat: number; lng: number; label?: string };
+  destinationPoint?: { lat: number; lng: number; label?: string };
 }
 
 export const NerGisMap: React.FC<NerGisMapProps> = ({
@@ -101,7 +143,9 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
   initialShowBridges = true,
   initialShowDepots = true,
   initialShowVehicles = true,
-  initialShowDistricts = true
+  initialShowDistricts = true,
+  originPoint,
+  destinationPoint
 }) => {
   const {
     districts,
@@ -114,6 +158,50 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
     openProvenanceModal,
     selectedStateFilter
   } = usePlatform();
+
+  // Extract or resolve start / destination points
+  let startPoint = originPoint;
+  let endPoint = destinationPoint;
+
+  if (highlightRoute) {
+    if (Array.isArray(highlightRoute.coordinates) && highlightRoute.coordinates.length > 0) {
+      const first = highlightRoute.coordinates[0];
+      const last = highlightRoute.coordinates[highlightRoute.coordinates.length - 1];
+      if (!startPoint && Array.isArray(first) && first.length >= 2) {
+        startPoint = {
+          lat: first[0],
+          lng: first[1],
+          label: highlightRoute.origin_district || highlightRoute.origin_name || 'Start Point (Origin)'
+        };
+      }
+      if (!endPoint && Array.isArray(last) && last.length >= 2) {
+        endPoint = {
+          lat: last[0],
+          lng: last[1],
+          label: highlightRoute.destination_district || highlightRoute.destination_name || 'Destination Target'
+        };
+      }
+    } else if (Array.isArray(highlightRoute.segments) && highlightRoute.segments.length > 0) {
+      const firstSeg = highlightRoute.segments[0];
+      const lastSeg = highlightRoute.segments[highlightRoute.segments.length - 1];
+      if (!startPoint && Array.isArray(firstSeg.coordinates) && firstSeg.coordinates.length > 0) {
+        const coord = firstSeg.coordinates[0];
+        startPoint = {
+          lat: coord[0],
+          lng: coord[1],
+          label: firstSeg.from_district || highlightRoute.origin_district || 'Start Point (Origin)'
+        };
+      }
+      if (!endPoint && Array.isArray(lastSeg.coordinates) && lastSeg.coordinates.length > 0) {
+        const coord = lastSeg.coordinates[lastSeg.coordinates.length - 1];
+        endPoint = {
+          lat: coord[0],
+          lng: coord[1],
+          label: lastSeg.to_district || highlightRoute.destination_district || 'Destination Target'
+        };
+      }
+    }
+  }
 
   const visibleDistricts = districts.filter(d => selectedStateFilter === 'ALL' || d.state_id === selectedStateFilter);
   const visibleCorridors = corridors.filter(c => {
@@ -289,35 +377,93 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
             );
           })}
 
-        {/* Highlight Active Route if present */}
-        {highlightRoute && (
-          <>
-            {Array.isArray(highlightRoute.coordinates) && highlightRoute.coordinates.length > 0 && (
-              <Polyline
-                positions={highlightRoute.coordinates as any}
-                pathOptions={{
-                  color: '#0284c7',
-                  weight: 6,
-                  opacity: 0.95
-                }}
-              />
-            )}
-            {Array.isArray(highlightRoute.segments) &&
-              highlightRoute.segments.map((seg: any, idx: number) => {
-                if (!Array.isArray(seg.coordinates) || seg.coordinates.length === 0) return null;
-                return (
-                  <Polyline
-                    key={`hl-seg-${idx}-${seg.segment_id || idx}`}
-                    positions={seg.coordinates as any}
-                    pathOptions={{
-                      color: '#38bdf8',
-                      weight: 7,
-                      opacity: 0.85
-                    }}
-                  />
-                );
-              })}
-          </>
+        {/* Authoritative Highlighted Route Polyline */}
+        {highlightRoute && Array.isArray(highlightRoute.coordinates) && highlightRoute.coordinates.length > 0 && (
+          <Polyline
+            positions={highlightRoute.coordinates as any}
+            pathOptions={{
+              color: '#0284c7',
+              weight: 6,
+              opacity: 0.95,
+              lineJoin: 'round',
+              lineCap: 'round'
+            }}
+          />
+        )}
+
+        {/* Transit Waypoint Markers (Intermediate Nodes) */}
+        {highlightRoute && Array.isArray(highlightRoute.waypoints) &&
+          highlightRoute.waypoints.map((wp: any) => {
+            if (wp.role === 'TRANSIT') {
+              return (
+                <Marker
+                  key={`wp-${wp.index}-${wp.node_id}`}
+                  position={[wp.lat, wp.lng]}
+                  icon={waypointIcon(wp.index)}
+                >
+                  <Popup>
+                    <div className="p-1.5 text-xs space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-[#1E3A5F]">
+                        <span className="w-4 h-4 rounded-full bg-[#1E3A5F] text-white flex items-center justify-center text-[10px] font-bold">
+                          {wp.index}
+                        </span>
+                        <span>TRANSIT JUNCTION / CORRIDOR</span>
+                      </div>
+                      <div className="font-bold text-gray-800">{wp.name} {wp.state ? `(${wp.state})` : ''}</div>
+                      <div className="text-[11px] text-gray-500 font-mono">
+                        {wp.lat.toFixed(4)}°N, {wp.lng.toFixed(4)}°E
+                      </div>
+                      <div className="text-[10px] text-blue-700 font-semibold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">
+                        Transit Waypoint #{wp.index}
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            }
+            return null;
+          })}
+
+        {/* Origin / Start Point Marker */}
+        {startPoint && (
+          <Marker position={[startPoint.lat, startPoint.lng]} icon={originIcon('A')}>
+            <Popup>
+              <div className="p-1.5 text-xs space-y-1">
+                <div className="flex items-center gap-1.5 font-black text-emerald-800">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span>ORIGIN (START POINT)</span>
+                </div>
+                <div className="font-bold text-[#1E3A5F]">{startPoint.label || 'Convoy Start'}</div>
+                <div className="text-[11px] text-gray-600 font-mono">
+                  {startPoint.lat.toFixed(4)}°N, {startPoint.lng.toFixed(4)}°E
+                </div>
+                <div className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                  ✓ Convoy Departure Node
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        )}
+
+        {/* Destination / Target Point Marker */}
+        {endPoint && (
+          <Marker position={[endPoint.lat, endPoint.lng]} icon={destinationIcon('🎯')}>
+            <Popup>
+              <div className="p-1.5 text-xs space-y-1">
+                <div className="flex items-center gap-1.5 font-black text-rose-700">
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                  <span>DESTINATION (TARGET)</span>
+                </div>
+                <div className="font-bold text-[#1E3A5F]">{endPoint.label || 'Convoy Target'}</div>
+                <div className="text-[11px] text-gray-600 font-mono">
+                  {endPoint.lat.toFixed(4)}°N, {endPoint.lng.toFixed(4)}°E
+                </div>
+                <div className="text-[10px] text-rose-700 font-bold bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                  🎯 Target Delivery Destination
+                </div>
+              </div>
+            </Popup>
+          </Marker>
         )}
 
         {/* 2. District Headquarter Markers */}

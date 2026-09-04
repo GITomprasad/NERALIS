@@ -59,6 +59,28 @@ MONTHLY_RAINFALL: Dict[str, List[float]] = {
 
 HORIZON_SCALE = {6: 0.8, 24: 1.0, 48: 1.25, 72: 1.45}
 
+# Explicit corridor-to-state mapping (all NER_ROAD_SEGMENTS IDs)
+CORRIDOR_STATE_MAP: Dict[str, str] = {
+    "SEG-01": "Assam",
+    "SEG-02": "Meghalaya",
+    "SEG-03": "Meghalaya",
+    "SEG-04": "Arunachal Pradesh",
+    "SEG-05": "Arunachal Pradesh",
+    "SEG-06": "Assam",
+    "SEG-07": "Arunachal Pradesh",
+    "SEG-08": "Nagaland",
+    "SEG-09": "Manipur",
+    "SEG-10": "Mizoram",
+    "SEG-11": "Mizoram",
+    "SEG-12": "Sikkim",
+    "SEG-13": "Sikkim",
+    "SEG-14": "Tripura",
+    "SEG-15": "Nagaland",
+    "SEG-16": "Assam",
+    "SEG-17": "Manipur",
+    "SEG-18": "Arunachal Pradesh",
+}
+
 
 class RealDisruptionMLModel:
     """
@@ -68,19 +90,28 @@ class RealDisruptionMLModel:
 
     def __init__(self):
         self.model = _model
-        self.model_version = _metrics["model_version"]
-        self.model_status = "authentic_nasa_imd_pipeline"
+        self.model_version = _metrics.get("model_version", "NERALIS-RF-NER-Landslide-v1.0")
+        self.model_status = "ACTIVE"
         self.is_simulation = False
-        self.algorithm = _metrics["algorithm"]
+        self.algorithm = _metrics.get(
+            "algorithm",
+            "Random Forest Classifier | class_weight=balanced | n_estimators=500 | max_depth=10 | max_features=log2"
+        )
         self.feature_names = _feat_names
         self.metrics = _metrics
 
     def _infer_state(self, corridor: Dict) -> str:
+        """Resolve corridor state using explicit corridor ID mapping first."""
+        corridor_id = corridor.get("id")
+        if corridor_id in CORRIDOR_STATE_MAP:
+            return CORRIDOR_STATE_MAP[corridor_id]
+
         text = corridor.get("name", "") + " " + corridor.get("to_district", "")
         states = ["Assam", "Meghalaya", "Manipur", "Nagaland", "Arunachal Pradesh", "Tripura", "Mizoram", "Sikkim"]
         for s in states:
             if s in text or s[:4] in text:
                 return s
+
         abbrevs = {
             "AS": "Assam", "ML": "Meghalaya", "MN": "Manipur",
             "NL": "Nagaland", "AR": "Arunachal Pradesh",
@@ -89,6 +120,7 @@ class RealDisruptionMLModel:
         for abbr, state in abbrevs.items():
             if text.upper().startswith(abbr + "-") or f"-{abbr}-" in text.upper():
                 return state
+
         return "Assam"
 
     def _build_feature_vector(

@@ -5,7 +5,7 @@ multi-channel output formatting (SMS, WhatsApp, IVR Voice, Push, USSD, NDMA CAP 
 separate dispatch triggering, and 6 AM Daily Morning Collector Briefings.
 """
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import datetime
 import random
 
@@ -168,11 +168,13 @@ class AlertDispatcher:
                 }
         return {"status": "NOT_FOUND", "alert_id": alert_id}
 
-    def generate_cap_xml(self, alert_id: str) -> str:
+    def generate_cap_xml(self, alert_id: str) -> Optional[str]:
         """
         Generates standard NDMA / ITU-T X.1303 compliant Common Alerting Protocol (CAP v1.2) XML.
         """
-        alert = next((a for a in self.active_alerts if a["id"] == alert_id), self.active_alerts[0])
+        alert = next((a for a in self.active_alerts if a["id"] == alert_id), None)
+        if not alert:
+            return None
         now_utc = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
         
         xml_template = f"""<?xml version="1.0" encoding="UTF-8"?>

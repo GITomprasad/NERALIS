@@ -22,6 +22,72 @@ import {
   TrendingDown
 } from 'lucide-react';
 
+export type LogisticsVehicleClass = 'THREE_WHEELER' | 'FOUR_WHEELER_SCV' | 'MEDIUM_TRUCK' | 'HEAVY_TRAILER';
+
+interface VehicleClassConfig {
+  id: LogisticsVehicleClass;
+  title: string;
+  category: string;
+  defaultWeight: number;
+  widthMeters: number;
+  iconEmoji: string;
+  roadSuitability: string;
+  clearanceNote: string;
+  badge: string;
+  badgeColor: string;
+}
+
+const VEHICLE_CLASSES: VehicleClassConfig[] = [
+  {
+    id: 'THREE_WHEELER',
+    title: '3-Wheeler Cargo Auto / EV',
+    category: 'Small Mountain Feeder (<1.5 MT)',
+    defaultWeight: 1.5,
+    widthMeters: 1.4,
+    iconEmoji: '🛺',
+    roadSuitability: 'Single-Lane (<2.2m) Passable',
+    clearanceNote: 'Passes narrow hillside bypasses, single-lane village shortcuts & emergency landslide detours where heavy trucks get blocked.',
+    badge: 'Narrow Track Passable',
+    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300'
+  },
+  {
+    id: 'FOUR_WHEELER_SCV',
+    title: '4-Wheeler Small LCV / Pickup',
+    category: 'Compact Commercial (Tata Ace / Bolero)',
+    defaultWeight: 3.5,
+    widthMeters: 1.8,
+    iconEmoji: '🛻',
+    roadSuitability: 'Narrow Mountain Roads (<2.8m)',
+    clearanceNote: 'Passes secondary hill roads, steep ghat gradients, and low-capacity Bailey bridges.',
+    badge: 'All-Terrain Hill LCV',
+    badgeColor: 'bg-blue-100 text-blue-800 border-blue-300'
+  },
+  {
+    id: 'MEDIUM_TRUCK',
+    title: '6-Wheeler Freight Truck (16T)',
+    category: 'Standard Goods Vehicle',
+    defaultWeight: 16.0,
+    widthMeters: 2.5,
+    iconEmoji: '🚚',
+    roadSuitability: 'Standard 2-Lane Highway',
+    clearanceNote: 'Standard National & State Highways. Requires certified two-lane bridges and standard turning radius.',
+    badge: 'Standard 2-Lane Only',
+    badgeColor: 'bg-amber-100 text-amber-800 border-amber-300'
+  },
+  {
+    id: 'HEAVY_TRAILER',
+    title: 'Heavy Multi-Axle / 16-Wheeler Trailer',
+    category: 'Heavy Freight Carrier (28T - 42T)',
+    defaultWeight: 36.0,
+    widthMeters: 2.7,
+    iconEmoji: '🚛',
+    roadSuitability: 'Heavy Express Highway (4-Lane / Wide)',
+    clearanceNote: 'Restricted from narrow single-lane hairpin passes. Strictly routed via Class-70R rated bridges & 4-lane corridors.',
+    badge: 'Heavy Corridor Only',
+    badgeColor: 'bg-purple-100 text-purple-800 border-purple-300'
+  }
+];
+
 export const RouteOptimizer: React.FC = () => {
   const { districts, addToast } = usePlatform();
   const { t } = useLanguage();
@@ -29,13 +95,21 @@ export const RouteOptimizer: React.FC = () => {
   const [origin, setOrigin] = useState('AS-KAM');
   const [destination, setDestination] = useState('AR-TAW');
   const [cargoType, setCargoType] = useState<CargoType>('CRITICAL_MEDICINES');
+  const [vehicleClass, setVehicleClass] = useState<LogisticsVehicleClass>('MEDIUM_TRUCK');
   const [vehicleWeight, setVehicleWeight] = useState(16.0);
-  const [departureHour, setDepartureHour] = useState(6);
   const [includeIntermodal, setIncludeIntermodal] = useState(true);
 
   const [isCalculating, setIsCalculating] = useState(false);
   const [routeResult, setRouteResult] = useState<any>(null);
   const [selectedRouteIndex, setSelectedRouteIndex] = useState(0); // 0 = Primary, 1 = Resilient, 2 = Multimodal
+
+  const handleVehicleClassSelect = (vClass: LogisticsVehicleClass) => {
+    setVehicleClass(vClass);
+    const cfg = VEHICLE_CLASSES.find((c) => c.id === vClass);
+    if (cfg) {
+      setVehicleWeight(cfg.defaultWeight);
+    }
+  };
 
   const handleComputeRoute = async (customOrigin?: string, customDestination?: string) => {
     const orig = typeof customOrigin === 'string' ? customOrigin : origin;
@@ -47,7 +121,7 @@ export const RouteOptimizer: React.FC = () => {
         destination: dest,
         cargo_type: cargoType,
         vehicle_weight_tons: vehicleWeight,
-        departure_hour: departureHour,
+        departure_hour: 8,
         include_intermodal: includeIntermodal
       });
 
@@ -192,49 +266,86 @@ export const RouteOptimizer: React.FC = () => {
               </div>
             </div>
 
-            {/* Vehicle Weight & Departure Slider */}
-            <div className="space-y-3 border-t pt-3">
-              <div>
-                <div className="flex justify-between text-xs font-bold mb-1">
-                  <span>Gross Vehicle Weight (Tons)</span>
-                  <span className="text-blue-700">{vehicleWeight} MT</span>
-                </div>
-                <input
-                  type="range"
-                  min="3"
-                  max="50"
-                  step="1"
-                  value={vehicleWeight}
-                  onChange={(e) => setVehicleWeight(Number(e.target.value))}
-                  className="w-full accent-[#1E3A5F]"
-                />
+            {/* Logistics Vehicle Class & Road Width Clearance Selector */}
+            <div className="space-y-2.5 border-t pt-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                  <Truck className="w-4 h-4 text-[#1E3A5F]" /> Logistics Vehicle Class & Road Clearance
+                </label>
+                <span className="text-[10px] bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded border border-slate-200">
+                  {VEHICLE_CLASSES.find((c) => c.id === vehicleClass)?.widthMeters}m Width • {vehicleWeight} MT
+                </span>
               </div>
 
-              <div>
-                <div className="flex justify-between text-xs font-bold mb-1">
-                  <span>Planned Departure Hour (IST)</span>
-                  <span className="text-blue-700">{departureHour}:00 IST</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="23"
-                  step="1"
-                  value={departureHour}
-                  onChange={(e) => setDepartureHour(Number(e.target.value))}
-                  className="w-full accent-[#1E3A5F]"
-                />
+              {/* 4 Vehicle Type Cards with Logos & Badges */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {VEHICLE_CLASSES.map((vc) => {
+                  const isSelected = vehicleClass === vc.id;
+                  return (
+                    <button
+                      key={vc.id}
+                      type="button"
+                      onClick={() => handleVehicleClassSelect(vc.id)}
+                      className={`p-2.5 rounded-xl border text-left transition-all relative ${
+                        isSelected
+                          ? 'bg-blue-50/90 border-[#1E3A5F] ring-2 ring-[#1E3A5F]/20 shadow-xs'
+                          : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl select-none" role="img" aria-label={vc.title}>
+                            {vc.iconEmoji}
+                          </span>
+                          <div>
+                            <div className={`font-black text-xs ${isSelected ? 'text-[#1E3A5F]' : 'text-gray-800'}`}>
+                              {vc.title}
+                            </div>
+                            <div className="text-[10px] text-gray-500">{vc.category}</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-1.5 flex items-center justify-between gap-1 text-[10px]">
+                        <span className={`font-bold px-1.5 py-0.5 rounded border ${vc.badgeColor}`}>
+                          {vc.badge}
+                        </span>
+                        <span className="font-mono text-gray-600 font-bold">{vc.defaultWeight} MT</span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
+              {/* Active Vehicle Clearance Policy Box */}
+              {(() => {
+                const activeCfg = VEHICLE_CLASSES.find((c) => c.id === vehicleClass);
+                if (!activeCfg) return null;
+                return (
+                  <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-1">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-800">
+                      <span className="flex items-center gap-1">
+                        <span>Road Passability:</span>
+                        <span className="text-blue-700 font-semibold">{activeCfg.roadSuitability}</span>
+                      </span>
+                      <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-0.5">
+                        <CheckCircle2 className="w-3 h-3" /> Clearance Active
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-gray-600 leading-relaxed">{activeCfg.clearanceNote}</p>
+                  </div>
+                );
+              })()}
+
+              {/* Multi-Modal Waterway Bypass */}
               <div className="flex items-center justify-between p-2.5 bg-blue-50/60 rounded-lg border border-blue-200">
-                <span className="font-semibold text-gray-800 flex items-center gap-1.5">
+                <span className="font-semibold text-gray-800 flex items-center gap-1.5 text-xs">
                   <Ship className="w-4 h-4 text-blue-700" /> Multi-Modal Waterway Bypass (NW-2)
                 </span>
                 <input
                   type="checkbox"
                   checked={includeIntermodal}
                   onChange={(e) => setIncludeIntermodal(e.target.checked)}
-                  className="rounded text-[#1E3A5F] w-4 h-4"
+                  className="rounded text-[#1E3A5F] w-4 h-4 cursor-pointer"
                 />
               </div>
             </div>
@@ -243,7 +354,7 @@ export const RouteOptimizer: React.FC = () => {
             <button
               onClick={() => handleComputeRoute()}
               disabled={isCalculating}
-              className="w-full bg-[#1E3A5F] hover:bg-[#152a45] text-white font-bold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all"
+              className="w-full bg-[#1E3A5F] hover:bg-[#152a45] text-white font-bold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
             >
               {isCalculating ? (
                 <>
@@ -315,10 +426,18 @@ export const RouteOptimizer: React.FC = () => {
                       <p className="text-[11px] text-gray-500 mt-0.5">{activeDisplayRoute.tradeoff_reason}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="text-right">
-                        <div className="text-xs font-bold text-gray-500">Departure Window:</div>
-                        <div className="text-xs font-black text-emerald-700">{routeResult.recommended_departure_window}</div>
-                      </div>
+                      {(() => {
+                        const vCfg = VEHICLE_CLASSES.find((c) => c.id === vehicleClass);
+                        return (
+                          <div className="text-right">
+                            <div className="text-[10px] font-bold text-gray-500">Vehicle Profile:</div>
+                            <div className="text-xs font-black text-[#1E3A5F] flex items-center gap-1 justify-end">
+                              <span>{vCfg?.iconEmoji}</span>
+                              <span>{vCfg?.title}</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -344,13 +463,99 @@ export const RouteOptimizer: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Route Journey Stepper (Requirement 5) */}
+                  {(() => {
+                    const journeyWaypoints = (activeDisplayRoute.waypoints && activeDisplayRoute.waypoints.length > 0)
+                      ? activeDisplayRoute.waypoints
+                      : (Array.isArray(activeDisplayRoute.path_nodes) && activeDisplayRoute.path_nodes.length > 0)
+                      ? activeDisplayRoute.path_nodes.map((nId: string, idx: number) => {
+                          const d = districts.find((item) => item.id === nId);
+                          return {
+                            index: idx + 1,
+                            node_id: nId,
+                            name: d ? d.name : nId,
+                            state: d ? d.state : '',
+                            lat: d ? d.lat : 26.1445,
+                            lng: d ? d.lng : 91.7362,
+                            role: idx === 0 ? 'ORIGIN' : idx === activeDisplayRoute.path_nodes.length - 1 ? 'DESTINATION' : 'TRANSIT'
+                          };
+                        })
+                      : [];
+
+                    if (journeyWaypoints.length === 0) return null;
+
+                    return (
+                      <div className="p-3 bg-slate-50 rounded-xl border border-gray-200 space-y-2 text-xs">
+                        <div className="font-bold text-[#1E3A5F] text-[11px] uppercase tracking-wider flex items-center justify-between">
+                          <span>Route Journey & Waypoint Sequence:</span>
+                          <span className="text-[10px] text-gray-500 font-mono">
+                            {journeyWaypoints.length} Nodes • {activeDisplayRoute.segments_count || (journeyWaypoints.length - 1)} Corridor Segments
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1.5 pt-1">
+                          {journeyWaypoints.map((wp: any, idx: number) => {
+                            const isOrigin = idx === 0;
+                            const isDest = idx === journeyWaypoints.length - 1;
+                            const segmentAfter = activeDisplayRoute.segments && activeDisplayRoute.segments[idx];
+                            return (
+                              <div key={`journey-node-${idx}`} className="flex items-start gap-2.5">
+                                <div className="flex flex-col items-center">
+                                  <div
+                                    className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] text-white shadow-xs ${
+                                      isOrigin
+                                        ? 'bg-emerald-600 ring-2 ring-emerald-200'
+                                        : isDest
+                                        ? 'bg-rose-600 ring-2 ring-rose-200'
+                                        : 'bg-[#1E3A5F]'
+                                    }`}
+                                  >
+                                    {isDest ? '🎯' : wp.index}
+                                  </div>
+                                  {!isDest && <div className="w-0.5 h-6 bg-gray-300 my-0.5" />}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-black text-[#1E3A5F] text-xs">
+                                      {wp.name} {wp.state ? `(${wp.state})` : ''}
+                                    </span>
+                                    <span
+                                      className={`text-[9px] font-bold px-1.5 py-0.2 rounded uppercase ${
+                                        isOrigin
+                                          ? 'bg-emerald-100 text-emerald-800'
+                                          : isDest
+                                          ? 'bg-rose-100 text-rose-800'
+                                          : 'bg-blue-100 text-blue-800'
+                                      }`}
+                                    >
+                                      {isOrigin ? 'Origin Departure' : isDest ? 'Destination Target' : 'Transit Junction'}
+                                    </span>
+                                  </div>
+                                  {!isDest && segmentAfter && (
+                                    <div className="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5 font-mono">
+                                      <span>↳ {segmentAfter.name || 'Corridor Link'}</span>
+                                      <span>({segmentAfter.distance_km} km • {segmentAfter.duration_hrs}h)</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {/* Why Recommended / Trade-off Rationale Box (Section 7) */}
                   <div className="p-3 bg-[#EBF3FB] rounded-xl border border-blue-200 space-y-1.5 text-xs">
                     <div className="font-bold text-[#17365D] text-[11px] flex items-center justify-between">
                       <span>Selection Rationale & Safeguards:</span>
                       <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Optimal Policy</span>
                     </div>
-                    <ul className="text-[11px] text-gray-700 space-y-0.5 list-disc pl-4">
+                    <ul className="text-[11px] text-gray-700 space-y-1 list-disc pl-4">
+                      <li>
+                        <strong>Vehicle Clearance ({VEHICLE_CLASSES.find((c) => c.id === vehicleClass)?.iconEmoji} {VEHICLE_CLASSES.find((c) => c.id === vehicleClass)?.title}):</strong>{' '}
+                        {VEHICLE_CLASSES.find((c) => c.id === vehicleClass)?.clearanceNote}
+                      </li>
                       <li><strong>Zero Active Blockades:</strong> Bypasses high-risk landslide zones on NH-10 & NH-13.</li>
                       <li><strong>Structural Clearance:</strong> All culverts and bridges on this corridor certified for {vehicleWeight} MT.</li>
                       <li><strong>Weather Exposure:</strong> Low river water-level alert window for next 12 hours.</li>
@@ -372,7 +577,23 @@ export const RouteOptimizer: React.FC = () => {
 
                   {/* Map Preview */}
                   <div className="h-80 sm:h-96 rounded-xl overflow-hidden border border-gray-200 shadow-inner relative">
-                    <NerGisMap height="100%" highlightRoute={activeDisplayRoute} initialShowRoads={false} />
+                    {(() => {
+                      const origD = districts.find((d) => d.id === origin);
+                      const destD = districts.find((d) => d.id === destination);
+                      return (
+                        <NerGisMap
+                          height="100%"
+                          highlightRoute={activeDisplayRoute}
+                          originPoint={origD ? { lat: origD.lat, lng: origD.lng, label: `${origD.name} (${origD.state})` } : undefined}
+                          destinationPoint={destD ? { lat: destD.lat, lng: destD.lng, label: `${destD.name} (${destD.state})` } : undefined}
+                          initialShowRoads={false}
+                          initialShowBridges={false}
+                          initialShowDepots={false}
+                          initialShowVehicles={false}
+                          initialShowDistricts={false}
+                        />
+                      );
+                    })()}
                   </div>
                 </div>
               )}

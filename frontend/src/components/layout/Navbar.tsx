@@ -33,12 +33,14 @@ import {
   RefreshCw,
   LogIn,
   LogOut,
-  UserPlus
+  UserPlus,
+  ChevronRight
 } from 'lucide-react';
 
 export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobileMenuToggle }) => {
   const {
     activeModule,
+    navigateToModule,
     goToLanding,
     userRole,
     setUserRole,
@@ -63,12 +65,14 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
     toasts,
     notifications,
     unreadNotifCount,
+    markNotificationAsRead,
     markAllNotificationsAsRead,
     clearAllNotifications,
     alerts,
     districts,
     corridors,
     bridges,
+    vehicles,
     openDrawer,
     addToast,
     refreshData,
@@ -1002,11 +1006,89 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                     const isWarning = n.tier === 'WARNING';
                     const isSuccess = n.tier === 'SUCCESS';
 
+                    const getTargetLabel = () => {
+                      if (n.targetModule === 'ACCESSIBILITY') return '01 GIS Map';
+                      if (n.targetModule === 'ROUTE') return '02 Route Optimizer';
+                      if (n.targetModule === 'FLEET') return '03 Fleet Tracking';
+                      if (n.targetModule === 'PREDICTION') return '04 Predictive AI';
+                      if (n.targetModule === 'ALERT') return '05 Alert Center';
+                      if (n.targetModule === 'FIELD_APP') return '06 Field PWA';
+
+                      const txt = `${n.title} ${n.message}`.toLowerCase();
+                      if (txt.includes('route') || txt.includes('dispatch') || txt.includes('itinerary')) return '02 Route Optimizer';
+                      if (txt.includes('vehicle') || txt.includes('fleet') || txt.includes('truck')) return '03 Fleet Tracking';
+                      if (txt.includes('prediction') || txt.includes('landslide')) return '04 Predictive AI';
+                      if (txt.includes('field') || txt.includes('inspector') || txt.includes('damage')) return '06 Field PWA';
+                      if (txt.includes('bridge') || txt.includes('corridor') || txt.includes('nh-')) return '01 GIS Map';
+                      return '05 Alert Center';
+                    };
+
+                    const handleItemClick = () => {
+                      markNotificationAsRead(n.id);
+                      setShowNotifDropdown(false);
+
+                      // 1. Determine destination module
+                      let targetMod = n.targetModule;
+                      if (!targetMod) {
+                        const txt = `${n.title} ${n.message}`.toLowerCase();
+                        if (txt.includes('route') || txt.includes('dispatch') || txt.includes('itinerary') || txt.includes('dijkstra')) {
+                          targetMod = 'ROUTE';
+                        } else if (txt.includes('vehicle') || txt.includes('fleet') || txt.includes('truck') || txt.includes('navic') || txt.includes('cold-chain')) {
+                          targetMod = 'FLEET';
+                        } else if (txt.includes('prediction') || txt.includes('landslide') || txt.includes('rainfall') || txt.includes('disruption')) {
+                          targetMod = 'PREDICTION';
+                        } else if (txt.includes('field') || txt.includes('inspector') || txt.includes('damage report') || txt.includes('pwa')) {
+                          targetMod = 'FIELD_APP';
+                        } else if (txt.includes('bridge') || txt.includes('saraighat') || txt.includes('coronation') || txt.includes('bogibeel') || txt.includes('sensor') || txt.includes('corridor') || txt.includes('nh-')) {
+                          targetMod = 'ACCESSIBILITY';
+                        } else {
+                          targetMod = 'ALERT';
+                        }
+                      }
+
+                      if (targetMod && activeModule !== targetMod) {
+                        navigateToModule(targetMod);
+                      }
+
+                      // 2. Open contextual drawer if matching entity is found
+                      if (n.targetDrawer) {
+                        openDrawer(n.targetDrawer.type, n.targetDrawer.data);
+                      } else {
+                        const txt = `${n.title} ${n.message}`.toLowerCase();
+                        const matchedCorridor = corridors.find((c) =>
+                          txt.includes(c.name.toLowerCase()) || txt.includes(c.id.toLowerCase())
+                        );
+                        if (matchedCorridor) {
+                          openDrawer('CORRIDOR', matchedCorridor);
+                          return;
+                        }
+
+                        const matchedBridge = bridges.find((b) =>
+                          txt.includes(b.name.toLowerCase()) || txt.includes(b.id.toLowerCase())
+                        );
+                        if (matchedBridge) {
+                          openDrawer('BRIDGE', matchedBridge);
+                          return;
+                        }
+
+                        const matchedAlert = alerts.find((a) =>
+                          txt.includes(a.title.toLowerCase()) || txt.includes(a.id.toLowerCase())
+                        );
+                        if (matchedAlert) {
+                          openDrawer('ALERT', matchedAlert);
+                          return;
+                        }
+                      }
+                    };
+
                     return (
-                      <div
+                      <button
                         key={n.id}
-                        className={`p-2 rounded-lg transition-colors flex items-start gap-2.5 ${
-                          !n.isRead ? 'bg-blue-50/60 border-l-2 border-l-blue-600' : 'hover:bg-gray-50'
+                        onClick={handleItemClick}
+                        className={`w-full text-left p-2.5 rounded-lg transition-all flex items-start gap-2.5 group cursor-pointer border ${
+                          !n.isRead
+                            ? 'bg-blue-50/70 border-blue-200 hover:bg-blue-100/70 hover:border-blue-300'
+                            : 'bg-white border-transparent hover:bg-gray-50 hover:border-gray-200'
                         }`}
                       >
                         <div className="shrink-0 mt-0.5">
@@ -1017,33 +1099,51 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-1">
-                            <span className="font-bold text-gray-900 text-xs truncate">{n.title}</span>
+                            <span className="font-bold text-gray-900 text-xs truncate group-hover:text-blue-700 transition-colors">
+                              {n.title}
+                            </span>
                             <span className="text-[9px] text-gray-400 shrink-0">{n.timestamp}</span>
                           </div>
                           <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{n.message}</p>
+                          <div className="flex items-center justify-between mt-1.5 pt-1 border-t border-gray-100">
+                            <span className="text-[9px] font-bold text-blue-700 uppercase tracking-wider flex items-center gap-0.5 group-hover:underline">
+                              <span>Go to {getTargetLabel()}</span>
+                              <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                            </span>
+                            {!n.isRead && (
+                              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" title="Unread notification" />
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      </button>
                     );
                   })
                 ) : alerts.length > 0 ? (
                   alerts.slice(0, 4).map((a) => (
-                    <div
+                    <button
                       key={a.id}
                       onClick={() => {
+                        navigateToModule('ALERT');
                         openDrawer('ALERT', a);
                         setShowNotifDropdown(false);
                       }}
-                      className="p-2 rounded-lg hover:bg-red-50/70 cursor-pointer transition-colors flex items-start gap-2.5"
+                      className="w-full text-left p-2.5 rounded-lg hover:bg-red-50/70 border border-transparent hover:border-red-200 cursor-pointer transition-colors flex items-start gap-2.5 group"
                     >
                       <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-1">
-                          <span className="font-bold text-gray-900 text-xs truncate">{a.title}</span>
+                          <span className="font-bold text-gray-900 text-xs truncate group-hover:text-red-700">{a.title}</span>
                           <span className="text-[9px] text-gray-400 shrink-0">{a.timestamp}</span>
                         </div>
                         <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{a.message_i18n?.en || a.title}</p>
+                        <div className="flex items-center justify-between mt-1.5 pt-1 border-t border-red-100">
+                          <span className="text-[9px] font-bold text-red-700 uppercase tracking-wider flex items-center gap-0.5 group-hover:underline">
+                            <span>Open in 05 Alert Center</span>
+                            <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </button>
                   ))
                 ) : (
                   <div className="py-6 text-center text-gray-400 text-xs">

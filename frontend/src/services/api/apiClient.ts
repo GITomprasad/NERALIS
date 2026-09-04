@@ -140,7 +140,7 @@ export const apiClient = {
   async updateCorridorStatus(corridorId: string, status: string): Promise<boolean> {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/corridors/${corridorId}/status`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
       });
@@ -153,7 +153,7 @@ export const apiClient = {
   async acknowledgeAlert(alertId: string, acknowledgedBy = 'Operator'): Promise<boolean> {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/alerts/${alertId}/ack`, {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ acknowledged_by: acknowledgedBy })
       });
