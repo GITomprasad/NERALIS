@@ -358,6 +358,7 @@ def get_me(x_role: Optional[str] = Header(None), authorization: Optional[str] = 
     )
 
 @router.get("/demo-accounts")
+@router.get("/demo-users")
 def get_demo_accounts():
     """
     Returns the 5 official Governance Role accounts for one-click testing.

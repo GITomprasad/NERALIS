@@ -60,8 +60,8 @@ tests = [
         "channels": ["SMS", "WhatsApp", "CAP-XML"],
         "message_en": "Critical flash flood warning on NH-27 Km 42."
     }),
-    ("Module 5 (Alert Center)", "POST", "/api/alerts/ALT-01/dispatch", {"channels": ["SMS", "WhatsApp"]}),
-    ("Module 5 (Alert Center)", "GET", "/api/alerts/ALT-01/cap-xml", None),
+    ("Module 5 (Alert Center)", "POST", "/api/alerts/ALT-2026-0891/dispatch", {"channels": ["SMS", "WhatsApp"]}),
+    ("Module 5 (Alert Center)", "GET", "/api/alerts/ALT-2026-0891/cap-xml", None),
     ("Module 5 (Alert Center)", "GET", "/api/alerts/morning-briefing", None),
 
     # 6. Module 6: PWA Field Crowdsourcing & Vision Classifier

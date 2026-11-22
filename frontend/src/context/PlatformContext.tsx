@@ -56,6 +56,8 @@ export interface NotificationItem {
   tier: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER';
   timestamp: string;
   isRead: boolean;
+  targetModule?: ActiveModule;
+  targetDrawer?: { type: 'CORRIDOR' | 'DISTRICT' | 'BRIDGE' | 'VEHICLE' | 'ALERT'; data?: any };
 }
 
 export interface OutboxItem {
@@ -153,8 +155,15 @@ interface PlatformContextType {
   toasts: ToastMessage[];
   notifications: NotificationItem[];
   unreadNotifCount: number;
-  addToast: (title: string, message: string, tier?: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER') => void;
+  addToast: (
+    title: string,
+    message: string,
+    tier?: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER',
+    targetModule?: ActiveModule,
+    targetDrawer?: { type: 'CORRIDOR' | 'DISTRICT' | 'BRIDGE' | 'VEHICLE' | 'ALERT'; data?: any }
+  ) => void;
   dismissToast: (id: string) => void;
+  markNotificationAsRead: (id: string) => void;
   markAllNotificationsAsRead: () => void;
   clearAllNotifications: () => void;
 
@@ -614,7 +623,13 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [alerts, setAlerts] = useState<Alert[]>(FALLBACK_ALERTS);
   const [fieldReports, setFieldReports] = useState<FieldReport[]>(FALLBACK_FIELD_REPORTS);
 
-  const addToast = (title: string, message: string, tier: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER' = 'INFO') => {
+  const addToast = (
+    title: string,
+    message: string,
+    tier: 'INFO' | 'SUCCESS' | 'WARNING' | 'DANGER' = 'INFO',
+    targetModule?: ActiveModule,
+    targetDrawer?: { type: 'CORRIDOR' | 'DISTRICT' | 'BRIDGE' | 'VEHICLE' | 'ALERT'; data?: any }
+  ) => {
     const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -632,7 +647,9 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       message,
       tier,
       timestamp,
-      isRead: false
+      isRead: false,
+      targetModule,
+      targetDrawer
     };
 
     // Show floating toast
@@ -648,6 +665,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const dismissToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const markNotificationAsRead = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+    );
   };
 
   const markAllNotificationsAsRead = () => {
@@ -975,6 +998,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         unreadNotifCount,
         addToast,
         dismissToast,
+        markNotificationAsRead,
         markAllNotificationsAsRead,
         clearAllNotifications,
         sources,

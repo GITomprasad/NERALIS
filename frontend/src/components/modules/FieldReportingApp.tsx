@@ -54,6 +54,7 @@ export const FieldReportingApp: React.FC = () => {
     addNewReport,
     addNewAlert,
     networkMode,
+    currentUser,
     setIsARModalOpen,
     setIsSignatureModalOpen,
     openDrawer,
@@ -196,15 +197,20 @@ export const FieldReportingApp: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const resolvedRole = currentUser?.role || currentUser?.frontend_role || reporterRole || 'FIELD_INSPECTOR';
+    const resolvedName = currentUser?.name || reporterName || 'Field Surveyor';
     const payload = {
-      reporter_name: reporterName,
-      reporter_role: reporterRole,
-      state: selectedState,
+      reporter_name: resolvedName,
+      reporter_role: resolvedRole,
+      state: selectedState || 'Assam',
       district,
       location_name: locationName,
       lat: currentCoords.lat,
       lng: currentCoords.lng,
       incident_type: incidentType,
+      crack_length_m: crackSpan,
+      pothole_depth_cm: potholeDepth,
+      debris_volume_cum: debrisVol,
       damage_dimensions: {
         crack_length_m: crackSpan,
         pothole_depth_cm: potholeDepth,

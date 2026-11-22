@@ -29,12 +29,14 @@ import {
   RefreshCw,
   LogIn,
   LogOut,
-  UserPlus
+  UserPlus,
+  ChevronRight
 } from 'lucide-react';
 
 export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobileMenuToggle }) => {
   const {
     activeModule,
+    navigateToModule,
     goToLanding,
     userRole,
     setUserRole,
@@ -59,12 +61,14 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
     toasts,
     notifications,
     unreadNotifCount,
+    markNotificationAsRead,
     markAllNotificationsAsRead,
     clearAllNotifications,
     alerts,
     districts,
     corridors,
     bridges,
+    vehicles,
     openDrawer,
     addToast,
     refreshData,
@@ -523,22 +527,82 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
 
                 <div className="max-h-72 overflow-y-auto space-y-1.5 pr-1">
                   {notifications.length > 0 ? (
-                    notifications.map((n) => (
-                      <div
-                        key={n.id}
-                        className={`p-2.5 rounded-xl border transition-all ${
-                          !n.isRead
-                            ? 'bg-[#16253B] border-[#1E2E45]'
-                            : 'bg-[#111D2D]/60 border-[#1E2E45]/50 opacity-80'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="font-bold text-[#F5F7FA] truncate text-xs">{n.title}</span>
-                          <span className="text-[9px] text-[#64748B] font-mono shrink-0">{n.timestamp}</span>
-                        </div>
-                        <p className="text-[11px] text-[#94A3B8] leading-tight">{n.message}</p>
-                      </div>
-                    ))
+                    notifications.map((n) => {
+                      const handleItemClick = () => {
+                        markNotificationAsRead(n.id);
+                        setShowNotifDropdown(false);
+
+                        // 1. Determine destination module
+                        let targetMod = n.targetModule;
+                        if (!targetMod) {
+                          const txt = `${n.title} ${n.message}`.toLowerCase();
+                          if (txt.includes('route') || txt.includes('dispatch') || txt.includes('itinerary')) targetMod = 'ROUTE';
+                          else if (txt.includes('vehicle') || txt.includes('fleet') || txt.includes('truck')) targetMod = 'FLEET';
+                          else if (txt.includes('prediction') || txt.includes('landslide')) targetMod = 'PREDICTION';
+                          else if (txt.includes('field') || txt.includes('inspector') || txt.includes('damage')) targetMod = 'FIELD_APP';
+                          else if (txt.includes('bridge') || txt.includes('corridor') || txt.includes('nh-')) targetMod = 'ACCESSIBILITY';
+                          else targetMod = 'ALERT';
+                        }
+
+                        if (targetMod && activeModule !== targetMod) {
+                          navigateToModule(targetMod);
+                        }
+
+                        // 2. Open contextual drawer if matching entity is found
+                        if (n.targetDrawer) {
+                          openDrawer(n.targetDrawer.type, n.targetDrawer.data);
+                        } else {
+                          const txt = `${n.title} ${n.message}`.toLowerCase();
+                          const matchedCorridor = corridors.find((c) =>
+                            txt.includes(c.name.toLowerCase()) || txt.includes(c.id.toLowerCase())
+                          );
+                          if (matchedCorridor) {
+                            openDrawer('CORRIDOR', matchedCorridor);
+                            return;
+                          }
+                          const matchedBridge = bridges.find((b) =>
+                            txt.includes(b.name.toLowerCase()) || txt.includes(b.id.toLowerCase())
+                          );
+                          if (matchedBridge) {
+                            openDrawer('BRIDGE', matchedBridge);
+                            return;
+                          }
+                          const matchedAlert = alerts.find((a) =>
+                            txt.includes(a.title.toLowerCase()) || txt.includes(a.id.toLowerCase())
+                          );
+                          if (matchedAlert) {
+                            openDrawer('ALERT', matchedAlert);
+                          }
+                        }
+                      };
+
+                      return (
+                        <button
+                          key={n.id}
+                          onClick={handleItemClick}
+                          className={`w-full text-left p-2.5 rounded-xl border transition-all cursor-pointer group ${
+                            !n.isRead
+                              ? 'bg-[#16253B] border-cyan-500/30 hover:border-cyan-500/50'
+                              : 'bg-[#111D2D]/60 border-[#1E2E45]/50 hover:bg-[#111D2D] opacity-80'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <span className="font-bold text-[#F5F7FA] group-hover:text-[#19C6D2] truncate text-xs transition-colors">{n.title}</span>
+                            <span className="text-[9px] text-[#64748B] font-mono shrink-0">{n.timestamp}</span>
+                          </div>
+                          <p className="text-[11px] text-[#94A3B8] leading-tight">{n.message}</p>
+                          <div className="flex items-center justify-between mt-1.5 pt-1 border-t border-[#1E2E45]/40 text-[9px]">
+                            <span className="font-bold text-[#19C6D2] flex items-center gap-0.5 group-hover:underline">
+                              <span>Inspect Context</span>
+                              <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                            </span>
+                            {!n.isRead && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#19C6D2] animate-pulse" />
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })
                   ) : (
                     <div className="p-4 text-center text-[#64748B]">No notifications recorded</div>
                   )}

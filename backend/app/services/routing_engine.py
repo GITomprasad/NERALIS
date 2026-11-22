@@ -188,6 +188,15 @@ class RouteOptimizationEngine:
             orig_lng = orig_data.get("lng", 91.7362)
             single_metrics = {
                 "path_nodes": [origin_id],
+                "waypoints": [{
+                    "index": 1,
+                    "node_id": origin_id,
+                    "name": orig_data.get("name", origin_id),
+                    "state": orig_data.get("state", ""),
+                    "lat": orig_lat,
+                    "lng": orig_lng,
+                    "role": "ORIGIN"
+                }],
                 "total_distance_km": 12.0,
                 "total_time_hrs": 0.5,
                 "avg_risk_score": 10,
@@ -287,6 +296,7 @@ class RouteOptimizationEngine:
         multimodal_metrics = {
             "route_tag": "Multi-Modal Inland Waterway Combined Itinerary",
             "path_nodes": primary_path,
+            "waypoints": primary_metrics.get("waypoints", []),
             "total_distance_km": multimodal_summary["total_distance_km"],
             "total_time_hrs": multimodal_summary["estimated_time_hrs"],
             "avg_risk_score": max(5, int(primary_metrics["avg_risk_score"] * 0.6)),
@@ -337,20 +347,43 @@ class RouteOptimizationEngine:
         for i in range(len(path) - 1):
             u = path[i]
             v = path[i+1]
+            u_data = self.graph.nodes.get(u, {})
+            v_data = self.graph.nodes.get(v, {})
+            u_lat = u_data.get("lat", 26.1445)
+            u_lng = u_data.get("lng", 91.7362)
+            v_lat = v_data.get("lat", 27.0844)
+            v_lng = v_data.get("lng", 93.6053)
+
             if self.graph.has_edge(u, v):
                 data = self.graph.get_edge_data(u, v)
                 dist = data.get("distance_km", 100)
                 dur = data.get("base_time_hrs", 2.0) / cargo_profile.get("speed_boost", 1.0)
                 risk = data.get("risk_score", 30)
                 status = data.get("status", "OPEN")
-                seg_coords = data.get("coordinates", [])
+                raw_coords = data.get("coordinates", [])
+
+                # Verify geometry orientation relative to traversal direction u -> v
+                if len(raw_coords) >= 2:
+                    d_start = haversine_distance_km(u_lat, u_lng, raw_coords[0][0], raw_coords[0][1])
+                    d_end = haversine_distance_km(u_lat, u_lng, raw_coords[-1][0], raw_coords[-1][1])
+                    if d_end < d_start:
+                        seg_coords = [list(c) for c in reversed(raw_coords)]
+                    else:
+                        seg_coords = [list(c) for c in raw_coords]
+                else:
+                    seg_coords = [list(c) for c in raw_coords] if raw_coords else [[u_lat, u_lng], [v_lat, v_lng]]
+
                 if status != "OPEN":
                     is_fully_open = False
                 total_distance += dist
                 total_time_hrs += dur
                 risk_scores.append(risk)
                 bridges_encountered.extend(data.get("bridges_on_route", []))
-                coordinates.extend(seg_coords)
+
+                for pt in seg_coords:
+                    if not coordinates or coordinates[-1] != pt:
+                        coordinates.append(pt)
+
                 route_segments.append({
                     "segment_id": data.get("id"),
                     "name": data.get("name"),
@@ -365,19 +398,17 @@ class RouteOptimizationEngine:
                     "coordinates": seg_coords
                 })
             else:
-                u_data = self.graph.nodes.get(u, {})
-                v_data = self.graph.nodes.get(v, {})
-                u_lat = u_data.get("lat", 26.1445)
-                u_lng = u_data.get("lng", 91.7362)
-                v_lat = v_data.get("lat", 27.0844)
-                v_lng = v_data.get("lng", 93.6053)
                 dist = haversine_distance_km(u_lat, u_lng, v_lat, v_lng)
                 dur = dist / 35.0
                 total_distance += dist
                 total_time_hrs += dur
                 risk_scores.append(25)
                 seg_coords = [[u_lat, u_lng], [v_lat, v_lng]]
-                coordinates.extend(seg_coords)
+
+                for pt in seg_coords:
+                    if not coordinates or coordinates[-1] != pt:
+                        coordinates.append(pt)
+
                 route_segments.append({
                     "segment_id": f"DIRECT-{u}-{v}",
                     "name": f"Direct Link {u} -> {v}",
@@ -404,8 +435,24 @@ class RouteOptimizationEngine:
             else:
                 coordinates = [[26.1445, 91.7362], [27.0844, 93.6053]]
 
+        # Generate structured waypoints list for clear multi-hop tracking
+        waypoints = []
+        for idx, node_id in enumerate(path):
+            node_info = self.district_lookup.get(node_id, self.graph.nodes.get(node_id, {}))
+            role = "ORIGIN" if idx == 0 else ("DESTINATION" if idx == len(path) - 1 else "TRANSIT")
+            waypoints.append({
+                "index": idx + 1,
+                "node_id": node_id,
+                "name": node_info.get("name", node_id),
+                "state": node_info.get("state", ""),
+                "lat": node_info.get("lat", 26.1445),
+                "lng": node_info.get("lng", 91.7362),
+                "role": role
+            })
+
         return {
             "path_nodes": path,
+            "waypoints": waypoints,
             "total_distance_km": round(total_distance, 1),
             "total_time_hrs": round(total_time_hrs, 1),
             "avg_risk_score": avg_risk,

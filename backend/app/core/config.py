@@ -1,26 +1,34 @@
 """
 NERALIS Core Configuration Module.
-Supports environment loading (.env) and configuration for Supabase PostgreSQL, Groq AI, and GIS services.
+Supports Supabase Cloud (PostgreSQL) + SQLite Local Cache Hybrid Architecture, Groq AI, and GIS services.
 """
 
 import os
 from typing import List
 from dotenv import load_dotenv
 
-# Automatically load environment variables from backend/.env if present
+# Automatically load environment variables from .env file
 load_dotenv(override=False)
 
 class Settings:
     PROJECT_NAME: str = "NERALIS Intelligence Engine"
-    VERSION: str = "2.2.0"
+    VERSION: str = "2.3.0"
     API_V1_PREFIX: str = "/api"
 
-    # Database Configuration (Supabase PostgreSQL / PostGIS in production, SQLite locally with WAL mode)
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./neralis.db")
+    # Primary Database URL (Supabase PostgreSQL / Cloud URI / SQLite)
+    DATABASE_URL: str = os.getenv("DATABASE_URL", os.getenv("SUPABASE_DB_URL", "sqlite:///./neralis.db"))
+    
+    # Local SQLite Operational Cache Path
+    SQLITE_CACHE_URL: str = os.getenv("SQLITE_CACHE_URL", "sqlite:///./neralis_cache.db")
+
+    # Offline Demonstration & Liveness Simulation
+    OFFLINE_SIMULATION_MODE: bool = os.getenv("NERALIS_OFFLINE_SIMULATION", "false").lower() == "true"
+    CONNECTIVITY_TIMEOUT_SECONDS: float = float(os.getenv("CONNECTIVITY_TIMEOUT_SECONDS", "3.0"))
 
     # Supabase Specific Configuration (optional, for direct Supabase Auth or Storage)
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", os.getenv("SUPABASE_ANON_KEY", ""))
+    SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "")
     SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 
     # CORS Origins (Allow local dev and production Render domains)
@@ -36,9 +44,6 @@ class Settings:
     ]
 
     # Security & Role Authorization
-    # NOTE: these must be supplied via environment variables (.env, hosting
-    # platform secrets, etc). No real secret should ever be hardcoded here as
-    # a Python default, since app/core/config.py is committed to git.
     SECRET_KEY: str = os.getenv("SECRET_KEY", "")
     API_KEY_HEADER: str = "X-API-Key"
     ROLE_HEADER: str = "X-Role"
@@ -54,4 +59,5 @@ class Settings:
     DEFAULT_SLA_FRESHNESS_MINUTES: int = 15
 
 settings = Settings()
+
 
