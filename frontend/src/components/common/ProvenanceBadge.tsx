@@ -35,38 +35,37 @@ export const ProvenanceBadge: React.FC<ProvenanceBadgeProps> = ({
       case 'OBSERVED':
         return {
           label: 'OBSERVED',
-          bg: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30',
-          icon: <Radio className="w-3 h-3 text-emerald-600 animate-pulse" />,
+          bg: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+          icon: <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />,
           desc: 'Verified Ground Sensor / Official Station'
         };
       case 'PREDICTED':
         return {
           label: confidence ? `AI PREDICTED (${confidence.toFixed(1)}%)` : 'AI PREDICTED',
-          bg: 'bg-purple-500/15 text-purple-700 border-purple-500/30',
-          icon: <Sparkles className="w-3 h-3 text-purple-600" />,
+          bg: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+          icon: <Sparkles className="w-3 h-3 text-purple-300" />,
           desc: 'Authentic NASA + IMD ML Disruption Model'
         };
-
       case 'REPORTED':
         return {
           label: 'REPORTED',
-          bg: 'bg-sky-500/15 text-sky-700 border-sky-500/30',
-          icon: <Radio className="w-3 h-3 text-sky-600" />,
+          bg: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+          icon: <Radio className="w-3 h-3 text-cyan-300" />,
           desc: 'Field Inspector Telemetry'
         };
       case 'VERIFIED':
         return {
           label: 'VERIFIED',
-          bg: 'bg-teal-500/15 text-teal-700 border-teal-500/30',
-          icon: <ShieldCheck className="w-3 h-3 text-teal-600" />,
+          bg: 'bg-teal-500/20 text-teal-300 border-teal-500/40',
+          icon: <ShieldCheck className="w-3 h-3 text-teal-300" />,
           desc: 'Authority Verified Ground Truth'
         };
       case 'SIMULATED':
       default:
         return {
           label: 'SIMULATED / DEMO',
-          bg: 'bg-amber-500/15 text-amber-700 border-amber-500/30',
-          icon: <FlaskConical className="w-3 h-3 text-amber-600" />,
+          bg: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+          icon: <FlaskConical className="w-3 h-3 text-amber-300" />,
           desc: 'Synthetic Simulation / Demo Telemetry'
         };
     }
@@ -78,7 +77,7 @@ export const ProvenanceBadge: React.FC<ProvenanceBadgeProps> = ({
     <span
       onClick={handleClick}
       title={`${cfg.desc} ${source ? `• Source: ${source}` : ''} • Click to Inspect Provenance`}
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black border transition-all ${cfg.bg} ${showInspectorOnClick && dataItem ? 'cursor-pointer hover:scale-105 shadow-2xs' : ''} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black border transition-all ${cfg.bg} ${showInspectorOnClick && dataItem ? 'cursor-pointer hover:scale-105 shadow-command-card' : ''} ${className}`}
     >
       {cfg.icon}
       <span>{cfg.label}</span>

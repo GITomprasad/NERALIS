@@ -26,7 +26,8 @@ import {
   Clock,
   Info,
   ShieldAlert,
-  ChevronRight
+  ChevronRight,
+  Zap
 } from 'lucide-react';
 import { ProvenanceBadge } from '../common/ProvenanceBadge';
 
@@ -49,8 +50,8 @@ export const AccessibilityMonitor: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'MAP' | 'DISTRICTS' | 'BRIDGES' | 'SATELLITE'>('MAP');
   const [districtSearch, setDistrictSearch] = useState('');
-  const [isCorridorDrawerOpen, setIsCorridorDrawerOpen] = useState(true);
-  const [isIntelPanelOpen, setIsIntelPanelOpen] = useState(true);
+  const [isCorridorDrawerOpen, setIsCorridorDrawerOpen] = useState(false);
+  const [isIntelPanelOpen, setIsIntelPanelOpen] = useState(false);
 
   const filteredDistricts = districts.filter((d) => {
     const matchesSearch =
@@ -61,219 +62,218 @@ export const AccessibilityMonitor: React.FC = () => {
   });
 
   return (
-    <div className="w-full h-full flex flex-col relative">
+    <div className="w-full h-full flex flex-col relative bg-[#080D16]">
       {/* TAB 1: FULL-COVERAGE LIVE GIS MAP */}
       {activeTab === 'MAP' && (
-        <div className="relative w-full flex-1 h-[calc(100vh-108px)] sm:h-[calc(100vh-112px)] min-h-[400px] sm:min-h-[580px] overflow-hidden bg-slate-900">
+        <div className="relative w-full flex-1 h-[calc(100vh-112px)] min-h-[460px] overflow-hidden bg-[#080D16]">
           {/* Main Map Edge-to-Edge */}
           <NerGisMap height="100%" className="h-full w-full" />
 
           {/* Floating Top Glassmorphism HUD Controls */}
-          <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 z-[1000] flex flex-wrap items-center justify-between gap-1.5 sm:gap-2.5 pointer-events-none">
+          <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 z-[1000] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
             {/* Left Title & Status Indicator */}
-            <div className="pointer-events-auto bg-white/95 backdrop-blur-md px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-gray-300 shadow-md flex items-center gap-2 sm:gap-3">
-              <div className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-emerald-500 animate-ping" />
+            <div className="pointer-events-auto bg-[#0D1522]/90 backdrop-blur-md px-3 py-2 rounded-2xl border border-[#1E2E45] shadow-command-card flex items-center gap-2.5">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#19C6D2] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#19C6D2]"></span>
+              </span>
               <div>
-                <div className="flex items-center gap-1.5 font-black text-xs text-[#1E3A5F]">
-                  <span className="hidden sm:inline">NER GIS Grid Command Center</span>
+                <div className="flex items-center gap-2 font-black text-xs text-[#F5F7FA]">
+                  <span className="hidden sm:inline">NER GIS Command Center</span>
                   <span className="sm:hidden">NER Grid</span>
-                  <span className="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.2 rounded font-bold">
+                  <span className="bg-[#19C6D2]/15 text-[#19C6D2] border border-[#19C6D2]/30 text-[10px] px-2 py-0.5 rounded-full font-mono font-bold">
                     89 Districts Live
                   </span>
                 </div>
-                <div className="text-[10px] text-gray-500 hidden md:block">
-                  Live satellite telemetry, bridge sensors & corridor hazards
+                <div className="text-[10px] text-[#94A3B8] hidden md:block">
+                  Live satellite telemetry, bridge sensors &amp; corridor hazards
                 </div>
               </div>
             </div>
 
             {/* Center Tab Switcher */}
-            <div className="pointer-events-auto bg-white/95 backdrop-blur-md p-1 rounded-xl border border-gray-300 shadow-md flex items-center gap-1 text-xs font-bold overflow-x-auto max-w-[95vw] sm:max-w-none">
+            <div className="pointer-events-auto bg-[#0D1522]/90 backdrop-blur-md p-1 rounded-2xl border border-[#1E2E45] shadow-command-card flex items-center gap-1 text-xs font-bold overflow-x-auto max-w-[95vw] sm:max-w-none">
               <button
                 onClick={() => setActiveTab('MAP')}
-                className="px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 bg-[#1E3A5F] text-white shadow-xs whitespace-nowrap"
+                className="px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 bg-[#19C6D2] text-[#080D16] shadow-sm whitespace-nowrap cursor-pointer font-extrabold"
               >
                 🗺️ <span className="hidden sm:inline">GIS</span> Map
               </button>
               <button
                 onClick={() => setActiveTab('DISTRICTS')}
-                className="px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
+                className="px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#16253B] whitespace-nowrap cursor-pointer"
               >
                 📍 <span className="hidden sm:inline">89 </span>Districts
               </button>
               <button
                 onClick={() => setActiveTab('BRIDGES')}
-                className="px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
+                className="px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#16253B] whitespace-nowrap cursor-pointer"
               >
                 🌉 Bridges <span className="hidden sm:inline">({bridges.length})</span>
               </button>
               <button
                 onClick={() => setActiveTab('SATELLITE')}
-                className="px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
+                className="px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#16253B] whitespace-nowrap cursor-pointer"
               >
                 🛰️ Sentinel-2
               </button>
             </div>
 
-            {/* Right: State Filter & Fullscreen Toggle */}
-            <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2">
+            {/* Right: State Filter & Intelligence Toggle */}
+            <div className="pointer-events-auto flex items-center gap-2">
               {/* State Filter Dropdown */}
-              <div className="bg-white/95 backdrop-blur-md px-2 sm:px-2.5 py-1.5 rounded-xl border border-gray-300 shadow-md flex items-center gap-1 sm:gap-1.5 text-xs font-bold">
-                <Filter className="w-3.5 h-3.5 text-blue-700" />
-                <span className="text-gray-500 text-[10px] hidden md:inline">State:</span>
+              <div className="bg-[#0D1522]/90 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-[#1E2E45] shadow-command-card flex items-center gap-2 text-xs font-bold">
+                <Filter className="w-3.5 h-3.5 text-[#19C6D2]" />
+                <span className="text-[#94A3B8] text-[10px] hidden md:inline">State:</span>
                 <select
                   value={selectedStateFilter}
                   onChange={(e) => setSelectedStateFilter(e.target.value)}
-                  className="bg-transparent text-gray-800 text-xs font-bold focus:outline-none cursor-pointer"
+                  className="bg-transparent text-[#F5F7FA] text-xs font-bold focus:outline-none cursor-pointer"
                 >
-                  <option value="ALL">All States</option>
-                  <option value="AS">Assam (AS)</option>
-                  <option value="AR">Arunachal (AR)</option>
-                  <option value="MN">Manipur (MN)</option>
-                  <option value="ML">Meghalaya (ML)</option>
-                  <option value="MZ">Mizoram (MZ)</option>
-                  <option value="NL">Nagaland (NL)</option>
-                  <option value="SK">Sikkim (SK)</option>
-                  <option value="TR">Tripura (TR)</option>
+                  <option value="ALL" className="bg-[#0D1522] text-[#F5F7FA]">All 8 States</option>
+                  <option value="AS" className="bg-[#0D1522] text-[#F5F7FA]">Assam (AS)</option>
+                  <option value="AR" className="bg-[#0D1522] text-[#F5F7FA]">Arunachal (AR)</option>
+                  <option value="MN" className="bg-[#0D1522] text-[#F5F7FA]">Manipur (MN)</option>
+                  <option value="ML" className="bg-[#0D1522] text-[#F5F7FA]">Meghalaya (ML)</option>
+                  <option value="MZ" className="bg-[#0D1522] text-[#F5F7FA]">Mizoram (MZ)</option>
+                  <option value="NL" className="bg-[#0D1522] text-[#F5F7FA]">Nagaland (NL)</option>
+                  <option value="SK" className="bg-[#0D1522] text-[#F5F7FA]">Sikkim (SK)</option>
+                  <option value="TR" className="bg-[#0D1522] text-[#F5F7FA]">Tripura (TR)</option>
                 </select>
               </div>
 
-              {/* Sidebar Collapse / Full Screen Toggle */}
+              {/* Toggle Intelligence Panel Button */}
               <button
-                onClick={toggleSidebar}
-                className="bg-white/95 backdrop-blur-md p-1.5 sm:p-2 rounded-xl border border-gray-300 shadow-md text-gray-700 hover:text-[#1E3A5F] hover:bg-white transition-all text-xs font-bold flex items-center gap-1 hidden lg:flex"
-                title={isSidebarCollapsed ? 'Expand Sidebar Navigation' : 'Maximize Map Canvas'}
+                onClick={() => setIsIntelPanelOpen(!isIntelPanelOpen)}
+                className={`p-2 rounded-2xl border shadow-command-card text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isIntelPanelOpen
+                    ? 'bg-[#19C6D2] text-[#080D16] border-[#19C6D2]'
+                    : 'bg-[#0D1522]/90 hover:bg-[#16253B] text-[#F5F7FA] border-[#1E2E45]'
+                }`}
+                title="Toggle Risk Intelligence Stream"
               >
-                {isSidebarCollapsed ? (
-                  <>
-                    <Minimize2 className="w-4 h-4 text-blue-700" />
-                    <span className="hidden xl:inline text-[11px]">Normal View</span>
-                  </>
-                ) : (
-                  <>
-                    <Maximize2 className="w-4 h-4 text-blue-700" />
-                    <span className="hidden xl:inline text-[11px]">Expand Map</span>
-                  </>
-                )}
+                <ShieldAlert className="w-4 h-4" />
+                <span className="hidden xl:inline">Intel Stream</span>
               </button>
             </div>
           </div>
 
-          {/* Universal Legend (Floating Top Left / Below Controls) */}
-          <div className="absolute top-16 left-3 z-[1000] pointer-events-auto hidden md:block">
-            <div className="bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl border border-gray-300 shadow-md space-y-1 text-[10px]">
-              <div className="font-black text-[#1E3A5F] text-[10px] uppercase tracking-wider mb-1 flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-teal-600" /> Operational Legend
+          {/* Universal Provenance Legend (Floating Top Left / Below Controls) */}
+          <div className="absolute top-18 left-3 z-[1000] pointer-events-auto hidden md:block">
+            <div className="bg-[#0D1522]/90 backdrop-blur-md px-3.5 py-2.5 rounded-2xl border border-[#1E2E45] shadow-command-card space-y-1.5 text-[10px]">
+              <div className="font-extrabold text-[#19C6D2] text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#20C997]" /> Verification Provenance
               </div>
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="bg-emerald-50 text-emerald-800 border border-emerald-300 px-1.5 py-0.5 rounded font-bold">● OBSERVED</span>
-                <span className="bg-teal-50 text-teal-800 border border-teal-300 px-1.5 py-0.5 rounded font-bold">✓ VERIFIED</span>
-                <span className="bg-purple-50 text-purple-800 border border-purple-300 px-1.5 py-0.5 rounded font-bold">✦ PREDICTED</span>
-                <span className="bg-sky-50 text-sky-800 border border-sky-300 px-1.5 py-0.5 rounded font-bold">⌖ REPORTED</span>
-                <span className="bg-amber-50 text-amber-800 border border-amber-300 px-1.5 py-0.5 rounded font-bold">⚗ DEMO</span>
+                <span className="bg-[#20C997]/15 text-[#20C997] border border-[#20C997]/30 px-2 py-0.5 rounded-md font-bold">● OBSERVED</span>
+                <span className="bg-[#19C6D2]/15 text-[#19C6D2] border border-[#19C6D2]/30 px-2 py-0.5 rounded-md font-bold">✓ VERIFIED</span>
+                <span className="bg-[#818CF8]/15 text-[#818CF8] border border-[#818CF8]/30 px-2 py-0.5 rounded-md font-bold">✦ PREDICTED</span>
+                <span className="bg-[#38BDF8]/15 text-[#38BDF8] border border-[#38BDF8]/30 px-2 py-0.5 rounded-md font-bold">⌖ REPORTED</span>
+                <span className="bg-[#FFB547]/15 text-[#FFB547] border border-[#FFB547]/30 px-2 py-0.5 rounded-md font-bold">⚗ DEMO</span>
               </div>
             </div>
           </div>
 
-          {/* Right Intelligence Panel (Section 7: Critical Alerts + Next 24h Risk + Recommended Action) */}
-          <div className="absolute top-16 right-3 z-[1000] pointer-events-auto hidden lg:block w-80">
-            <div className="bg-white/95 backdrop-blur-md rounded-xl border border-gray-300 shadow-xl overflow-hidden transition-all duration-200">
-              {/* Panel Header */}
-              <div
-                onClick={() => setIsIntelPanelOpen(!isIntelPanelOpen)}
-                className="px-3.5 py-2 bg-[#1E3A5F] text-white flex items-center justify-between cursor-pointer text-xs font-bold"
-              >
-                <div className="flex items-center gap-1.5">
-                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Right Intelligence Stream</span>
+          {/* Right Intelligence Panel (Critical Alerts + Next 24h Risk + Recommended Action) */}
+          {isIntelPanelOpen && (
+            <div className="absolute top-18 right-3 z-[1000] pointer-events-auto w-84 max-w-[90vw] animate-in fade-in slide-in-from-right duration-200">
+              <div className="bg-[#0D1522]/95 backdrop-blur-md rounded-2xl border border-[#1E2E45] shadow-2xl overflow-hidden">
+                {/* Panel Header */}
+                <div
+                  onClick={() => setIsIntelPanelOpen(false)}
+                  className="px-4 py-3 bg-[#111D2D] border-b border-[#1E2E45] text-[#F5F7FA] flex items-center justify-between cursor-pointer text-xs font-bold"
+                >
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="w-4 h-4 text-[#FFB547]" />
+                    <span className="font-extrabold text-[#F5F7FA]">Risk Intelligence Stream</span>
+                  </div>
+                  <button className="text-[#94A3B8] hover:text-[#F5F7FA]">
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-sky-200">
-                  <span>{isIntelPanelOpen ? 'Collapse' : 'Expand'}</span>
-                  {isIntelPanelOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-                </div>
-              </div>
 
-              {/* Panel Body */}
-              {isIntelPanelOpen && (
-                <div className="p-3 space-y-2.5 max-h-[420px] overflow-y-auto text-xs">
+                {/* Panel Body */}
+                <div className="p-3.5 space-y-3 max-h-[460px] overflow-y-auto text-xs">
                   {/* 1. Critical Disruption Alert */}
-                  <div className="bg-red-50/80 border border-red-200 rounded-lg p-2.5 space-y-1">
+                  <div className="bg-[#FF5252]/10 border border-[#FF5252]/30 rounded-xl p-3 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-red-800 uppercase flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3 text-red-600" /> Active Emergency Alert
+                      <span className="text-[10px] font-bold text-[#FF5252] uppercase flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-[#FF5252]" /> Active Emergency Alert
                       </span>
-                      <span className="text-[9px] bg-red-100 text-red-700 font-bold px-1.5 py-0.2 rounded">T4 CRITICAL</span>
+                      <span className="text-[9px] bg-[#FF5252]/20 text-[#FF5252] font-black px-2 py-0.5 rounded border border-[#FF5252]/40">
+                        T4 CRITICAL
+                      </span>
                     </div>
-                    <div className="font-black text-gray-900 text-xs mt-0.5">
+                    <div className="font-black text-[#F5F7FA] text-xs">
                       {alerts[0]?.title || 'NH-10 Teesta Corridor Blockade'}
                     </div>
-                    <p className="text-[10px] text-gray-600 leading-snug">
-                      Debris slurry impassable at Km 42. Diversion to alternate hill bypass activated.
+                    <p className="text-[11px] text-[#94A3B8] leading-relaxed">
+                      Debris slurry impassable at Km 42. Diversion to alternate hill bypass activated via Melli.
                     </p>
                   </div>
 
                   {/* 2. Next 24h Risk Outlook */}
-                  <div className="bg-purple-50/70 border border-purple-200 rounded-lg p-2.5 space-y-1">
+                  <div className="bg-[#818CF8]/10 border border-[#818CF8]/30 rounded-xl p-3 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-purple-800 uppercase flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-purple-600" /> 24h AI Risk Forecast
+                      <span className="text-[10px] font-bold text-[#818CF8] uppercase flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-[#818CF8]" /> 24h AI Risk Forecast
                       </span>
-                      <span className="text-[9px] text-purple-700 font-bold">NASA + IMD Baseline</span>
+                      <span className="text-[9px] text-[#818CF8] font-bold">NASA + IMD</span>
                     </div>
 
-                    <div className="text-[11px] font-bold text-gray-800">
+                    <div className="text-[11px] font-bold text-[#F5F7FA]">
                       Sela Pass Sector (NH-13): 86% Landslide Probability
                     </div>
-                    <div className="text-[10px] text-gray-500">
+                    <div className="text-[10px] text-[#94A3B8]">
                       IMD 72h Rain: 240mm • Soil Saturation: 92%
                     </div>
                   </div>
 
                   {/* 3. Recommended Operator Action */}
-                  <div className="bg-emerald-50/70 border border-emerald-200 rounded-lg p-2.5 space-y-1">
-                    <span className="text-[10px] font-bold text-emerald-800 uppercase flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3 text-emerald-600" /> Operator Recommended Action
+                  <div className="bg-[#20C997]/10 border border-[#20C997]/30 rounded-xl p-3 space-y-1.5">
+                    <span className="text-[10px] font-bold text-[#20C997] uppercase flex items-center gap-1.5">
+                      <CheckCircle className="w-3.5 h-3.5 text-[#20C997]" /> Recommended Operational Action
                     </span>
-                    <p className="text-[11px] text-gray-700 font-medium leading-snug">
+                    <p className="text-[11px] text-[#94A3B8] font-medium leading-relaxed">
                       Pre-position 4,000 vaccine units from Guwahati Central Depot to Tawang buffer before 05:00 AM.
                     </p>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Floating Bottom Collapsible Corridor Status Drawer */}
           <div className="absolute bottom-3 right-3 left-3 sm:left-auto sm:right-3 sm:max-w-2xl z-[1000] pointer-events-auto">
-            <div className="bg-white/95 backdrop-blur-md rounded-xl border border-gray-300 shadow-xl overflow-hidden transition-all duration-200">
+            <div className="bg-[#0D1522]/95 backdrop-blur-md rounded-2xl border border-[#1E2E45] shadow-2xl overflow-hidden transition-all duration-200">
               {/* Drawer Header Toggle */}
               <div
                 onClick={() => setIsCorridorDrawerOpen(!isCorridorDrawerOpen)}
-                className="px-3.5 py-2 bg-[#1E3A5F]/90 text-white flex items-center justify-between cursor-pointer hover:bg-[#1E3A5F] transition-colors text-xs font-bold"
+                className="px-4 py-2.5 bg-[#111D2D] hover:bg-[#16253B] text-[#F5F7FA] flex items-center justify-between cursor-pointer transition-colors text-xs font-bold"
               >
                 <div className="flex items-center gap-2">
-                  <Compass className="w-4 h-4 text-sky-300" />
-                  <span>Critical Corridors Diagnostics ({corridors.length})</span>
+                  <Compass className="w-4 h-4 text-[#19C6D2]" />
+                  <span>Strategic Corridors Quick Status ({corridors.length})</span>
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-sky-200">
-                  <span>{isCorridorDrawerOpen ? 'Hide' : 'Show'} Quick Cards</span>
+                <div className="flex items-center gap-1 text-[11px] text-[#94A3B8]">
+                  <span>{isCorridorDrawerOpen ? 'Minimize' : 'Expand'}</span>
                   {isCorridorDrawerOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
                 </div>
               </div>
 
               {/* Drawer Content */}
               {isCorridorDrawerOpen && (
-                <div className="p-3 max-h-48 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  {corridors.slice(0, 6).map((c) => (
+                <div className="p-3 max-h-52 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  {corridors.slice(0, 8).map((c) => (
                     <div
                       key={c.id}
                       onClick={() => openDrawer('CORRIDOR', c)}
-                      className="p-2.5 rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-xs cursor-pointer transition-all bg-gray-50/70 hover:bg-white"
+                      className="p-2.5 rounded-xl border border-[#1E2E45] hover:border-[#19C6D2]/60 cursor-pointer transition-all bg-[#080D16] hover:bg-[#111D2D]"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-mono font-bold text-[11px] text-[#1E3A5F]">{c.id}</span>
+                        <span className="font-mono font-bold text-[11px] text-[#19C6D2]">{c.id}</span>
                         <span
-                          className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
+                          className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
                             c.status === 'OPEN'
                               ? 'badge-open'
                               : c.status === 'RESTRICTED'
@@ -286,10 +286,12 @@ export const AccessibilityMonitor: React.FC = () => {
                           {c.status}
                         </span>
                       </div>
-                      <div className="font-bold text-[11px] text-gray-900 mt-1 truncate">{c.name}</div>
-                      <div className="text-[10px] text-gray-500 mt-0.5 flex justify-between">
+                      <div className="font-bold text-[11px] text-[#F5F7FA] mt-1 truncate">{c.name}</div>
+                      <div className="text-[10px] text-[#94A3B8] mt-0.5 flex justify-between">
                         <span>{c.distance_km} km</span>
-                        <span>Risk: <strong className="text-amber-800">{c.risk_score}%</strong></span>
+                        <span>
+                          Hazard Risk: <strong className="text-[#FFB547]">{c.risk_score}%</strong>
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -302,55 +304,55 @@ export const AccessibilityMonitor: React.FC = () => {
 
       {/* NON-MAP TABS CONTAINER */}
       {activeTab !== 'MAP' && (
-        <div className="p-4 lg:p-6 space-y-4 max-w-7xl mx-auto w-full">
+        <div className="p-3 sm:p-4 lg:p-6 space-y-4 max-w-7xl mx-auto w-full">
           {/* Top Controls Bar with Return to Map Button */}
-          <div className="bg-white p-4 rounded-xl border border-[#D1D5DB] flex flex-wrap items-center justify-between gap-3 shadow-xs">
+          <div className="card-command flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setActiveTab('MAP')}
-                className="btn-primary text-xs py-2 px-3 flex items-center gap-1.5 shadow-sm"
+                className="btn-primary text-xs py-2 px-3.5 flex items-center gap-1.5 shadow-sm"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Return to Full GIS Map</span>
+                <span>Return to GIS Map</span>
               </button>
               <div>
-                <h2 className="text-base font-black text-[#1E3A5F]">
-                  {t('module_1')} — North Eastern Region GIS Grid
+                <h2 className="text-base font-black text-[#F5F7FA]">
+                  {t('module_1')} — Northeast Regional GIS Grid
                 </h2>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Detailed analytics and diagnostic inspections across all 89 districts
+                <p className="text-xs text-[#94A3B8] mt-0.5">
+                  Detailed analytics, sensor diagnostics &amp; district scorecards across 89 districts
                 </p>
               </div>
             </div>
 
             {/* Tab Switcher */}
-            <div className="flex items-center bg-gray-100 p-1 rounded-lg text-xs font-bold gap-1">
+            <div className="flex items-center bg-[#0D1522] p-1 rounded-xl border border-[#1E2E45] text-xs font-bold gap-1 overflow-x-auto max-w-full">
               <button
                 onClick={() => setActiveTab('MAP')}
-                className="px-3 py-1.5 rounded-md transition-all text-gray-600 hover:text-gray-900"
+                className="px-3 py-1.5 rounded-lg transition-all text-[#94A3B8] hover:text-[#F5F7FA] cursor-pointer whitespace-nowrap"
               >
                 🗺️ Full GIS Map
               </button>
               <button
                 onClick={() => setActiveTab('DISTRICTS')}
-                className={`px-3 py-1.5 rounded-md transition-all ${
-                  activeTab === 'DISTRICTS' ? 'bg-[#1E3A5F] text-white shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'DISTRICTS' ? 'bg-[#19C6D2] text-[#080D16] font-extrabold shadow-sm' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
                 }`}
               >
                 📍 89-District Scorecard
               </button>
               <button
                 onClick={() => setActiveTab('BRIDGES')}
-                className={`px-3 py-1.5 rounded-md transition-all ${
-                  activeTab === 'BRIDGES' ? 'bg-[#1E3A5F] text-white shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'BRIDGES' ? 'bg-[#19C6D2] text-[#080D16] font-extrabold shadow-sm' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
                 }`}
               >
-                🌉 Bridge Health IoT ({bridges.length})
+                🌉 Bridge IoT Health ({bridges.length})
               </button>
               <button
                 onClick={() => setActiveTab('SATELLITE')}
-                className={`px-3 py-1.5 rounded-md transition-all ${
-                  activeTab === 'SATELLITE' ? 'bg-[#1E3A5F] text-white shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'SATELLITE' ? 'bg-[#19C6D2] text-[#080D16] font-extrabold shadow-sm' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
                 }`}
               >
                 🛰️ Sentinel-2 Diff
@@ -360,30 +362,30 @@ export const AccessibilityMonitor: React.FC = () => {
 
           {/* TAB 2: 89-DISTRICT SCORECARD GRID */}
           {activeTab === 'DISTRICTS' && (
-            <div className="bg-white p-4 rounded-xl border border-[#D1D5DB] space-y-4 shadow-xs">
+            <div className="card-command space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="relative flex-1 max-w-sm">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]" />
                   <input
                     type="text"
                     value={districtSearch}
                     onChange={(e) => setDistrictSearch(e.target.value)}
                     placeholder="Search by district name or state..."
-                    className="w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-[#1E3A5F] focus:outline-none"
+                    className="w-full bg-[#0D1522] text-[#F5F7FA] placeholder:text-[#64748B] pl-9 pr-3 py-2 border border-[#1E2E45] rounded-xl text-xs focus:ring-1 focus:ring-[#19C6D2] focus:outline-none"
                   />
                 </div>
 
                 {/* State filter buttons */}
                 <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                  <span className="font-bold text-gray-500 text-[10px] uppercase mr-1">Filter State:</span>
+                  <span className="font-bold text-[#64748B] text-[10px] uppercase mr-1">Filter State:</span>
                   {['ALL', 'AS', 'AR', 'MN', 'ML', 'MZ', 'NL', 'SK', 'TR'].map((st) => (
                     <button
                       key={st}
                       onClick={() => setSelectedStateFilter(st)}
-                      className={`px-2.5 py-1 rounded text-xs font-bold transition-colors ${
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                         selectedStateFilter === st
-                          ? 'bg-[#1E3A5F] text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-[#19C6D2] text-[#080D16] font-black'
+                          : 'bg-[#0D1522] text-[#94A3B8] hover:bg-[#16253B] hover:text-[#F5F7FA] border border-[#1E2E45]'
                       }`}
                     >
                       {st}
@@ -392,8 +394,8 @@ export const AccessibilityMonitor: React.FC = () => {
                 </div>
               </div>
 
-              <div className="border border-gray-200 rounded-lg overflow-x-auto">
-                <table className="w-full text-left table-official min-w-[700px]">
+              <div className="border border-[#1E2E45] rounded-xl overflow-x-auto">
+                <table className="table-command min-w-[700px]">
                   <thead>
                     <tr>
                       <th>District / State</th>
@@ -408,22 +410,22 @@ export const AccessibilityMonitor: React.FC = () => {
                   </thead>
                   <tbody>
                     {filteredDistricts.map((d) => (
-                      <tr key={d.id} className="hover:bg-blue-50/40">
+                      <tr key={d.id}>
                         <td>
-                          <div className="font-bold text-gray-900">{d.name}</div>
-                          <div className="text-[11px] text-gray-500">{d.state}</div>
+                          <div className="font-bold text-[#F5F7FA]">{d.name}</div>
+                          <div className="text-[11px] text-[#94A3B8]">{d.state}</div>
                         </td>
                         <td>
-                          <span className="bg-gray-100 px-2 py-0.5 rounded text-[11px] text-gray-700 font-medium">
+                          <span className="bg-[#0D1522] px-2 py-0.5 rounded text-[11px] text-[#94A3B8] font-medium border border-[#1E2E45]">
                             {d.terrain}
                           </span>
                         </td>
                         <td>
                           <div className="flex items-center gap-2">
-                            <span className="font-black text-sm text-[#1E3A5F]">{d.score}</span>
-                            <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <span className="font-black text-sm text-[#F5F7FA]">{d.score}</span>
+                            <div className="w-16 h-1.5 bg-[#0D1522] rounded-full overflow-hidden border border-[#1E2E45]">
                               <div
-                                className={`h-full ${d.score > 75 ? 'bg-emerald-600' : d.score > 55 ? 'bg-amber-500' : 'bg-red-600'}`}
+                                className={`h-full ${d.score > 75 ? 'bg-[#20C997]' : d.score > 55 ? 'bg-[#FFB547]' : 'bg-[#FF5252]'}`}
                                 style={{ width: `${d.score}%` }}
                               />
                             </div>
@@ -431,7 +433,7 @@ export const AccessibilityMonitor: React.FC = () => {
                         </td>
                         <td>
                           <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
                               d.status === 'OPEN'
                                 ? 'badge-open'
                                 : d.status === 'RESTRICTED'
@@ -451,31 +453,31 @@ export const AccessibilityMonitor: React.FC = () => {
                           <span
                             className={`font-bold text-xs ${
                               d.risk_level === 'CRITICAL'
-                                ? 'text-red-700'
+                                ? 'text-[#FF5252]'
                                 : d.risk_level === 'HIGH'
-                                ? 'text-amber-700'
-                                : 'text-emerald-700'
+                                ? 'text-[#FFB547]'
+                                : 'text-[#20C997]'
                             }`}
                           >
                             {d.risk_level}
                           </span>
                         </td>
                         <td>
-                          <span className="text-xs font-semibold text-gray-800">
+                          <span className="text-xs font-semibold text-[#F5F7FA]">
                             {d.critical_stock_pct}% ({d.phc_count} Centers)
                           </span>
                         </td>
                         <td>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2.5">
                             <button
                               onClick={() => openDrawer('DISTRICT', d)}
-                              className="text-xs font-bold text-[#2563A8] hover:underline flex items-center gap-1"
+                              className="text-xs font-bold text-[#19C6D2] hover:underline flex items-center gap-1 cursor-pointer"
                             >
                               <Eye className="w-3.5 h-3.5" /> Inspect
                             </button>
                             <button
                               onClick={() => openProvenanceModal(d)}
-                              className="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1"
+                              className="text-xs font-bold text-[#20C997] hover:underline flex items-center gap-1 cursor-pointer"
                               title="Inspect Source & Telemetry Provenance"
                             >
                               <ShieldCheck className="w-3.5 h-3.5" /> Provenance
@@ -497,15 +499,15 @@ export const AccessibilityMonitor: React.FC = () => {
                 <div
                   key={br.id}
                   onClick={() => openDrawer('BRIDGE', br)}
-                  className="bg-white p-4 rounded-xl border border-[#D1D5DB] shadow-xs hover:border-blue-400 cursor-pointer space-y-3"
+                  className="card-command hover:border-[#19C6D2]/60 cursor-pointer space-y-3 group"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-mono font-bold text-xs bg-slate-100 px-2 py-0.5 rounded text-gray-700">
+                    <span className="font-mono font-bold text-xs bg-[#0D1522] border border-[#1E2E45] px-2.5 py-0.5 rounded text-[#19C6D2]">
                       {br.id}
                     </span>
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        br.structural_health_pct > 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                        br.structural_health_pct > 80 ? 'badge-open' : 'badge-restricted'
                       }`}
                     >
                       {br.status.split(' ')[0]}
@@ -513,31 +515,31 @@ export const AccessibilityMonitor: React.FC = () => {
                   </div>
 
                   <div>
-                    <h3 className="font-bold text-sm text-[#1E3A5F]">{br.name}</h3>
-                    <div className="text-[11px] text-gray-500 mt-0.5">{br.location}</div>
+                    <h3 className="font-bold text-sm text-[#F5F7FA] group-hover:text-[#19C6D2] transition-colors">{br.name}</h3>
+                    <div className="text-[11px] text-[#94A3B8] mt-0.5">{br.location}</div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-center bg-[#F8FAFC] p-2.5 rounded-lg border border-gray-200 text-xs">
+                  <div className="grid grid-cols-2 gap-2 text-center bg-[#0D1522] p-2.5 rounded-xl border border-[#1E2E45] text-xs">
                     <div>
-                      <div className="text-[10px] text-gray-500">Structural Health</div>
-                      <div className="text-base font-black text-[#1E3A5F]">{br.structural_health_pct}%</div>
+                      <div className="text-[10px] text-[#64748B]">Structural Health</div>
+                      <div className="text-base font-black text-[#20C997]">{br.structural_health_pct}%</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-gray-500">Strain (με)</div>
-                      <div className="text-base font-black text-amber-800">{br.strain_microstrain}</div>
+                      <div className="text-[10px] text-[#64748B]">Strain (με)</div>
+                      <div className="text-base font-black text-[#FFB547]">{br.strain_microstrain}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-gray-500">Vibration (Hz)</div>
-                      <div className="font-mono font-bold">{br.vibration_hz} Hz</div>
+                      <div className="text-[10px] text-[#64748B]">Vibration (Hz)</div>
+                      <div className="font-mono font-bold text-[#F5F7FA]">{br.vibration_hz} Hz</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-gray-500">Girder Clearance</div>
-                      <div className="font-bold text-emerald-700">{br.water_clearance_m} m</div>
+                      <div className="text-[10px] text-[#64748B]">Girder Clearance</div>
+                      <div className="font-bold text-[#38BDF8]">{br.water_clearance_m} m</div>
                     </div>
                   </div>
 
-                  <div className="text-[11px] text-blue-700 font-medium truncate flex items-center gap-1">
-                    <Radio className="w-3 h-3 text-emerald-600 animate-pulse" /> {br.cctv_status}
+                  <div className="text-[11px] text-[#94A3B8] truncate flex items-center gap-1.5 pt-1 border-t border-[#1E2E45]">
+                    <Radio className="w-3.5 h-3.5 text-[#20C997] animate-pulse" /> {br.cctv_status}
                   </div>
                 </div>
               ))}
@@ -546,24 +548,24 @@ export const AccessibilityMonitor: React.FC = () => {
 
           {/* TAB 4: SATELLITE SENTINEL-2 CHANGE DETECTION */}
           {activeTab === 'SATELLITE' && (
-            <div className="bg-white p-5 rounded-xl border border-[#D1D5DB] space-y-4 shadow-xs">
-              <div className="flex items-center gap-2">
-                <Satellite className="w-5 h-5 text-indigo-600" />
+            <div className="card-command space-y-4">
+              <div className="flex items-center gap-2.5">
+                <Satellite className="w-5 h-5 text-[#818CF8]" />
                 <div>
-                  <h3 className="text-sm font-bold text-[#1E3A5F]">
-                    ISRO Bhuvan & Copernicus Sentinel-2 Bi-Daily Damage Detection
+                  <h3 className="text-sm font-bold text-[#F5F7FA]">
+                    ISRO Bhuvan &amp; Copernicus Sentinel-2 Bi-Daily Damage Detection
                   </h3>
-                  <p className="text-xs text-gray-500">
-                    Automated optical difference detection flagging recent debris slips, road washed sections, and riverbank erosions
+                  <p className="text-xs text-[#94A3B8]">
+                    Automated optical difference detection flagging recent debris slips, washed road sections, and riverbank erosions
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border border-gray-200 rounded-xl overflow-hidden shadow-xs">
-                  <div className="bg-gray-100 px-3 py-2 text-xs font-bold text-gray-700 flex justify-between">
+                <div className="border border-[#1E2E45] bg-[#0D1522] rounded-xl overflow-hidden shadow-md">
+                  <div className="px-3 py-2 text-xs font-bold text-[#94A3B8] flex justify-between border-b border-[#1E2E45]">
                     <span>Baseline Image (T-48h) — Sentinel-2 MSI Band 4-3-2</span>
-                    <span className="text-[10px] text-gray-500">2026-08-24</span>
+                    <span className="text-[10px] font-mono text-[#64748B]">2026-08-24</span>
                   </div>
                   <img
                     src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=700&q=80"
@@ -572,10 +574,12 @@ export const AccessibilityMonitor: React.FC = () => {
                   />
                 </div>
 
-                <div className="border border-red-300 rounded-xl overflow-hidden shadow-xs">
-                  <div className="bg-red-50 px-3 py-2 text-xs font-bold text-red-800 flex justify-between">
+                <div className="border border-[#FF5252]/40 bg-[#0D1522] rounded-xl overflow-hidden shadow-md">
+                  <div className="bg-[#FF5252]/10 px-3 py-2 text-xs font-bold text-[#FF5252] flex justify-between border-b border-[#FF5252]/30">
                     <span>Current Overpass (T-0) — AI Highlighted Mudflow Scar</span>
-                    <span className="text-[10px] bg-red-200 text-red-900 px-1.5 py-0.2 rounded">Anomaly Detected</span>
+                    <span className="text-[10px] bg-[#FF5252]/20 text-[#FF5252] px-2 py-0.5 rounded font-black border border-[#FF5252]/30">
+                      Anomaly Detected
+                    </span>
                   </div>
                   <div className="relative">
                     <img
@@ -583,18 +587,18 @@ export const AccessibilityMonitor: React.FC = () => {
                       alt="Post-event damage satellite view"
                       className="w-full h-56 object-cover"
                     />
-                    <div className="absolute top-8 left-16 border-2 border-red-500 bg-red-500/20 px-2 py-1 rounded text-[10px] font-bold text-white shadow">
+                    <div className="absolute top-8 left-16 border-2 border-[#FF5252] bg-[#FF5252]/30 backdrop-blur-xs px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-white shadow-lg">
                       🚨 Active Rockslide Area (12,400 sq.m)
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between">
-                <span className="font-semibold">
-                  AI Verification Complete: YOLOv8 model classified damage as <strong>SEVERE (Tier 3 Disruption)</strong>.
+              <div className="p-3 bg-[#20C997]/10 rounded-xl border border-[#20C997]/30 text-xs text-[#F5F7FA] flex items-center justify-between">
+                <span className="font-semibold text-[#20C997]">
+                  AI Classification: YOLOv8 model classified damage as <strong>SEVERE (Tier 3 Disruption)</strong>.
                 </span>
-                <span className="font-bold bg-emerald-200 px-2 py-1 rounded text-[10px]">
+                <span className="font-bold bg-[#20C997]/20 text-[#20C997] px-2.5 py-1 rounded-lg text-[10px] border border-[#20C997]/30">
                   Confidence: 94.2%
                 </span>
               </div>

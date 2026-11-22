@@ -2,7 +2,7 @@ import React from 'react';
 import { usePlatform, ActiveModule } from '../../context/PlatformContext';
 import { useLanguage } from '../../context/LanguageContext';
 import {
-  MapPin,
+  Map,
   Route,
   Truck,
   CloudLightning,
@@ -15,9 +15,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
-  Map,
   Bot,
-  X
+  X,
+  Compass,
+  Radio,
+  Sparkles
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -40,32 +42,86 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
   const navSections: {
     sectionKey: string;
     sectionTitle: string;
-    items: { id: ActiveModule; labelKey: string; code: string; icon: React.ReactNode }[];
+    items: {
+      id: ActiveModule;
+      labelKey: string;
+      code: string;
+      icon: React.ReactNode;
+      accentColor: string;
+    }[];
   }[] = [
     {
       sectionKey: 'operations',
       sectionTitle: 'OPERATIONS',
       items: [
-        { id: 'ACCESSIBILITY', labelKey: 'module_1', code: '01', icon: <Map className="w-4 h-4 text-emerald-600" /> },
-        { id: 'ROUTE', labelKey: 'module_2', code: '02', icon: <Route className="w-4 h-4 text-blue-600" /> },
-        { id: 'FLEET', labelKey: 'module_3', code: '03', icon: <Truck className="w-4 h-4 text-indigo-600" /> },
-        { id: 'PREDICTION', labelKey: 'module_4', code: '04', icon: <CloudLightning className="w-4 h-4 text-amber-600" /> }
+        {
+          id: 'ACCESSIBILITY',
+          labelKey: 'module_1',
+          code: '01',
+          icon: <Map className="w-4 h-4" />,
+          accentColor: '#19C6D2'
+        },
+        {
+          id: 'ROUTE',
+          labelKey: 'module_2',
+          code: '02',
+          icon: <Route className="w-4 h-4" />,
+          accentColor: '#438BFF'
+        },
+        {
+          id: 'FLEET',
+          labelKey: 'module_3',
+          code: '03',
+          icon: <Truck className="w-4 h-4" />,
+          accentColor: '#818CF8'
+        },
+        {
+          id: 'PREDICTION',
+          labelKey: 'module_4',
+          code: '04',
+          icon: <CloudLightning className="w-4 h-4" />,
+          accentColor: '#FFB547'
+        }
       ]
     },
     {
       sectionKey: 'response',
-      sectionTitle: 'RESPONSE',
+      sectionTitle: 'RESPONSE & FIELD',
       items: [
-        { id: 'ALERT', labelKey: 'module_5', code: '05', icon: <BellRing className="w-4 h-4 text-rose-600" /> },
-        { id: 'FIELD_APP', labelKey: 'module_6', code: '06', icon: <Smartphone className="w-4 h-4 text-teal-600" /> }
+        {
+          id: 'ALERT',
+          labelKey: 'module_5',
+          code: '05',
+          icon: <BellRing className="w-4 h-4" />,
+          accentColor: '#FF5252'
+        },
+        {
+          id: 'FIELD_APP',
+          labelKey: 'module_6',
+          code: '06',
+          icon: <Smartphone className="w-4 h-4" />,
+          accentColor: '#20C997'
+        }
       ]
     },
     {
       sectionKey: 'insights',
-      sectionTitle: 'INSIGHTS',
+      sectionTitle: 'GOVERNANCE & SYNC',
       items: [
-        { id: 'ANALYTICS', labelKey: 'module_7', code: '07', icon: <BarChart3 className="w-4 h-4 text-cyan-700" /> },
-        { id: 'OFFLINE_RESILIENCE', labelKey: 'module_8', code: '08', icon: <HardDrive className="w-4 h-4 text-slate-700" /> }
+        {
+          id: 'ANALYTICS',
+          labelKey: 'module_7',
+          code: '07',
+          icon: <BarChart3 className="w-4 h-4" />,
+          accentColor: '#38BDF8'
+        },
+        {
+          id: 'OFFLINE_RESILIENCE',
+          labelKey: 'module_8',
+          code: '08',
+          icon: <HardDrive className="w-4 h-4" />,
+          accentColor: '#94A3B8'
+        }
       ]
     }
   ];
@@ -79,35 +135,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:flex bg-white border-r border-[#D1D5DB] flex-col justify-between shrink-0 shadow-xs select-none z-20 transition-all duration-200 ${
-          isSidebarCollapsed ? 'w-16' : 'w-64'
+        className={`hidden lg:flex bg-[#0D1522] border-r border-[#1E2E45] flex-col justify-between shrink-0 shadow-xl select-none z-20 transition-all duration-200 ${
+          isSidebarCollapsed ? 'w-18' : 'w-64'
         }`}
       >
-        <div className="p-2 space-y-3 overflow-y-auto">
-          {/* Sidebar Header & Toggle */}
-          <div className="flex items-center justify-between px-2 py-1 border-b border-gray-100 mb-1">
+        <div className="p-3 space-y-4 overflow-y-auto">
+          {/* Header section with collapse toggle */}
+          <div className="flex items-center justify-between px-2 py-1 border-b border-[#1E2E45]/70 pb-2">
             {!isSidebarCollapsed && (
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                {t('navigation') || 'Navigation'}
+              <span className="text-[10px] font-extrabold text-[#94A3B8] tracking-widest uppercase flex items-center gap-1.5">
+                <Compass className="w-3.5 h-3.5 text-[#19C6D2]" />
+                Command Modules
               </span>
             )}
             <button
               onClick={toggleSidebar}
-              className="p-1 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors ml-auto cursor-pointer"
+              className={`p-1.5 rounded-lg text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#16253B] transition-colors cursor-pointer ${
+                isSidebarCollapsed ? 'mx-auto' : 'ml-auto'
+              }`}
               title={isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+              aria-label={isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
             >
-              {isSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+              {isSidebarCollapsed ? (
+                <ChevronRight className="w-4 h-4 text-[#19C6D2]" />
+              ) : (
+                <ChevronLeft className="w-4 h-4 text-[#94A3B8]" />
+              )}
             </button>
           </div>
 
+          {/* Module Nav Links */}
           {navSections.map((sec, sIdx) => (
             <div key={sIdx} className="space-y-1">
               {!isSidebarCollapsed && (
-                <div className="px-2.5 py-0.5 text-[9px] font-black tracking-wider text-gray-400 uppercase">
+                <div className="px-2.5 py-1 text-[9px] font-black tracking-widest text-[#64748B] uppercase">
                   {t(sec.sectionKey) || sec.sectionTitle}
                 </div>
               )}
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 {sec.items.map((item) => {
                   const isActive = activeModule === item.id;
                   const itemLabel = `${item.code} ${t(item.labelKey)}`;
@@ -117,25 +182,47 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
                       onClick={() => handleNav(item.id)}
                       title={itemLabel}
                       className={`w-full flex items-center ${
-                        isSidebarCollapsed ? 'justify-center p-2' : 'justify-between px-2.5 py-2'
-                      } rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                        isSidebarCollapsed ? 'justify-center p-2.5' : 'justify-between px-3 py-2.5'
+                      } rounded-xl text-xs font-semibold transition-all cursor-pointer relative group ${
                         isActive
-                          ? 'bg-[#EBF3FB] text-[#17365D] border-r-3 border-[#2563A8] font-bold shadow-xs'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-[#17365D]'
+                          ? 'bg-[#16253B] text-[#F5F7FA] border border-[#19C6D2]/50 shadow-command-glow'
+                          : 'text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#111D2D] border border-transparent'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className={`p-1 rounded shrink-0 ${isActive ? 'bg-white text-blue-700 shadow-xs' : 'bg-gray-100 text-gray-600'}`}>
+                      {/* Active indicator bar */}
+                      {isActive && (
+                        <div
+                          className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full"
+                          style={{ backgroundColor: item.accentColor }}
+                        />
+                      )}
+
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span
+                          className={`p-1.5 rounded-lg shrink-0 transition-colors ${
+                            isActive
+                              ? 'bg-[#111D2D] text-[#19C6D2]'
+                              : 'bg-[#111D2D]/60 text-[#94A3B8] group-hover:text-[#F5F7FA]'
+                          }`}
+                          style={isActive ? { color: item.accentColor } : {}}
+                        >
                           {item.icon}
                         </span>
                         {!isSidebarCollapsed && (
-                          <span className="truncate text-left">{itemLabel}</span>
+                          <span className={`truncate text-left font-medium ${isActive ? 'font-bold text-[#F5F7FA]' : ''}`}>
+                            {t(item.labelKey)}
+                          </span>
                         )}
                       </div>
+
                       {!isSidebarCollapsed && (
-                        <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono font-bold shrink-0 ${
-                          isActive ? 'bg-blue-200/80 text-blue-900' : 'bg-gray-100 text-gray-500'
-                        }`}>
+                        <span
+                          className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold shrink-0 ${
+                            isActive
+                              ? 'bg-[#111D2D] text-[#19C6D2] border border-[#19C6D2]/30'
+                              : 'bg-[#111D2D]/60 text-[#64748B]'
+                          }`}
+                        >
                           {item.code}
                         </span>
                       )}
@@ -146,39 +233,53 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
             </div>
           ))}
 
+          {/* Quick Tools & Reports */}
           {!isSidebarCollapsed && (
-            <div className="pt-3 border-t border-gray-100 space-y-1.5">
-              <div className="px-3 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+            <div className="pt-3 border-t border-[#1E2E45]/70 space-y-2">
+              <div className="px-2.5 text-[9px] font-black tracking-widest text-[#64748B] uppercase">
                 {t('reports_compliance') || 'Reports & Tools'}
               </div>
+
               {/* NERALIS AI Assistant Trigger Button */}
               <button
-                onClick={() => { toggleChatbot(); onMobileClose?.(); }}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs ${
+                onClick={() => {
+                  toggleChatbot();
+                  onMobileClose?.();
+                }}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isChatbotOpen
-                    ? 'bg-amber-400 text-slate-900 shadow-amber-400/20'
-                    : 'text-slate-800 bg-amber-50 hover:bg-amber-100 border border-amber-300/80'
+                    ? 'bg-[#19C6D2] text-[#080D16] shadow-command-glow'
+                    : 'text-[#F5F7FA] bg-[#111D2D] hover:bg-[#16253B] border border-[#1E2E45]'
                 }`}
                 title="Open NERALIS AI Sahayak Assistant"
               >
-                <div className="flex items-center gap-2">
-                  <Bot className={`w-4 h-4 ${isChatbotOpen ? 'text-slate-900' : 'text-amber-600'}`} />
+                <div className="flex items-center gap-2.5">
+                  <Bot className={`w-4 h-4 ${isChatbotOpen ? 'text-[#080D16]' : 'text-[#19C6D2]'}`} />
                   <span>NERALIS Sahayak</span>
                 </div>
-                <span className="text-[9px] bg-amber-200/80 text-amber-900 px-1.5 py-0.2 rounded font-mono font-bold">
+                <span
+                  className={`text-[9px] px-1.5 py-0.2 rounded font-mono font-bold ${
+                    isChatbotOpen
+                      ? 'bg-[#080D16]/30 text-[#080D16]'
+                      : 'bg-[#19C6D2]/20 text-[#19C6D2] border border-[#19C6D2]/30'
+                  }`}
+                >
                   AI
                 </span>
               </button>
 
               <button
-                onClick={() => { setIsParliamentModalOpen(true); onMobileClose?.(); }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsParliamentModalOpen(true);
+                  onMobileClose?.();
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-[#20C997] bg-[#20C997]/10 hover:bg-[#20C997]/20 border border-[#20C997]/30 transition-colors cursor-pointer"
               >
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-emerald-700" />
-                  <span>{t('parliament_report')}</span>
+                <div className="flex items-center gap-2.5">
+                  <FileText className="w-4 h-4 text-[#20C997]" />
+                  <span className="truncate">{t('parliament_report') || 'Parliament Report'}</span>
                 </div>
-                <ExternalLink className="w-3 h-3 text-emerald-600" />
+                <ExternalLink className="w-3.5 h-3.5 text-[#20C997] shrink-0" />
               </button>
             </div>
           )}
@@ -186,70 +287,98 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
 
         {/* Footer info badge */}
         {!isSidebarCollapsed && (
-          <div className="p-3 bg-[#EBF3FB]/60 border-t border-[#D1D5DB] text-[11px] text-gray-600">
-            <div className="flex items-center gap-2 font-bold text-[#1E3A5F]">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>NER Digital Grid v1.0</span>
+          <div className="p-3 bg-[#080D16]/60 border-t border-[#1E2E45] text-[11px] text-[#94A3B8]">
+            <div className="flex items-center justify-between font-bold text-[#F5F7FA]">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#20C997]" />
+                <span className="text-xs">NER Digital Grid</span>
+              </div>
+              <span className="bg-[#19C6D2]/15 text-[#19C6D2] border border-[#19C6D2]/30 text-[9px] font-mono px-1.5 py-0.2 rounded">
+                v2.0
+              </span>
             </div>
-            <p className="text-[10px] text-gray-500 mt-1">8 States • 89 Districts Monitored</p>
-            <p className="text-[9px] text-gray-400">MDoNER National Logistics Platform</p>
+            <p className="text-[10px] text-[#64748B] mt-1">8 States • 89 Districts Monitored</p>
+            <p className="text-[9px] text-[#64748B]">MDoNER National Logistics Platform</p>
           </div>
         )}
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Drawer Overlay Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-xs"
+          className="fixed inset-0 bg-black/75 z-[3500] lg:hidden backdrop-blur-sm transition-opacity"
           onClick={onMobileClose}
         />
       )}
 
-      {/* Mobile Drawer */}
+      {/* Mobile Sidebar Slide-over Drawer */}
       <div
-        className={`fixed inset-y-0 left-0 w-72 bg-white z-50 lg:hidden transform transition-transform duration-200 ease-in-out flex flex-col justify-between ${
+        className={`fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-[#0D1522] border-r border-[#1E2E45] z-[3600] lg:hidden transform transition-transform duration-200 ease-in-out flex flex-col justify-between shadow-2xl ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="p-4 space-y-4 overflow-y-auto">
-          <div className="flex items-center justify-between pb-3 border-b border-gray-200">
-            <div className="flex items-center gap-2 font-black text-sm text-[#17365D]">
-              <span>NERALIS Navigation</span>
+          {/* Drawer Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-[#1E2E45]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#19C6D2]/20 border border-[#19C6D2]/40 flex items-center justify-center">
+                <Compass className="w-4 h-4 text-[#19C6D2]" />
+              </div>
+              <div>
+                <span className="font-black text-sm text-[#F5F7FA] tracking-wider block">NERALIS</span>
+                <span className="text-[10px] text-[#94A3B8]">Command Center Navigation</span>
+              </div>
             </div>
             <button
               onClick={onMobileClose}
-              className="p-1 rounded-lg hover:bg-gray-100 text-gray-500"
+              className="p-2 rounded-lg bg-[#111D2D] hover:bg-[#16253B] text-[#94A3B8] hover:text-[#F5F7FA] border border-[#1E2E45] cursor-pointer"
+              aria-label="Close Navigation"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
+          {/* Module Sections */}
           {navSections.map((sec, sIdx) => (
-            <div key={sIdx} className="space-y-1">
-              <div className="px-3 text-[10px] font-black tracking-wider text-gray-400 uppercase">
+            <div key={sIdx} className="space-y-1.5">
+              <div className="px-2 text-[10px] font-black tracking-widest text-[#64748B] uppercase">
                 {t(sec.sectionKey) || sec.sectionTitle}
               </div>
               <div className="space-y-1">
                 {sec.items.map((item) => {
                   const isActive = activeModule === item.id;
-                  const itemLabel = `${item.code} ${t(item.labelKey)}`;
                   return (
                     <button
                       key={item.id}
                       onClick={() => handleNav(item.id)}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                      className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
                         isActive
-                          ? 'bg-[#EBF3FB] text-[#17365D] border border-[#2563A8]/30 font-bold'
-                          : 'text-gray-700 hover:bg-gray-50'
+                          ? 'bg-[#16253B] text-[#F5F7FA] border border-[#19C6D2]/50 shadow-command-glow'
+                          : 'text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#111D2D]'
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className={`p-1.5 rounded-lg ${isActive ? 'bg-white shadow-sm' : 'bg-gray-100'}`}>
+                        <span
+                          className={`p-2 rounded-lg ${
+                            isActive ? 'bg-[#111D2D]' : 'bg-[#111D2D]/60'
+                          }`}
+                          style={{ color: item.accentColor }}
+                        >
                           {item.icon}
                         </span>
-                        <span>{itemLabel}</span>
+                        <span className={isActive ? 'font-bold text-[#F5F7FA]' : ''}>
+                          {t(item.labelKey)}
+                        </span>
                       </div>
-                      {isActive && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                      <span
+                        className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
+                          isActive
+                            ? 'bg-[#19C6D2]/20 text-[#19C6D2] border border-[#19C6D2]/30'
+                            : 'bg-[#111D2D] text-[#64748B]'
+                        }`}
+                      >
+                        {item.code}
+                      </span>
                     </button>
                   );
                 })}
@@ -257,43 +386,51 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onMobileCl
             </div>
           ))}
 
-          <div className="pt-3 border-t border-gray-100 space-y-2">
+          {/* Mobile Tools */}
+          <div className="pt-3 border-t border-[#1E2E45] space-y-2">
             <button
-              onClick={() => { toggleChatbot(); onMobileClose?.(); }}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+              onClick={() => {
+                toggleChatbot();
+                onMobileClose?.();
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                 isChatbotOpen
-                  ? 'bg-amber-400 text-slate-900 shadow-md'
-                  : 'text-slate-800 bg-amber-50 hover:bg-amber-100 border border-amber-300'
+                  ? 'bg-[#19C6D2] text-[#080D16]'
+                  : 'text-[#F5F7FA] bg-[#111D2D] hover:bg-[#16253B] border border-[#1E2E45]'
               }`}
             >
               <div className="flex items-center gap-3">
-                <Bot className={`w-5 h-5 ${isChatbotOpen ? 'text-slate-900' : 'text-amber-600'}`} />
+                <Bot className={`w-5 h-5 ${isChatbotOpen ? 'text-[#080D16]' : 'text-[#19C6D2]'}`} />
                 <span>NERALIS AI Sahayak</span>
               </div>
-              <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-bold">
-                AI Copilot
+              <span className="text-[10px] bg-[#19C6D2]/20 text-[#19C6D2] px-2 py-0.5 rounded font-bold">
+                AI Assistant
               </span>
             </button>
 
             <button
-              onClick={() => { setIsParliamentModalOpen(true); onMobileClose?.(); }}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors cursor-pointer"
+              onClick={() => {
+                setIsParliamentModalOpen(true);
+                onMobileClose?.();
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold text-[#20C997] bg-[#20C997]/10 hover:bg-[#20C997]/20 border border-[#20C997]/30 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <FileText className="w-4 h-4 text-emerald-700" />
-                <span>{t('parliament_report')}</span>
+                <FileText className="w-5 h-5 text-[#20C997]" />
+                <span>{t('parliament_report') || 'Parliament Report'}</span>
               </div>
-              <ExternalLink className="w-4 h-4 text-emerald-600" />
+              <ExternalLink className="w-4 h-4 text-[#20C997]" />
             </button>
           </div>
         </div>
 
-        <div className="p-3 bg-[#EBF3FB]/60 border-t border-[#D1D5DB] text-[11px] text-gray-600">
-          <div className="flex items-center gap-2 font-bold text-[#1E3A5F]">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>NER Digital Grid v1.0</span>
+        {/* Mobile Footer */}
+        <div className="p-3.5 bg-[#080D16] border-t border-[#1E2E45] text-xs text-[#94A3B8]">
+          <div className="flex items-center gap-2 font-bold text-[#F5F7FA]">
+            <ShieldCheck className="w-4 h-4 text-[#20C997]" />
+            <span>NER Digital Grid v2.0</span>
           </div>
-          <p className="text-[10px] text-gray-500 mt-1">8 States • 89 Districts Monitored</p>
+          <p className="text-[10px] text-[#64748B] mt-1">8 States • 89 Districts Monitored</p>
         </div>
       </div>
     </>

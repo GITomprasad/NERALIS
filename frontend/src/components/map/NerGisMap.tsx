@@ -2,7 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { usePlatform } from '../../context/PlatformContext';
-import { Layers, Eye, EyeOff, MapPin, Truck, AlertTriangle, Activity, ShieldCheck, Maximize2, Minimize2 } from 'lucide-react';
+import {
+  Layers,
+  Eye,
+  EyeOff,
+  MapPin,
+  Truck,
+  AlertTriangle,
+  Activity,
+  ShieldCheck,
+  Maximize2,
+  Minimize2,
+  Sun,
+  Moon
+} from 'lucide-react';
 import { ProvenanceBadge } from '../common/ProvenanceBadge';
 
 const MapResizer: React.FC<{ isSidebarCollapsed?: boolean; isFullscreen?: boolean }> = ({ isSidebarCollapsed, isFullscreen }) => {
@@ -51,33 +64,24 @@ const RouteBoundsFitter: React.FC<{ highlightRoute?: any }> = ({ highlightRoute 
   return null;
 };
 
-// Fix standard Leaflet default icon issues in React
-const createCustomIcon = (color: string, label: string) => {
-  return L.divIcon({
-    className: 'custom-div-icon',
-    html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 10px;">${label}</div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
-  });
-};
-
+// High-tech DivIcons for dark GIS command mode
 const vehicleIcon = L.divIcon({
   className: 'vehicle-icon',
-  html: `<div style="background-color: #1E3A5F; width: 28px; height: 28px; border-radius: 6px; border: 2px solid #38bdf8; box-shadow: 0 2px 6px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white;">🚛</div>`,
-  iconSize: [28, 28],
-  iconAnchor: [14, 14]
+  html: `<div style="background: linear-gradient(135deg, #16253B, #0D1522); width: 30px; height: 30px; border-radius: 8px; border: 2px solid #19C6D2; box-shadow: 0 0 12px rgba(25, 198, 210, 0.45); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">🚛</div>`,
+  iconSize: [30, 30],
+  iconAnchor: [15, 15]
 });
 
 const bridgeIcon = L.divIcon({
   className: 'bridge-icon',
-  html: `<div style="background-color: #B85C00; width: 26px; height: 26px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">🌉</div>`,
-  iconSize: [26, 26],
-  iconAnchor: [13, 13]
+  html: `<div style="background: linear-gradient(135deg, #2D1A00, #1F1200); width: 28px; height: 28px; border-radius: 50%; border: 2px solid #FFB547; box-shadow: 0 0 12px rgba(255, 181, 71, 0.45); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px;">🌉</div>`,
+  iconSize: [28, 28],
+  iconAnchor: [14, 14]
 });
 
 const depotIcon = L.divIcon({
   className: 'depot-icon',
-  html: `<div style="background-color: #0F6B6B; width: 28px; height: 28px; border-radius: 8px; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">🏢</div>`,
+  html: `<div style="background: linear-gradient(135deg, #0A2926, #061917); width: 28px; height: 28px; border-radius: 8px; border: 2px solid #20C997; box-shadow: 0 0 12px rgba(32, 201, 151, 0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px;">🏢</div>`,
   iconSize: [28, 28],
   iconAnchor: [14, 14]
 });
@@ -134,6 +138,7 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
   const [showVehicles, setShowVehicles] = useState(initialShowVehicles);
   const [showDistricts, setShowDistricts] = useState(initialShowDistricts);
   const [showLayersMenu, setShowLayersMenu] = useState(false);
+  const [mapTheme, setMapTheme] = useState<'DARK' | 'LIGHT'>('DARK');
 
   // Fullscreen State & Handlers
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -197,26 +202,36 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'OPEN':
-        return '#0F6B6B'; // Teal
+        return '#20C997'; // Emerald / Mint safe
       case 'RESTRICTED':
-        return '#B85C00'; // Amber/Orange
+        return '#FFB547'; // Amber warning
       case 'DEGRADED':
-        return '#ea580c'; // Orange-red
+        return '#F97316'; // Orange-red
       case 'CLOSED':
-        return '#9B1B1B'; // Danger Red
+        return '#FF5252'; // Critical red
       case 'SEASONAL':
-        return '#2563A8'; // Blue
+        return '#438BFF'; // Cyan blue
       default:
-        return '#6b7280';
+        return '#64748B';
     }
   };
+
+  const tileUrl =
+    mapTheme === 'DARK'
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+  const tileAttr =
+    mapTheme === 'DARK'
+      ? '&copy; <a href="https://carto.com/attributions">CARTO</a> | ISRO Bhuvan GIS'
+      : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | ISRO Bhuvan GIS';
 
   return (
     <div
       ref={containerRef}
       className={`relative w-full overflow-hidden transition-all ${
         isFullscreen
-          ? 'fixed inset-0 z-[99999] w-screen h-screen bg-slate-950 flex flex-col'
+          ? 'fixed inset-0 z-[99999] w-screen h-screen bg-[#080D16] flex flex-col'
           : className
       }`}
       style={{ height: isFullscreen ? '100vh' : height }}
@@ -231,8 +246,8 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
         <MapResizer isSidebarCollapsed={isSidebarCollapsed} isFullscreen={isFullscreen} />
         <RouteBoundsFitter highlightRoute={highlightRoute} />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | ISRO Bhuvan GIS'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution={tileAttr}
+          url={tileUrl}
         />
 
         {/* 1. Road Segments Polylines */}
@@ -247,8 +262,8 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
                 positions={seg.coordinates as any}
                 pathOptions={{
                   color,
-                  weight: isClosed ? 5 : isOpen ? 3 : 4,
-                  opacity: isOpen ? 0.65 : 0.85,
+                  weight: isClosed ? 5 : isOpen ? 3.5 : 4.5,
+                  opacity: isOpen ? 0.8 : 0.95,
                   dashArray: isClosed ? '6, 8' : undefined
                 }}
                 eventHandlers={{
@@ -256,29 +271,30 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
                 }}
               >
                 <Popup>
-                  <div className="p-1 text-xs space-y-1">
-                    <div className="flex items-center justify-between gap-1">
-                      <div className="font-bold text-[#1E3A5F]">{seg.name}</div>
+                  <div className="p-1 text-xs space-y-1.5 min-w-[200px]">
+                    <div className="flex items-center justify-between gap-1 pb-1 border-b border-[#1E2E45]">
+                      <div className="font-bold text-[#19C6D2]">{seg.name}</div>
                       <ProvenanceBadge status={seg.verification_status || 'VERIFIED'} dataItem={seg} />
                     </div>
-                    <div className="text-[11px] text-gray-600">
-                      Distance: {seg.distance_km} km • Status: <strong>{seg.status}</strong>
+                    <div className="text-[11px] text-[#94A3B8]">
+                      Distance: <span className="text-[#F5F7FA] font-medium">{seg.distance_km} km</span> • Status:{' '}
+                      <strong style={{ color }}>{seg.status}</strong>
                     </div>
                     {seg.hazard_type && (
-                      <div className="text-[10px] text-red-600 font-semibold">
+                      <div className="text-[10px] text-[#FF5252] font-semibold bg-[#FF5252]/10 p-1 rounded border border-[#FF5252]/20">
                         Hazard: {seg.hazard_type}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 pt-1 border-t border-gray-100">
+                    <div className="flex items-center gap-2 pt-1.5 border-t border-[#1E2E45]">
                       <button
                         onClick={() => openDrawer('CORRIDOR', seg)}
-                        className="text-[10px] font-bold text-blue-700 underline"
+                        className="text-[10px] font-bold text-[#19C6D2] hover:underline cursor-pointer"
                       >
                         Corridor Details &rarr;
                       </button>
                       <button
                         onClick={() => openProvenanceModal(seg)}
-                        className="text-[10px] font-bold text-teal-700 flex items-center gap-0.5 hover:underline ml-auto"
+                        className="text-[10px] font-bold text-[#20C997] flex items-center gap-0.5 hover:underline ml-auto cursor-pointer"
                       >
                         <ShieldCheck className="w-2.5 h-2.5" /> Provenance
                       </button>
@@ -296,7 +312,7 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
               <Polyline
                 positions={highlightRoute.coordinates as any}
                 pathOptions={{
-                  color: '#0284c7',
+                  color: '#19C6D2',
                   weight: 6,
                   opacity: 0.95
                 }}
@@ -310,9 +326,9 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
                     key={`hl-seg-${idx}-${seg.segment_id || idx}`}
                     positions={seg.coordinates as any}
                     pathOptions={{
-                      color: '#38bdf8',
+                      color: '#438BFF',
                       weight: 7,
-                      opacity: 0.85
+                      opacity: 0.9
                     }}
                   />
                 );
@@ -330,7 +346,7 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
               pathOptions={{
                 fillColor: getStatusColor(d.status),
                 fillOpacity: 0.9,
-                color: '#ffffff',
+                color: '#080D16',
                 weight: 2
               }}
               eventHandlers={{
@@ -338,25 +354,25 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
               }}
             >
               <Popup>
-                <div className="p-1 text-xs space-y-1">
-                  <div className="flex items-center justify-between gap-1">
-                    <div className="font-bold text-[#1E3A5F]">{d.name}</div>
+                <div className="p-1 text-xs space-y-1.5 min-w-[190px]">
+                  <div className="flex items-center justify-between gap-1 pb-1 border-b border-[#1E2E45]">
+                    <div className="font-bold text-[#F5F7FA]">{d.name}</div>
                     <ProvenanceBadge status={d.verification_status || 'OBSERVED'} dataItem={d} />
                   </div>
-                  <div className="text-[11px] text-gray-500">{d.state} ({d.terrain})</div>
-                  <div className="font-bold text-emerald-800">
-                    Connectivity Score: {d.score} / 100
+                  <div className="text-[11px] text-[#94A3B8]">{d.state} ({d.terrain})</div>
+                  <div className="font-bold text-[#20C997]">
+                    Readiness Score: {d.score} / 100
                   </div>
-                  <div className="flex items-center gap-2 pt-1 border-t border-gray-100">
+                  <div className="flex items-center gap-2 pt-1 border-t border-[#1E2E45]">
                     <button
                       onClick={() => openDrawer('DISTRICT', d)}
-                      className="text-[10px] font-bold text-blue-700 underline"
+                      className="text-[10px] font-bold text-[#19C6D2] hover:underline cursor-pointer"
                     >
-                      Readiness &rarr;
+                      Inspect Readiness &rarr;
                     </button>
                     <button
                       onClick={() => openProvenanceModal(d)}
-                      className="text-[10px] font-bold text-teal-700 flex items-center gap-0.5 hover:underline ml-auto"
+                      className="text-[10px] font-bold text-[#20C997] flex items-center gap-0.5 hover:underline ml-auto cursor-pointer"
                     >
                       <ShieldCheck className="w-2.5 h-2.5" /> Provenance
                     </button>
@@ -378,25 +394,25 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
               }}
             >
               <Popup>
-                <div className="p-1 text-xs space-y-1">
-                  <div className="flex items-center justify-between gap-1">
-                    <div className="font-bold text-[#1E3A5F]">{br.name}</div>
+                <div className="p-1 text-xs space-y-1.5 min-w-[200px]">
+                  <div className="flex items-center justify-between gap-1 pb-1 border-b border-[#1E2E45]">
+                    <div className="font-bold text-[#F5F7FA]">{br.name}</div>
                     <ProvenanceBadge status={br.verification_status || 'OBSERVED'} dataItem={br} />
                   </div>
-                  <div className="text-[11px] text-gray-600">River: {br.river}</div>
-                  <div className="font-semibold text-amber-800">
+                  <div className="text-[11px] text-[#94A3B8]">River: {br.river}</div>
+                  <div className="font-semibold text-[#FFB547]">
                     Health: {br.structural_health_pct}% • Strain: {br.strain_microstrain} με
                   </div>
-                  <div className="flex items-center gap-2 pt-1 border-t border-gray-100">
+                  <div className="flex items-center gap-2 pt-1 border-t border-[#1E2E45]">
                     <button
                       onClick={() => openDrawer('BRIDGE', br)}
-                      className="text-[10px] font-bold text-blue-700 underline"
+                      className="text-[10px] font-bold text-[#19C6D2] hover:underline cursor-pointer"
                     >
                       IoT Diagnostics &rarr;
                     </button>
                     <button
                       onClick={() => openProvenanceModal(br)}
-                      className="text-[10px] font-bold text-teal-700 flex items-center gap-0.5 hover:underline ml-auto"
+                      className="text-[10px] font-bold text-[#20C997] flex items-center gap-0.5 hover:underline ml-auto cursor-pointer"
                     >
                       <ShieldCheck className="w-2.5 h-2.5" /> Provenance
                     </button>
@@ -415,17 +431,17 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
               icon={depotIcon}
             >
               <Popup>
-                <div className="p-1 text-xs space-y-1">
-                  <div className="flex items-center justify-between gap-1">
-                    <div className="font-bold text-[#1E3A5F]">{dep.name}</div>
+                <div className="p-1 text-xs space-y-1.5 min-w-[200px]">
+                  <div className="flex items-center justify-between gap-1 pb-1 border-b border-[#1E2E45]">
+                    <div className="font-bold text-[#F5F7FA]">{dep.name}</div>
                     <ProvenanceBadge status={dep.verification_status || 'VERIFIED'} dataItem={dep} />
                   </div>
-                  <div className="text-[11px] text-gray-600">{dep.type}</div>
-                  <div className="text-emerald-800 font-bold">
+                  <div className="text-[11px] text-[#94A3B8]">{dep.type}</div>
+                  <div className="text-[#20C997] font-bold">
                     Stock: {dep.current_stock_tons.toLocaleString()} / {dep.capacity_metric_tons.toLocaleString()} MT
                   </div>
-                  <div className="text-[10px] text-blue-700">
-                    Vaccines: {dep.critical_vaccine_units.toLocaleString()} doses
+                  <div className="text-[10px] text-[#38BDF8]">
+                    Vaccine Buffer: {dep.critical_vaccine_units.toLocaleString()} doses
                   </div>
                 </div>
               </Popup>
@@ -444,30 +460,30 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
               }}
             >
               <Popup>
-                <div className="p-1 text-xs space-y-1">
-                  <div className="flex items-center justify-between gap-1">
-                    <div className="font-bold text-[#1E3A5F]">{veh.plate_number}</div>
+                <div className="p-1 text-xs space-y-1.5 min-w-[200px]">
+                  <div className="flex items-center justify-between gap-1 pb-1 border-b border-[#1E2E45]">
+                    <div className="font-bold text-[#19C6D2] font-mono">{veh.plate_number}</div>
                     <ProvenanceBadge status={veh.verification_status || 'OBSERVED'} dataItem={veh} />
                   </div>
-                  <div className="text-[11px] text-gray-700">{veh.cargo_type}</div>
-                  <div className="text-[10px] text-gray-500">
-                    Speed: {veh.speed_kmh} km/h • Mode: {veh.network_mode}
+                  <div className="text-[11px] text-[#F5F7FA]">{veh.cargo_type}</div>
+                  <div className="text-[10px] text-[#94A3B8]">
+                    Speed: {veh.speed_kmh} km/h • NavIC: {veh.network_mode}
                   </div>
                   {veh.cold_chain && (
-                    <div className="text-[10px] font-bold text-emerald-700">
-                      ❄️ Temp: {veh.cold_chain.current_temp_c}°C
+                    <div className="text-[10px] font-bold text-[#20C997] bg-[#20C997]/10 p-1 rounded border border-[#20C997]/20">
+                      ❄️ Temp: {veh.cold_chain.current_temp_c}°C ({veh.cold_chain.status})
                     </div>
                   )}
-                  <div className="flex items-center gap-2 pt-1 border-t border-gray-100">
+                  <div className="flex items-center gap-2 pt-1 border-t border-[#1E2E45]">
                     <button
                       onClick={() => openDrawer('VEHICLE', veh)}
-                      className="text-[10px] font-bold text-blue-700 underline"
+                      className="text-[10px] font-bold text-[#19C6D2] hover:underline cursor-pointer"
                     >
-                      Track Manifest &rarr;
+                      Track Telematics &rarr;
                     </button>
                     <button
                       onClick={() => openProvenanceModal(veh)}
-                      className="text-[10px] font-bold text-teal-700 flex items-center gap-0.5 hover:underline ml-auto"
+                      className="text-[10px] font-bold text-[#20C997] flex items-center gap-0.5 hover:underline ml-auto cursor-pointer"
                     >
                       <ShieldCheck className="w-2.5 h-2.5" /> Provenance
                     </button>
@@ -480,25 +496,34 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
 
       {/* Floating Controls (Top-Right) */}
       <div className="absolute top-3 right-3 z-[1000] flex items-center gap-2">
+        {/* Map Theme Toggle (Dark Command / Daylight) */}
+        <button
+          onClick={() => setMapTheme(mapTheme === 'DARK' ? 'LIGHT' : 'DARK')}
+          className="bg-[#0D1522]/90 backdrop-blur-md border border-[#1E2E45] hover:border-[#19C6D2]/50 text-[#F5F7FA] p-2 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer"
+          title={mapTheme === 'DARK' ? 'Switch to Daylight Map' : 'Switch to Dark Command Map'}
+        >
+          {mapTheme === 'DARK' ? <Sun className="w-4 h-4 text-[#FFB547]" /> : <Moon className="w-4 h-4 text-[#19C6D2]" />}
+        </button>
+
         {/* Fullscreen Toggle Button */}
         <button
           onClick={toggleFullscreen}
-          className={`backdrop-blur-md shadow-md px-3 py-2 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+          className={`backdrop-blur-md shadow-md px-3 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
             isFullscreen
-              ? 'bg-rose-600 hover:bg-rose-700 text-white border-rose-500 ring-2 ring-rose-300'
-              : 'bg-white/95 hover:bg-white text-[#1E3A5F] border-gray-300 hover:border-[#1E3A5F]'
+              ? 'bg-[#FF5252] hover:bg-[#e04343] text-white border-[#FF5252] ring-2 ring-[#FF5252]/30'
+              : 'bg-[#0D1522]/90 hover:bg-[#16253B] text-[#F5F7FA] border-[#1E2E45] hover:border-[#19C6D2]'
           }`}
           title={isFullscreen ? 'Exit Fullscreen (Esc)' : 'Open Fullscreen Interactive Map'}
         >
           {isFullscreen ? (
             <>
-              <Minimize2 className="w-4 h-4 text-white" />
-              <span>Exit Fullscreen</span>
+              <Minimize2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Exit Fullscreen</span>
             </>
           ) : (
             <>
-              <Maximize2 className="w-4 h-4 text-[#2563A8]" />
-              <span>Fullscreen</span>
+              <Maximize2 className="w-4 h-4 text-[#19C6D2]" />
+              <span className="hidden sm:inline">Fullscreen</span>
             </>
           )}
         </button>
@@ -507,65 +532,66 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
         <div className="relative">
           <button
             onClick={() => setShowLayersMenu(!showLayersMenu)}
-            className="bg-white/95 backdrop-blur shadow-md px-3 py-2 rounded-lg border border-gray-300 text-xs font-bold text-[#1E3A5F] flex items-center gap-2 hover:bg-white transition-all cursor-pointer"
+            className="bg-[#0D1522]/90 backdrop-blur-md shadow-md px-3 py-2 rounded-xl border border-[#1E2E45] text-xs font-bold text-[#F5F7FA] flex items-center gap-2 hover:bg-[#16253B] hover:border-[#19C6D2]/50 transition-all cursor-pointer"
           >
-            <Layers className="w-4 h-4 text-[#2563A8]" />
-            <span>GIS Map Layers</span>
+            <Layers className="w-4 h-4 text-[#19C6D2]" />
+            <span className="hidden xs:inline">Layers</span>
           </button>
 
           {showLayersMenu && (
-            <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-xl border border-gray-200 p-3 space-y-2 text-xs">
-              <div className="font-bold text-gray-500 text-[10px] uppercase border-b pb-1">
-                Toggle GIS Overlays
+            <div className="absolute right-0 mt-2 w-56 bg-[#0D1522] rounded-2xl shadow-2xl border border-[#1E2E45] p-3 space-y-2 text-xs z-[1050]">
+              <div className="font-bold text-[#64748B] text-[10px] uppercase border-b border-[#1E2E45] pb-1.5 flex items-center justify-between">
+                <span>GIS Overlays</span>
+                <span className="text-[#19C6D2] font-mono">LIVE</span>
               </div>
-              <label className="flex items-center justify-between cursor-pointer">
-                <span className="font-medium text-gray-800">Road Corridors</span>
+              <label className="flex items-center justify-between cursor-pointer py-1 text-[#F5F7FA]">
+                <span className="font-medium">Road Corridors</span>
                 <input
                   type="checkbox"
                   checked={showRoads}
                   onChange={(e) => setShowRoads(e.target.checked)}
-                  className="rounded text-[#17365D]"
+                  className="rounded text-[#19C6D2] bg-[#111D2D] border-[#1E2E45] focus:ring-0"
                 />
               </label>
-              <label className="flex items-center justify-between cursor-pointer">
-                <span className="font-medium text-gray-800">Bridge IoT Health</span>
+              <label className="flex items-center justify-between cursor-pointer py-1 text-[#F5F7FA]">
+                <span className="font-medium">Bridge Sensors</span>
                 <input
                   type="checkbox"
                   checked={showBridges}
                   onChange={(e) => setShowBridges(e.target.checked)}
-                  className="rounded text-[#17365D]"
+                  className="rounded text-[#19C6D2] bg-[#111D2D] border-[#1E2E45] focus:ring-0"
                 />
               </label>
-              <label className="flex items-center justify-between cursor-pointer">
-                <span className="font-medium text-gray-800">Strategic Depots</span>
+              <label className="flex items-center justify-between cursor-pointer py-1 text-[#F5F7FA]">
+                <span className="font-medium">Strategic Depots</span>
                 <input
                   type="checkbox"
                   checked={showDepots}
                   onChange={(e) => setShowDepots(e.target.checked)}
-                  className="rounded text-[#17365D]"
+                  className="rounded text-[#19C6D2] bg-[#111D2D] border-[#1E2E45] focus:ring-0"
                 />
               </label>
-              <label className="flex items-center justify-between cursor-pointer">
-                <span className="font-medium text-gray-800">Tracked Fleet</span>
+              <label className="flex items-center justify-between cursor-pointer py-1 text-[#F5F7FA]">
+                <span className="font-medium">Tracked Fleet</span>
                 <input
                   type="checkbox"
                   checked={showVehicles}
                   onChange={(e) => setShowVehicles(e.target.checked)}
-                  className="rounded text-[#17365D]"
+                  className="rounded text-[#19C6D2] bg-[#111D2D] border-[#1E2E45] focus:ring-0"
                 />
               </label>
-              <label className="flex items-center justify-between cursor-pointer">
-                <span className="font-medium text-gray-800">District Nodes</span>
+              <label className="flex items-center justify-between cursor-pointer py-1 text-[#F5F7FA]">
+                <span className="font-medium">District Nodes</span>
                 <input
                   type="checkbox"
                   checked={showDistricts}
                   onChange={(e) => setShowDistricts(e.target.checked)}
-                  className="rounded text-[#17365D]"
+                  className="rounded text-[#19C6D2] bg-[#111D2D] border-[#1E2E45] focus:ring-0"
                 />
               </label>
-              <div className="pt-2 border-t border-gray-100 text-[10px] text-gray-500 flex items-center justify-between">
-                <span>Data updated 42 sec ago</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="pt-2 border-t border-[#1E2E45] text-[10px] text-[#64748B] flex items-center justify-between">
+                <span>Auto-refresh active</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#20C997] animate-pulse" />
               </div>
             </div>
           )}
@@ -573,26 +599,28 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
       </div>
 
       {/* Map Legend (Bottom-Left) */}
-      <div className="absolute bottom-3 left-3 z-[1000] bg-white/95 backdrop-blur-sm p-3 rounded-xl border border-gray-300 shadow-md text-[11px] space-y-1.5">
-        <div className="font-bold text-[#17365D] text-[10px] uppercase tracking-wider mb-1 flex items-center justify-between">
-          <span>Corridor Accessibility Status</span>
-          <span className="text-[9px] text-gray-400 font-mono">LIVE</span>
+      <div className="absolute bottom-3 left-3 z-[1000] bg-[#0D1522]/95 backdrop-blur-md p-3 rounded-2xl border border-[#1E2E45] shadow-xl text-[11px] space-y-1.5 max-w-[200px] xs:max-w-none">
+        <div className="font-bold text-[#19C6D2] text-[10px] uppercase tracking-wider mb-1 flex items-center justify-between">
+          <span>Corridor Status</span>
+          <span className="text-[9px] text-[#64748B] font-mono">89 NODES</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-[#0F6B6B]"></span>
-          <span className="text-gray-700 font-medium">Open (Normal Flow)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-[#B85C00]"></span>
-          <span className="text-gray-700 font-medium">Restricted (One-way / Hazard)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-[#ea580c]"></span>
-          <span className="text-gray-700 font-medium">Degraded (Rough / Mud Slurry)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-[#9B1B1B]"></span>
-          <span className="text-gray-700 font-bold">Closed (Impassable Blockade)</span>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#20C997]"></span>
+            <span className="text-[#94A3B8] text-[10px]">Open</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFB547]"></span>
+            <span className="text-[#94A3B8] text-[10px]">Restricted</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#f97316]"></span>
+            <span className="text-[#94A3B8] text-[10px]">Degraded</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FF5252]"></span>
+            <span className="text-[#94A3B8] text-[10px]">Closed</span>
+          </div>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ export const ToastContainer: React.FC = () => {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed top-20 right-5 z-[9999] space-y-2 max-w-sm w-full pointer-events-none">
+    <div className="fixed top-20 right-4 sm:right-6 z-[9999] space-y-2.5 max-w-sm w-full pointer-events-none">
       {toasts.map((toast) => {
         const isDanger = toast.tier === 'DANGER';
         const isWarning = toast.tier === 'WARNING';
@@ -17,34 +17,34 @@ export const ToastContainer: React.FC = () => {
         return (
           <div
             key={toast.id}
-            className={`pointer-events-auto p-3.5 rounded-xl shadow-xl border bg-white flex items-start gap-3 transition-all animate-in slide-in-from-right duration-200 ${
+            className={`pointer-events-auto p-3.5 rounded-xl shadow-2xl border backdrop-blur-md bg-[#0D1522]/95 flex items-start gap-3 transition-all animate-in slide-in-from-right duration-200 ${
               isDanger
-                ? 'border-l-4 border-l-red-600 border-red-200'
+                ? 'border-l-4 border-l-[#FF5252] border-rose-500/30 text-rose-200'
                 : isWarning
-                ? 'border-l-4 border-l-amber-500 border-amber-200'
+                ? 'border-l-4 border-l-[#FFB547] border-amber-500/30 text-amber-200'
                 : isSuccess
-                ? 'border-l-4 border-l-emerald-600 border-emerald-200'
-                : 'border-l-4 border-l-blue-600 border-blue-200'
+                ? 'border-l-4 border-l-[#20C997] border-emerald-500/30 text-emerald-200'
+                : 'border-l-4 border-l-[#19C6D2] border-cyan-500/30 text-cyan-200'
             }`}
           >
             <div className="shrink-0 mt-0.5">
-              {isDanger && <XCircle className="w-4 h-4 text-red-600" />}
-              {isWarning && <AlertTriangle className="w-4 h-4 text-amber-500" />}
-              {isSuccess && <CheckCircle className="w-4 h-4 text-emerald-600" />}
-              {!isDanger && !isWarning && !isSuccess && <Info className="w-4 h-4 text-blue-600" />}
+              {isDanger && <XCircle className="w-4 h-4 text-[#FF5252]" />}
+              {isWarning && <AlertTriangle className="w-4 h-4 text-[#FFB547]" />}
+              {isSuccess && <CheckCircle className="w-4 h-4 text-[#20C997]" />}
+              {!isDanger && !isWarning && !isSuccess && <Info className="w-4 h-4 text-[#19C6D2]" />}
             </div>
 
             <div className="flex-1 min-w-0 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-gray-900">{toast.title}</span>
-                <span className="text-[10px] text-gray-400">{toast.timestamp}</span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-bold text-[#F5F7FA] truncate">{toast.title}</span>
+                <span className="text-[10px] text-[#64748B] shrink-0 font-mono">{toast.timestamp}</span>
               </div>
-              <p className="text-gray-600 mt-0.5 leading-snug">{toast.message}</p>
+              <p className="text-[#94A3B8] mt-0.5 leading-snug">{toast.message}</p>
             </div>
 
             <button
               onClick={() => dismissToast(toast.id)}
-              className="text-gray-400 hover:text-gray-600 shrink-0"
+              className="text-[#64748B] hover:text-[#F5F7FA] transition-colors shrink-0 p-0.5 rounded cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

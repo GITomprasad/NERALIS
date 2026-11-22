@@ -23,7 +23,8 @@ import {
   Download,
   Share2,
   Navigation,
-  ShieldCheck
+  ShieldCheck,
+  X
 } from 'lucide-react';
 
 export const AlertCenter: React.FC = () => {
@@ -32,7 +33,7 @@ export const AlertCenter: React.FC = () => {
 
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(alerts[0] || null);
   const [targetLang, setTargetLang] = useState<LanguageCode>('en');
-  const [channelView, setChannelView] = useState<'SMS' | 'WHATSAPP' | 'VOICE' | 'CAP_XML' | 'MORNING_BRIEF'>('WHATSAPP');
+  const [channelView, setChannelView] = useState<'WHATSAPP' | 'SMS' | 'VOICE' | 'CAP_XML' | 'MORNING_BRIEF'>('WHATSAPP');
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [copiedXml, setCopiedXml] = useState(false);
 
@@ -67,7 +68,7 @@ export const AlertCenter: React.FC = () => {
     selectedAlert.acknowledged_by = 'District Magistrate (Verified Online)';
     addToast(
       'Alert Receipt Acknowledged',
-      `Official DM acknowledgement logged for ${selectedAlert.id}. 20-min SLA timer stopped.`,
+      `Official DM acknowledgement logged for ${selectedAlert.id}. 20-min SLA escalation stopped.`,
       'SUCCESS'
     );
   };
@@ -179,12 +180,12 @@ export const AlertCenter: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="bg-white p-4 rounded-xl border border-[#D1D5DB] flex flex-wrap items-center justify-between gap-3 shadow-xs">
+      <div className="card-command flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-black text-[#1E3A5F]">
-            {t('module_5')} — Multilingual Broadcast & NDMA Integration
+          <h2 className="text-base font-black text-[#F5F7FA]">
+            {t('module_5')} — Multilingual Broadcast &amp; Emergency Alert Center
           </h2>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs text-[#94A3B8] mt-0.5">
             5-Tier alert hierarchy dispatched across 8 NER regional languages, 2G SMS, IVR voice, and NDMA CAP feeds
           </p>
         </div>
@@ -192,7 +193,7 @@ export const AlertCenter: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="bg-[#1E3A5F] hover:bg-[#2563A8] text-white font-bold text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            className="btn-danger text-xs py-2 px-3.5 flex items-center gap-1.5 shadow-sm"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Dispatch Emergency Alert</span>
@@ -203,12 +204,12 @@ export const AlertCenter: React.FC = () => {
       {/* Main Grid: Alert List on Left (5 cols), Multi-channel preview on Right (7 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left: Active Alerts Queue (5 cols) */}
-        <div className="lg:col-span-5 bg-white p-4 rounded-xl border border-[#D1D5DB] shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black uppercase tracking-wider text-[#1E3A5F]">
+        <div className="lg:col-span-5 card-command space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-[#1E2E45]">
+            <h3 className="text-xs font-black uppercase tracking-wider text-[#19C6D2]">
               Dispatched Alerts Queue ({alerts.length})
             </h3>
-            <span className="text-[10px] bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">
+            <span className="text-[10px] bg-[#FF5252]/15 text-[#FF5252] border border-[#FF5252]/30 font-bold px-2 py-0.5 rounded">
               20-Min SLA Escalation Active
             </span>
           </div>
@@ -216,46 +217,47 @@ export const AlertCenter: React.FC = () => {
           <div className="space-y-2.5 max-h-[580px] overflow-y-auto pr-1">
             {alerts.map((a) => {
               const isSelected = selectedAlert?.id === a.id;
+              const isCrit = a.tier_level >= 4;
               return (
                 <div
                   key={a.id}
                   onClick={() => setSelectedAlert(a)}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-[#EBF3FB] border-[#2563A8] shadow-xs ring-1 ring-blue-300'
-                      : 'bg-[#F8FAFC] border-gray-200 hover:bg-white hover:shadow-xs'
+                      ? 'bg-[#16253B] border-[#19C6D2] shadow-command-glow'
+                      : 'bg-[#0D1522] border-[#1E2E45] hover:bg-[#111D2D]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span
-                      className={`text-[9px] font-black px-2 py-0.5 rounded uppercase ${
-                        a.tier_level >= 4
-                          ? 'bg-red-600 text-white'
+                      className={`text-[9px] font-black px-2 py-0.5 rounded uppercase font-mono ${
+                        isCrit
+                          ? 'bg-[#FF5252]/20 text-[#FF5252] border border-[#FF5252]/40'
                           : a.tier_level === 3
-                          ? 'bg-amber-500 text-white'
-                          : 'bg-blue-600 text-white'
+                          ? 'bg-[#FFB547]/20 text-[#FFB547] border border-[#FFB547]/40'
+                          : 'bg-[#438BFF]/20 text-[#438BFF] border border-[#438BFF]/40'
                       }`}
                     >
                       {a.tier}
                     </span>
-                    <span className="text-[10px] text-gray-500">{a.timestamp}</span>
+                    <span className="text-[10px] text-[#64748B] font-mono">{a.timestamp}</span>
                   </div>
 
-                  <div className="font-bold text-xs text-gray-900 mt-1.5">{a.title}</div>
-                  <p className="text-[11px] text-gray-600 mt-0.5 line-clamp-2">
+                  <div className="font-bold text-xs text-[#F5F7FA] mt-1.5">{a.title}</div>
+                  <p className="text-[11px] text-[#94A3B8] mt-0.5 line-clamp-2">
                     {a.message_i18n?.en || a.title}
                   </p>
 
-                  <div className="mt-2 pt-2 border-t border-gray-200/60 flex items-center justify-between text-[10px]">
-                    <span className="text-gray-500">
-                      Recipients: <strong>{a.target_recipients_count}</strong>
+                  <div className="mt-2 pt-2 border-t border-[#1E2E45] flex items-center justify-between text-[10px]">
+                    <span className="text-[#64748B]">
+                      Recipients: <strong className="text-[#F5F7FA]">{a.target_recipients_count}</strong>
                     </span>
                     <span
                       className={`font-semibold ${
-                        a.acknowledged ? 'text-emerald-700 font-bold' : 'text-amber-700 animate-pulse'
+                        a.acknowledged ? 'text-[#20C997] font-bold' : 'text-[#FFB547] animate-pulse'
                       }`}
                     >
-                      {a.acknowledged ? '✓ Acknowledged' : '⏱️ Pending DC Ack (11m)'}
+                      {a.acknowledged ? '✓ Acknowledged' : '⏱️ Pending DC Ack'}
                     </span>
                   </div>
                 </div>
@@ -265,26 +267,26 @@ export const AlertCenter: React.FC = () => {
         </div>
 
         {/* Right: Multi-Channel Formatter & Regional Translator (7 cols) */}
-        <div className="lg:col-span-7 bg-white p-5 rounded-xl border border-[#D1D5DB] shadow-xs space-y-4 text-xs">
+        <div className="lg:col-span-7 card-command space-y-4 text-xs">
           {/* Header with Language Switcher */}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1E2E45] pb-3">
             <div>
-              <span className="text-[10px] font-bold text-gray-500 uppercase">Alert Delivery Simulator</span>
-              <h3 className="text-sm font-black text-[#1E3A5F]">
+              <span className="text-[10px] font-bold text-[#64748B] uppercase">Alert Delivery Simulator</span>
+              <h3 className="text-sm font-black text-[#F5F7FA]">
                 {selectedAlert?.title || 'Select Alert'}
               </h3>
             </div>
 
             {/* Regional Language Switcher */}
             <div className="flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-blue-700" />
+              <Globe className="w-3.5 h-3.5 text-[#19C6D2]" />
               <select
                 value={targetLang}
                 onChange={(e) => setTargetLang(e.target.value as LanguageCode)}
-                className="bg-gray-50 border border-gray-300 rounded px-2.5 py-1 text-xs font-bold text-gray-800 focus:ring-2 focus:ring-[#1E3A5F] cursor-pointer"
+                className="bg-[#0D1522] border border-[#1E2E45] rounded-xl px-2.5 py-1 text-xs font-bold text-[#F5F7FA] focus:ring-1 focus:ring-[#19C6D2] cursor-pointer"
               >
                 {languages.map((l) => (
-                  <option key={l.code} value={l.code}>
+                  <option key={l.code} value={l.code} className="bg-[#0D1522] text-[#F5F7FA]">
                     {l.native} ({l.label})
                   </option>
                 ))}
@@ -293,83 +295,83 @@ export const AlertCenter: React.FC = () => {
           </div>
 
           {/* Channel Selector Tabs */}
-          <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-lg text-xs font-bold">
+          <div className="flex flex-wrap gap-1 bg-[#0D1522] p-1 rounded-xl border border-[#1E2E45] text-xs font-bold">
             <button
               onClick={() => setChannelView('WHATSAPP')}
-              className={`px-3 py-1.5 rounded-md flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'WHATSAPP' ? 'bg-[#1E3A5F] text-white shadow-xs' : 'text-gray-700 hover:bg-gray-200'
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
+                channelView === 'WHATSAPP' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
               }`}
             >
-              <MessageSquare className="w-3.5 h-3.5 text-emerald-400" /> WhatsApp Business
+              <MessageSquare className="w-3.5 h-3.5 text-[#20C997]" /> WhatsApp
             </button>
             <button
               onClick={() => setChannelView('SMS')}
-              className={`px-3 py-1.5 rounded-md flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'SMS' ? 'bg-[#1E3A5F] text-white shadow-xs' : 'text-gray-700 hover:bg-gray-200'
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
+                channelView === 'SMS' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
               }`}
             >
-              <Smartphone className="w-3.5 h-3.5 text-sky-400" /> 2G SMS (160c)
+              <Smartphone className="w-3.5 h-3.5 text-[#38BDF8]" /> 2G SMS
             </button>
             <button
               onClick={() => setChannelView('VOICE')}
-              className={`px-3 py-1.5 rounded-md flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'VOICE' ? 'bg-[#1E3A5F] text-white shadow-xs' : 'text-gray-700 hover:bg-gray-200'
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
+                channelView === 'VOICE' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
               }`}
             >
-              <Volume2 className="w-3.5 h-3.5 text-amber-400" /> IVR Voice Call
+              <Volume2 className="w-3.5 h-3.5 text-[#FFB547]" /> IVR Voice
             </button>
             <button
               onClick={() => setChannelView('CAP_XML')}
-              className={`px-3 py-1.5 rounded-md flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'CAP_XML' ? 'bg-[#1E3A5F] text-white shadow-xs' : 'text-gray-700 hover:bg-gray-200'
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
+                channelView === 'CAP_XML' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
               }`}
             >
-              <FileCode className="w-3.5 h-3.5 text-cyan-400" /> NDMA CAP (XML)
+              <FileCode className="w-3.5 h-3.5 text-[#818CF8]" /> NDMA CAP (XML)
             </button>
             <button
               onClick={() => setChannelView('MORNING_BRIEF')}
-              className={`px-3 py-1.5 rounded-md flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'MORNING_BRIEF' ? 'bg-[#1E3A5F] text-white shadow-xs' : 'text-gray-700 hover:bg-gray-200'
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
+                channelView === 'MORNING_BRIEF' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
               }`}
             >
-              <FileText className="w-3.5 h-3.5 text-rose-400" /> 6 AM Briefing
+              <FileText className="w-3.5 h-3.5 text-[#FF5252]" /> 6 AM Briefing
             </button>
           </div>
 
           {/* CHANNEL PREVIEWS */}
           {channelView === 'WHATSAPP' && (
-            <div className="p-4 bg-[#E5DDD5] rounded-xl border border-emerald-300 max-w-md mx-auto space-y-2 shadow-inner">
-              <div className="bg-white p-3 rounded-lg rounded-tl-none shadow-xs space-y-1.5 border border-emerald-100">
-                <div className="flex items-center justify-between border-b pb-1">
-                  <span className="font-bold text-emerald-800 text-[11px] flex items-center gap-1">
-                    🏛️ GOI NERALIS DISASTER ALERTS
+            <div className="p-4 bg-[#0B141A] rounded-2xl border border-[#1E2E45] max-w-md mx-auto space-y-2 shadow-inner">
+              <div className="bg-[#1F2C34] p-3.5 rounded-2xl rounded-tl-none shadow-md space-y-2 border border-[#2A3942]">
+                <div className="flex items-center justify-between border-b border-[#2A3942] pb-1.5">
+                  <span className="font-bold text-[#25D366] text-[11px] flex items-center gap-1">
+                    🏛️ GOI NERALIS EMERGENCY ALERTS
                   </span>
-                  <span className="text-[9px] text-gray-400">10:45 AM</span>
+                  <span className="text-[9px] text-[#8696A0]">10:45 AM</span>
                 </div>
-                <div className="font-bold text-gray-900 text-xs">
+                <div className="font-bold text-[#E9EDEF] text-xs">
                   {selectedAlert?.title}
                 </div>
-                <p className="text-gray-800 text-xs leading-relaxed font-regional">
+                <p className="text-[#D1D7DB] text-xs leading-relaxed font-regional">
                   {activeMsgText}
                 </p>
-                <div className="pt-2 flex flex-col gap-1.5">
+                <div className="pt-2 flex flex-col gap-2">
                   <button
                     onClick={handleViewAlternateRoute}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded text-[11px] transition-colors cursor-pointer flex items-center justify-center gap-1"
+                    className="bg-[#00A884] hover:bg-[#008f6f] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
                   >
-                    <Navigation className="w-3 h-3" />
-                    <span>View Live Alternate Route</span>
+                    <Navigation className="w-3.5 h-3.5" />
+                    <span>View Live Alternate Route Bypass</span>
                   </button>
                   <button
                     onClick={handleAcknowledgeAlert}
                     disabled={selectedAlert?.acknowledged}
-                    className={`py-1.5 px-3 rounded text-[11px] font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer ${
+                    className={`py-2 px-3 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                       selectedAlert?.acknowledged
-                        ? 'bg-emerald-100 text-emerald-800 cursor-default'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                        ? 'bg-[#20C997]/20 text-[#20C997] border border-[#20C997]/40 cursor-default'
+                        : 'bg-[#2A3942] hover:bg-[#32424B] text-[#E9EDEF]'
                     }`}
                   >
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#20C997]" />
                     <span>{selectedAlert?.acknowledged ? '✓ Receipt Acknowledged (DM Office)' : 'Acknowledge Receipt (DM Office)'}</span>
                   </button>
                 </div>
@@ -378,38 +380,38 @@ export const AlertCenter: React.FC = () => {
           )}
 
           {channelView === 'SMS' && (
-            <div className="p-4 bg-slate-900 text-emerald-400 font-mono rounded-xl border border-slate-700 space-y-2">
-              <div className="text-[10px] text-slate-400 flex justify-between">
-                <span>BSNL / AIRTEL 2G SMS GATEWAY</span>
+            <div className="p-4 bg-[#080D16] text-[#20C997] font-mono rounded-xl border border-[#1E2E45] space-y-2">
+              <div className="text-[10px] text-[#64748B] flex justify-between">
+                <span>BSNL / AIRTEL 2G CELL BROADCAST</span>
                 <span>{activeMsgText.length} / 160 chars</span>
               </div>
-              <div className="bg-slate-950 p-3 rounded border border-slate-800 text-xs leading-relaxed font-regional">
+              <div className="bg-[#0D1522] p-3 rounded-lg border border-[#1E2E45] text-xs leading-relaxed font-regional text-[#F5F7FA]">
                 {activeMsgText}
               </div>
-              <div className="text-[10px] text-slate-400 flex items-center justify-between">
+              <div className="text-[10px] text-[#64748B] flex items-center justify-between">
                 <span>Auto-compressed for low-bandwidth 2G feature phones.</span>
-                <span className="text-emerald-400 font-bold">✓ Cell Broadcast Push Sent</span>
+                <span className="text-[#20C997] font-bold">✓ Cell Broadcast Pushed</span>
               </div>
             </div>
           )}
 
           {channelView === 'VOICE' && (
-            <div className="p-4 bg-amber-50 rounded-xl border border-amber-300 space-y-3">
+            <div className="p-4 bg-[#0D1522] rounded-xl border border-[#FFB547]/30 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-amber-950 flex items-center gap-1.5">
-                  <Volume2 className="w-4 h-4 text-amber-700" /> Automated Multilingual IVR Voice Broadcast
+                <span className="font-bold text-[#FFB547] flex items-center gap-1.5">
+                  <Volume2 className="w-4 h-4 text-[#FFB547]" /> Automated Multilingual IVR Voice Broadcast
                 </span>
-                <span className="text-[10px] bg-amber-200 text-amber-900 font-bold px-2 py-0.5 rounded">
+                <span className="text-[10px] bg-[#FFB547]/20 text-[#FFB547] font-bold px-2 py-0.5 rounded border border-[#FFB547]/30">
                   TTS Engine Active
                 </span>
               </div>
-              <p className="text-xs text-gray-800 italic bg-white p-3 rounded-lg border border-amber-200 font-regional">
+              <p className="text-xs text-[#F5F7FA] italic bg-[#111D2D] p-3 rounded-lg border border-[#1E2E45] font-regional">
                 "{activeMsgText}"
               </p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleSpeak(activeMsgText)}
-                  className="bg-[#1E3A5F] hover:bg-[#2563A8] text-white font-bold text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                  className="btn-primary text-xs py-2 px-3.5"
                 >
                   <Volume2 className="w-4 h-4" />
                   <span>{isPlayingAudio ? 'Broadcasting Audio...' : 'Play Synthetic Voice Preview'}</span>
@@ -419,49 +421,49 @@ export const AlertCenter: React.FC = () => {
           )}
 
           {channelView === 'CAP_XML' && (
-            <div className="p-3 bg-slate-900 text-slate-200 font-mono rounded-xl border border-slate-700 space-y-2 text-[11px] overflow-x-auto">
+            <div className="p-3 bg-[#080D16] text-[#818CF8] font-mono rounded-xl border border-[#1E2E45] space-y-2 text-[11px] overflow-x-auto">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-sky-400 font-bold">
+                <span className="text-[10px] text-[#19C6D2] font-bold">
                   NDMA Common Alerting Protocol (CAP v1.2 XML Feed)
                 </span>
                 <button
                   onClick={handleCopyXml}
-                  className="bg-slate-800 hover:bg-slate-700 text-sky-300 px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                  className="btn-secondary text-[10px] py-1 px-2.5"
                 >
-                  {copiedXml ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  {copiedXml ? <Check className="w-3 h-3 text-[#20C997]" /> : <Copy className="w-3 h-3" />}
                   <span>{copiedXml ? 'Copied' : 'Copy CAP XML'}</span>
                 </button>
               </div>
-              <pre className="text-[10px] leading-relaxed text-sky-200 max-h-64 overflow-y-auto">
+              <pre className="text-[10px] leading-relaxed text-[#94A3B8] max-h-64 overflow-y-auto">
                 {rawCapXml}
               </pre>
             </div>
           )}
 
           {channelView === 'MORNING_BRIEF' && (
-            <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 space-y-2.5">
+            <div className="p-4 bg-[#0D1522] rounded-xl border border-[#1E2E45] space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-[#1E3A5F] text-xs">
+                <span className="font-bold text-[#F5F7FA] text-xs">
                   Automated 6 AM Daily Logistics Intelligence Briefing
                 </span>
                 <button
                   onClick={() => addToast('Briefing Exported', '6 AM Logistics Briefing saved as summary digest.', 'SUCCESS')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] px-2.5 py-1 rounded flex items-center gap-1 cursor-pointer"
+                  className="btn-secondary text-[10px] py-1 px-2.5 flex items-center gap-1"
                 >
                   <Download className="w-3 h-3" />
                   <span>Export Digest</span>
                 </button>
               </div>
-              <div className="bg-white p-3 rounded-lg border border-blue-100 text-xs space-y-2">
-                <div className="font-bold text-gray-900">
+              <div className="bg-[#111D2D] p-3.5 rounded-xl border border-[#1E2E45] text-xs space-y-2">
+                <div className="font-bold text-[#19C6D2]">
                   TOP 5 HIGH-RISK LOGISTICS CORRIDORS FOR TODAY:
                 </div>
-                <div className="space-y-1 text-[11px] text-gray-700">
-                  <div>1. <strong>NH-10 (Siliguri - Gangtok)</strong>: 82% Risk (Restricted). Bypass light freight via Melli.</div>
-                  <div>2. <strong>NH-13 (Bomdila - Tawang)</strong>: 79% Risk (Degraded). Pre-position BRO bulldozers.</div>
-                  <div>3. <strong>NH-37 (Silchar - Imphal)</strong>: 75% Risk (Degraded). River gauge watch at Irang Bridge.</div>
-                  <div>4. <strong>NH-6 (Sonapur Tunnel)</strong>: 68% Risk (Restricted). Mudflow vacuum pumps deployed.</div>
-                  <div>5. <strong>NH-2 (Dimapur - Kohima)</strong>: 64% Risk (Restricted). Stagger heavy truck departure.</div>
+                <div className="space-y-1.5 text-[11px] text-[#94A3B8]">
+                  <div>1. <strong className="text-[#F5F7FA]">NH-10 (Siliguri - Gangtok)</strong>: 82% Risk (Restricted). Bypass light freight via Melli.</div>
+                  <div>2. <strong className="text-[#F5F7FA]">NH-13 (Bomdila - Tawang)</strong>: 79% Risk (Degraded). Pre-position BRO bulldozers.</div>
+                  <div>3. <strong className="text-[#F5F7FA]">NH-37 (Silchar - Imphal)</strong>: 75% Risk (Degraded). River gauge watch at Irang Bridge.</div>
+                  <div>4. <strong className="text-[#F5F7FA]">NH-6 (Sonapur Tunnel)</strong>: 68% Risk (Restricted). Mudflow vacuum pumps deployed.</div>
+                  <div>5. <strong className="text-[#F5F7FA]">NH-2 (Dimapur - Kohima)</strong>: 64% Risk (Restricted). Stagger heavy truck departure.</div>
                 </div>
               </div>
             </div>
@@ -471,67 +473,67 @@ export const AlertCenter: React.FC = () => {
 
       {/* Manual Alert Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[3000] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden border border-gray-300 shadow-2xl p-5 space-y-4 text-xs">
-            <div className="flex items-center justify-between border-b pb-2">
-              <h3 className="font-bold text-sm text-[#1E3A5F]">Dispatch New Multi-Channel Alert</h3>
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[3000] flex items-center justify-center p-4">
+          <div className="bg-[#0D1522] rounded-2xl w-full max-w-md overflow-hidden border border-[#1E2E45] shadow-2xl p-5 space-y-4 text-xs text-[#F5F7FA] animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-[#1E2E45] pb-3">
+              <h3 className="font-bold text-sm text-[#F5F7FA]">Dispatch New Emergency Alert</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-gray-600 font-bold cursor-pointer text-base"
+                className="text-[#94A3B8] hover:text-[#F5F7FA] p-1 cursor-pointer"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateAlertSubmit} className="space-y-3">
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Alert Title</label>
+                <label className="block font-bold text-[#94A3B8] mb-1">Alert Title</label>
                 <input
                   type="text"
                   required
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Landslide Warning on NH-29"
-                  className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#1E3A5F]"
+                  className="w-full p-2.5 bg-[#111D2D] border border-[#1E2E45] rounded-xl text-xs font-semibold text-[#F5F7FA] focus:ring-1 focus:ring-[#19C6D2] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Severity Tier</label>
+                <label className="block font-bold text-[#94A3B8] mb-1">Severity Tier</label>
                 <select
                   value={newTier}
                   onChange={(e) => setNewTier(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold cursor-pointer"
+                  className="w-full p-2.5 bg-[#111D2D] border border-[#1E2E45] rounded-xl text-xs font-semibold text-[#F5F7FA] cursor-pointer"
                 >
-                  <option value="T1 - INFO">T1 — Info (Minor delay notice)</option>
-                  <option value="T2 - ADVISORY">T2 — Advisory (Route degraded / heavy rain)</option>
-                  <option value="T3 - WARNING">T3 — Warning (Route closure predicted 6h)</option>
-                  <option value="T4 - CRITICAL">T4 — Critical (Route fully blocked)</option>
-                  <option value="T5 - DISASTER">T5 — Disaster (Region isolated / NDRF)</option>
+                  <option value="T1 - INFO" className="bg-[#0D1522]">T1 — Info (Minor delay notice)</option>
+                  <option value="T2 - ADVISORY" className="bg-[#0D1522]">T2 — Advisory (Route degraded / heavy rain)</option>
+                  <option value="T3 - WARNING" className="bg-[#0D1522]">T3 — Warning (Route closure predicted 6h)</option>
+                  <option value="T4 - CRITICAL" className="bg-[#0D1522]">T4 — Critical (Route fully blocked)</option>
+                  <option value="T5 - DISASTER" className="bg-[#0D1522]">T5 — Disaster (Region isolated / NDRF)</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Message Text (English)</label>
+                <label className="block font-bold text-[#94A3B8] mb-1">Message Text (English)</label>
                 <textarea
                   required
                   rows={3}
                   value={newMsgEn}
                   onChange={(e) => setNewMsgEn(e.target.value)}
                   placeholder="Type alert description. System will auto-translate to 8 regional languages."
-                  className="w-full p-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-[#1E3A5F]"
+                  className="w-full p-2.5 bg-[#111D2D] border border-[#1E2E45] rounded-xl text-xs text-[#F5F7FA] focus:ring-1 focus:ring-[#19C6D2] focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t">
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#1E2E45]">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="btn-secondary text-xs cursor-pointer"
+                  className="btn-secondary text-xs"
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary text-xs cursor-pointer">
+                <button type="submit" className="btn-danger text-xs">
                   Broadcast Alert
                 </button>
               </div>

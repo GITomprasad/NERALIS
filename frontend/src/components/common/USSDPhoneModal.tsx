@@ -35,20 +35,20 @@ export const USSDPhoneModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[3000] flex items-center justify-center p-4">
-      <div className="bg-slate-900 text-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border-4 border-slate-700 relative">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[6000] flex items-center justify-center p-4 animate-fadeIn">
+      <div className="bg-[#0D1522] text-[#F5F7FA] rounded-3xl p-6 w-full max-w-xs shadow-2xl border-2 border-cyan-500/30 relative">
         <button
           onClick={() => setIsUSSDModalOpen(false)}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white"
+          className="absolute top-4 right-4 text-[#64748B] hover:text-[#F5F7FA] transition-colors p-1"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="text-center mb-3">
-          <div className="text-[10px] uppercase font-bold text-amber-400 tracking-wider flex items-center justify-center gap-1">
-            <Radio className="w-3 h-3 animate-pulse" /> 2G BSNL/Airtel Feature Phone Simulator
+          <div className="text-[10px] uppercase font-bold text-[#FFB547] tracking-wider flex items-center justify-center gap-1.5">
+            <Radio className="w-3.5 h-3.5 animate-pulse text-[#FFB547]" /> 2G BSNL/Airtel Feature Phone Simulator
           </div>
-          <h4 className="text-xs font-bold text-gray-300">NER USSD *123# Emergency Gateway</h4>
+          <h4 className="text-xs font-bold text-[#94A3B8] mt-0.5">NER USSD *123# Emergency Gateway</h4>
         </div>
 
         {/* Feature Phone Screen */}
@@ -56,8 +56,8 @@ export const USSDPhoneModal: React.FC = () => {
           {ussdScreen === 'IDLE' && (
             <div className="text-center my-auto space-y-2">
               <div className="text-sm font-bold tracking-widest text-[#102008]">NERALIS USSD</div>
-              <div className="text-[11px]">Dial *123# for Road Status in Zero-Data Areas</div>
-              <div className="bg-[#7D996D] py-1 px-2 rounded text-base font-black tracking-widest">
+              <div className="text-[11px] leading-tight text-[#1A2E10]/90">Dial *123# for Road Status in Zero-Data Areas</div>
+              <div className="bg-[#7D996D] py-1 px-2 rounded text-base font-black tracking-widest text-[#102008]">
                 {dialCode}
               </div>
             </div>
@@ -109,7 +109,7 @@ export const USSDPhoneModal: React.FC = () => {
                 autoFocus
                 className="w-full bg-[#7D996D] text-[#1A2E10] px-1.5 py-0.5 rounded text-xs focus:outline-none placeholder:text-[#1A2E10]/50 font-bold"
               />
-              <button type="submit" className="bg-[#1A2E10] text-[#8CA87B] px-2 py-0.5 rounded text-[10px] font-bold">
+              <button type="submit" className="bg-[#1A2E10] text-[#8CA87B] px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer">
                 Send
               </button>
             </form>
@@ -121,14 +121,14 @@ export const USSDPhoneModal: React.FC = () => {
           {ussdScreen === 'IDLE' ? (
             <button
               onClick={handleDial}
-              className="col-span-3 bg-emerald-600 hover:bg-emerald-500 py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-1 shadow"
+              className="col-span-3 bg-[#20C997] hover:bg-emerald-400 text-slate-950 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-command-card transition-all cursor-pointer"
             >
               <Phone className="w-3.5 h-3.5" /> Call *123# (USSD)
             </button>
           ) : (
             <button
               onClick={resetPhone}
-              className="col-span-3 bg-slate-700 hover:bg-slate-600 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center gap-1"
+              className="col-span-3 bg-[#111D2D] hover:bg-[#1E2E45] border border-[#1E2E45] text-[#94A3B8] hover:text-[#F5F7FA] py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" /> End / Reset USSD Call
             </button>

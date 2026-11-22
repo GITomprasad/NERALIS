@@ -26,10 +26,6 @@ import {
   Compass,
   X,
   CheckCircle,
-  CheckCheck,
-  Trash2,
-  XCircle,
-  Info,
   RefreshCw,
   LogIn,
   LogOut,
@@ -131,38 +127,45 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
     : [];
 
   return (
-    <header className="h-16 bg-[#17365D] text-white px-3 sm:px-4 lg:px-6 flex items-center justify-between shadow-xs z-[5000] sticky top-0 border-b border-[#2563A8]/30">
+    <header className="h-16 bg-[#0D1522] text-[#F5F7FA] px-3 sm:px-4 lg:px-6 flex items-center justify-between shadow-lg z-[5000] sticky top-0 border-b border-[#1E2E45]">
       {/* Left: Branding & Emblem */}
       <div className="flex items-center gap-2 lg:gap-3">
         {/* Mobile Hamburger Menu */}
         <button
           onClick={onMobileMenuToggle}
-          className="lg:hidden p-1.5 sm:p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/15 cursor-pointer"
+          className="lg:hidden p-2 rounded-xl bg-[#111D2D] hover:bg-[#16253B] text-[#94A3B8] hover:text-[#F5F7FA] transition-colors border border-[#1E2E45] cursor-pointer"
           title="Open Navigation Menu"
+          aria-label="Open Navigation Menu"
         >
-          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
 
-        {/* GoI Emblem representation */}
-        <div className="flex items-center gap-2 cursor-pointer" onClick={goToLanding} title="Go to Main GIS Map Landing Page">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 p-1 flex items-center justify-center border border-white/20">
-            <svg viewBox="0 0 100 100" className="w-6 h-6 sm:w-7 sm:h-7 fill-amber-400">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="4" />
-              <circle cx="50" cy="50" r="16" fill="currentColor" />
-              <path d="M50 8 L50 92 M8 50 L92 50 M20 20 L80 80 M20 80 L80 20" stroke="currentColor" strokeWidth="2.5" />
+        {/* Branding representation */}
+        <div
+          className="flex items-center gap-2.5 cursor-pointer group"
+          onClick={goToLanding}
+          title="Go to Main GIS Map Landing Page"
+        >
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#111D2D] to-[#16253B] p-1.5 flex items-center justify-center border border-[#19C6D2]/40 shadow-command-glow group-hover:border-[#19C6D2] transition-all">
+            <svg viewBox="0 0 100 100" className="w-6 h-6 sm:w-7 sm:h-7">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#19C6D2" strokeWidth="4" />
+              <circle cx="50" cy="50" r="16" fill="#438BFF" />
+              <path d="M50 8 L50 92 M8 50 L92 50 M20 20 L80 80 M20 80 L80 20" stroke="#19C6D2" strokeWidth="2.5" />
             </svg>
           </div>
           <div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="font-black tracking-wider text-sm sm:text-base lg:text-lg text-white">NERALIS</span>
-              <span className="bg-amber-500/20 text-amber-300 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-400/40 hidden xs:inline">
-                Govt of India
+            <div className="flex items-center gap-2">
+              <span className="font-black tracking-wider text-base sm:text-lg text-[#F5F7FA]">
+                NERALIS
+              </span>
+              <span className="bg-[#19C6D2]/15 text-[#19C6D2] text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#19C6D2]/30 hidden xs:inline">
+                COMMAND CENTER
               </span>
             </div>
-            <p className="text-[11px] text-sky-200 hidden md:block leading-tight font-medium">
-              Ministry of Development of North Eastern Region (MDoNER)
+            <p className="text-[10px] text-[#94A3B8] hidden md:block leading-tight font-medium">
+              AI &amp; GIS Smart Logistics • Northeast India
             </p>
           </div>
         </div>
@@ -171,11 +174,11 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
         {activeModule !== 'ACCESSIBILITY' && (
           <button
             onClick={goToLanding}
-            className="ml-1 sm:ml-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-2 sm:px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-xs transition-all hover:scale-102"
+            className="ml-1 sm:ml-2 bg-[#19C6D2] hover:bg-[#16b2bd] text-[#080D16] font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
             title="Back to Landing Page (Main GIS Map)"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-slate-900" />
-            <span className="font-extrabold hidden sm:inline">← Back to Map</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span className="font-extrabold hidden sm:inline">GIS Map</span>
             <span className="font-extrabold sm:hidden">Map</span>
           </button>
         )}
@@ -185,17 +188,18 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
       <div className="md:hidden relative ml-1">
         <button
           onClick={() => setShowSearchSuggestions(!showSearchSuggestions)}
-          className="p-1.5 sm:p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/15 cursor-pointer flex items-center justify-center"
+          className="p-2 rounded-xl bg-[#111D2D] hover:bg-[#16253B] text-[#19C6D2] border border-[#1E2E45] cursor-pointer flex items-center justify-center"
           title="Search Districts & Road Nodes"
+          aria-label="Search"
         >
-          <Search className="w-4 h-4 text-sky-200" />
+          <Search className="w-4 h-4" />
         </button>
       </div>
 
       {/* Center: Search with Smart District Suggestions Dropdown */}
       <div className="hidden md:flex items-center flex-1 min-w-[200px] max-w-md mx-2 lg:mx-4 relative">
         <div className="relative w-full">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
@@ -204,8 +208,8 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
               setSearchQuery(e.target.value);
               setShowSearchSuggestions(true);
             }}
-            placeholder={t('quick_search')}
-            className="w-full bg-white/10 text-white placeholder:text-sky-200/60 text-xs rounded-lg pl-9 pr-8 py-1.5 border border-white/15 focus:outline-none focus:bg-white focus:text-gray-900 focus:ring-2 focus:ring-amber-400 transition-all"
+            placeholder={t('quick_search') || 'Search 89 districts, corridors, bridges...'}
+            className="w-full bg-[#111D2D] text-[#F5F7FA] placeholder:text-[#64748B] text-xs rounded-xl pl-9 pr-8 py-2 border border-[#1E2E45] focus:outline-none focus:border-[#19C6D2] focus:ring-1 focus:ring-[#19C6D2] transition-all"
           />
           {searchQuery && (
             <button
@@ -213,7 +217,7 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                 setSearchQuery('');
                 setShowSearchSuggestions(false);
               }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white p-0.5"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#F5F7FA] p-0.5 cursor-pointer"
               title="Clear search query"
             >
               <X className="w-3.5 h-3.5" />
@@ -224,43 +228,21 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
         {/* District & Node Autocomplete Suggestions Dropdown */}
         {showSearchSuggestions && (
           <>
-            {/* Backdrop to close suggestions */}
             <div
               className="fixed inset-0 z-[2400]"
               onClick={() => setShowSearchSuggestions(false)}
             />
 
-            <div className="absolute left-0 top-full mt-2 w-[340px] xs:w-[420px] sm:w-[480px] md:w-[540px] max-w-[92vw] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-3.5 z-[2500] text-xs space-y-2.5 max-h-[500px] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute left-0 top-full mt-2 w-[340px] xs:w-[420px] sm:w-[480px] md:w-[540px] max-w-[92vw] bg-[#0D1522] text-[#F5F7FA] rounded-2xl shadow-2xl border border-[#1E2E45] p-3.5 z-[2500] text-xs space-y-2.5 max-h-[500px] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
               {/* Header & State Filter Pills */}
-              <div className="space-y-2 border-b border-gray-100 pb-2.5 shrink-0">
+              <div className="space-y-2 border-b border-[#1E2E45] pb-2.5 shrink-0">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-[#1E3A5F] uppercase tracking-wider flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-blue-600" /> NER Districts & Highway Nodes
+                  <span className="text-[11px] font-bold text-[#19C6D2] uppercase tracking-wider flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-[#19C6D2]" /> NER Districts &amp; Highway Nodes
                   </span>
-                  <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full font-mono">
+                  <span className="text-[10px] bg-[#19C6D2]/15 text-[#19C6D2] border border-[#19C6D2]/30 font-bold px-2 py-0.5 rounded-full font-mono">
                     89 Districts
                   </span>
-                </div>
-
-                {/* Mobile Search Input inside Dropdown */}
-                <div className="md:hidden relative">
-                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    autoFocus
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search district, state, corridor..."
-                    className="w-full bg-slate-100 text-gray-900 text-xs rounded-lg pl-8 pr-7 py-1.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
                 </div>
 
                 {/* State Filter Pills */}
@@ -281,8 +263,8 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                       onClick={() => setSearchStateFilter(st.id)}
                       className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all cursor-pointer ${
                         searchStateFilter === st.id
-                          ? 'bg-[#1E3A5F] text-white shadow-xs ring-2 ring-blue-300'
-                          : 'bg-slate-100 text-gray-700 hover:bg-slate-200'
+                          ? 'bg-[#19C6D2] text-[#080D16] shadow-sm font-extrabold'
+                          : 'bg-[#111D2D] text-[#94A3B8] hover:bg-[#16253B] hover:text-[#F5F7FA] border border-[#1E2E45]'
                       }`}
                     >
                       {st.label}
@@ -295,7 +277,7 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
               <div className="overflow-y-auto space-y-1 pr-1 flex-1 max-h-72">
                 {/* District Section */}
                 <div className="space-y-1">
-                  <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider px-1">
+                  <div className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider px-1">
                     Districts ({filteredDistricts.length})
                   </div>
                   {filteredDistricts.length > 0 ? (
@@ -309,17 +291,17 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                           if (activeModule !== 'ACCESSIBILITY') goToLanding();
                           addToast('District Selected', `${d.name} (${d.state}) opened for inspection.`, 'INFO');
                         }}
-                        className="w-full text-left p-2 rounded-lg hover:bg-[#EBF3FB] border border-transparent hover:border-blue-200 transition-all flex items-center justify-between gap-2 group"
+                        className="w-full text-left p-2 rounded-xl hover:bg-[#16253B] border border-transparent hover:border-[#1E2E45] transition-all flex items-center justify-between gap-2 group cursor-pointer"
                       >
                         <div className="flex items-center gap-2 min-w-0">
-                          <div className="w-6 h-6 rounded-md bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                            <MapPin className="w-3.5 h-3.5 text-blue-600 group-hover:text-white" />
+                          <div className="w-6 h-6 rounded-md bg-[#111D2D] border border-[#1E2E45] flex items-center justify-center shrink-0 group-hover:border-[#19C6D2]">
+                            <MapPin className="w-3.5 h-3.5 text-[#19C6D2]" />
                           </div>
                           <div className="min-w-0">
-                            <div className="font-bold text-gray-900 group-hover:text-blue-900 truncate">
+                            <div className="font-bold text-[#F5F7FA] group-hover:text-[#19C6D2] truncate">
                               {d.name}
                             </div>
-                            <div className="text-[10px] text-gray-500 flex items-center gap-1.5">
+                            <div className="text-[10px] text-[#94A3B8] flex items-center gap-1.5">
                               <span>{d.state}</span>
                               <span>•</span>
                               <span>PHCs: {d.phc_count}</span>
@@ -333,22 +315,22 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                           <span
                             className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                               d.status === 'OPEN'
-                                ? 'bg-emerald-100 text-emerald-800'
+                                ? 'bg-[#20C997]/15 text-[#20C997] border border-[#20C997]/30'
                                 : d.status === 'RESTRICTED'
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-red-100 text-red-800'
+                                ? 'bg-[#FFB547]/15 text-[#FFB547] border border-[#FFB547]/30'
+                                : 'bg-[#FF5252]/15 text-[#FF5252] border border-[#FF5252]/30'
                             }`}
                           >
                             Score: {d.score}/100
                           </span>
-                          <span className="text-[9px] font-mono font-bold bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded uppercase">
+                          <span className="text-[9px] font-mono font-bold bg-[#111D2D] text-[#94A3B8] px-1.5 py-0.5 rounded uppercase border border-[#1E2E45]">
                             {d.state_id}
                           </span>
                         </div>
                       </button>
                     ))
                   ) : (
-                    <div className="p-3 text-center text-gray-500 text-xs">
+                    <div className="p-3 text-center text-[#64748B] text-xs">
                       No matching districts found for "{searchQuery}".
                     </div>
                   )}
@@ -356,8 +338,8 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
 
                 {/* Corridors Match (If query is active) */}
                 {filteredCorridors.length > 0 && (
-                  <div className="space-y-1 pt-2 border-t border-gray-100">
-                    <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider px-1">
+                  <div className="space-y-1 pt-2 border-t border-[#1E2E45]">
+                    <div className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider px-1">
                       Matching Corridors ({filteredCorridors.length})
                     </div>
                     {filteredCorridors.map((c) => (
@@ -370,16 +352,16 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                           if (activeModule !== 'ACCESSIBILITY') goToLanding();
                           addToast('Corridor Selected', `${c.name} opened for inspection.`, 'INFO');
                         }}
-                        className="w-full text-left p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-gray-200 transition-all flex items-center justify-between gap-2"
+                        className="w-full text-left p-2 rounded-xl hover:bg-[#16253B] border border-transparent hover:border-[#1E2E45] transition-all flex items-center justify-between gap-2 cursor-pointer"
                       >
                         <div className="flex items-center gap-2 min-w-0">
-                          <Compass className="w-4 h-4 text-purple-600 shrink-0" />
+                          <Compass className="w-4 h-4 text-[#818CF8] shrink-0" />
                           <div className="min-w-0">
-                            <div className="font-bold text-gray-900 truncate">{c.name}</div>
-                            <div className="text-[10px] text-gray-500">{c.distance_km} km • {c.id}</div>
+                            <div className="font-bold text-[#F5F7FA] truncate">{c.name}</div>
+                            <div className="text-[10px] text-[#94A3B8]">{c.distance_km} km • {c.id}</div>
                           </div>
                         </div>
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#111D2D] text-[#94A3B8] border border-[#1E2E45]">
                           {c.status}
                         </span>
                       </button>
@@ -389,8 +371,8 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
 
                 {/* Bridges Match (If query is active) */}
                 {filteredBridges.length > 0 && (
-                  <div className="space-y-1 pt-2 border-t border-gray-100">
-                    <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider px-1">
+                  <div className="space-y-1 pt-2 border-t border-[#1E2E45]">
+                    <div className="text-[9px] font-bold text-[#64748B] uppercase tracking-wider px-1">
                       Matching Bridges ({filteredBridges.length})
                     </div>
                     {filteredBridges.map((b) => (
@@ -403,16 +385,16 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                           if (activeModule !== 'ACCESSIBILITY') goToLanding();
                           addToast('Bridge Selected', `${b.name} (${b.river} River) opened for inspection.`, 'INFO');
                         }}
-                        className="w-full text-left p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-gray-200 transition-all flex items-center justify-between gap-2"
+                        className="w-full text-left p-2 rounded-xl hover:bg-[#16253B] border border-transparent hover:border-[#1E2E45] transition-all flex items-center justify-between gap-2 cursor-pointer"
                       >
                         <div className="flex items-center gap-2 min-w-0">
-                          <Activity className="w-4 h-4 text-amber-600 shrink-0" />
+                          <Activity className="w-4 h-4 text-[#FFB547] shrink-0" />
                           <div className="min-w-0">
-                            <div className="font-bold text-gray-900 truncate">{b.name}</div>
-                            <div className="text-[10px] text-gray-500">{b.river} River • {b.id}</div>
+                            <div className="font-bold text-[#F5F7FA] truncate">{b.name}</div>
+                            <div className="text-[10px] text-[#94A3B8]">{b.river} River • {b.id}</div>
                           </div>
                         </div>
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#20C997]/15 text-[#20C997] border border-[#20C997]/30">
                           {b.structural_health_pct}% Health
                         </span>
                       </button>
@@ -422,9 +404,9 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
               </div>
 
               {/* Footer Helper */}
-              <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-400">
-                <span>Click any district to inspect live terrain, PHCs & connectivity score</span>
-                <span className="font-mono">ESC / Click outside to close</span>
+              <div className="pt-2 border-t border-[#1E2E45] flex items-center justify-between text-[10px] text-[#64748B]">
+                <span>Click any district to inspect terrain, PHCs &amp; road health</span>
+                <span className="font-mono">ESC to close</span>
               </div>
             </div>
           </>
@@ -432,46 +414,46 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-2 lg:gap-2.5">
-        {/* Truthful Data Status Badge (Section 2 & 13) - Clickable for Instant Sync */}
+      <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-2.5">
+        {/* Live Telemetry Sync Pill */}
         <button
           onClick={handleNavbarSync}
           disabled={isNavbarSyncing}
-          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 border transition-all cursor-pointer hover:opacity-90 active:scale-95 ${
+          className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold flex items-center gap-1.5 border transition-all cursor-pointer hover:opacity-90 active:scale-95 ${
             networkMode === 'OFFLINE'
-              ? 'bg-slate-800 text-slate-300 border-slate-700'
+              ? 'bg-[#111D2D] text-[#94A3B8] border-[#1E2E45]'
               : isDemoMode
-              ? 'bg-amber-500/20 text-amber-300 border-amber-400/40'
+              ? 'bg-[#FFB547]/15 text-[#FFB547] border-[#FFB547]/30'
               : networkMode === 'LOW_2G'
-              ? 'bg-sky-500/20 text-sky-200 border-sky-400/40'
-              : 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+              ? 'bg-[#38BDF8]/15 text-[#38BDF8] border-[#38BDF8]/30'
+              : 'bg-[#20C997]/15 text-[#20C997] border-[#20C997]/30'
           }`}
           title="Click to Force Sync Live Telemetry & Outbox"
         >
           {isNavbarSyncing ? (
             <>
-              <RefreshCw className="w-3 h-3 text-white animate-spin" />
+              <RefreshCw className="w-3 h-3 text-[#19C6D2] animate-spin" />
               <span className="hidden sm:inline">Syncing...</span>
             </>
           ) : networkMode === 'OFFLINE' ? (
             <>
-              <span className="w-2 h-2 rounded-xs bg-slate-400" />
-              <span className="hidden sm:inline">OFFLINE • Local Cache</span>
+              <span className="w-2 h-2 rounded-xs bg-[#64748B]" />
+              <span className="hidden sm:inline">OFFLINE</span>
             </>
           ) : isDemoMode ? (
             <>
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-              <span className="hidden sm:inline">DEMO • Simulated Feeds</span>
+              <span className="w-2 h-2 rounded-full bg-[#FFB547]" />
+              <span className="hidden sm:inline">DEMO SIM</span>
             </>
           ) : networkMode === 'LOW_2G' ? (
             <>
-              <span className="w-2 h-2 rounded-xs bg-sky-400" />
-              <span className="hidden sm:inline">LOW 2G • Sync Limited</span>
+              <span className="w-2 h-2 rounded-xs bg-[#38BDF8]" />
+              <span className="hidden sm:inline">LOW 2G</span>
             </>
           ) : (
             <>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="hidden sm:inline">LIVE • Sync Now</span>
+              <span className="w-2 h-2 rounded-full bg-[#20C997] animate-pulse" />
+              <span className="hidden sm:inline">LIVE GRID</span>
             </>
           )}
         </button>
@@ -479,18 +461,94 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
         {/* AI Assistant Sahayak Quick Trigger */}
         <button
           onClick={toggleChatbot}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs ${
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             isChatbotOpen
-              ? 'bg-amber-400 text-slate-900 shadow-amber-400/20'
-              : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-amber-400/50'
+              ? 'bg-[#19C6D2] text-[#080D16] shadow-command-glow'
+              : 'bg-[#111D2D] hover:bg-[#16253B] text-[#F5F7FA] border border-[#1E2E45] hover:border-[#19C6D2]/50'
           }`}
           title="Open NERALIS AI Sahayak Assistant"
         >
-          <Bot className={`w-3.5 h-3.5 ${isChatbotOpen ? 'text-slate-900' : 'text-amber-400 animate-pulse'}`} />
+          <Bot className={`w-3.5 h-3.5 ${isChatbotOpen ? 'text-[#080D16]' : 'text-[#19C6D2]'}`} />
           <span className="hidden sm:inline">AI Sahayak</span>
         </button>
 
-        {/* More Tools Dropdown (USSD, Parliament, AI Metrics, Demo switch) */}
+        {/* Notifications Bell */}
+        <div className="relative">
+          <button
+            onClick={() => {
+              setShowNotifDropdown(!showNotifDropdown);
+              setShowLangDropdown(false);
+              setShowRoleDropdown(false);
+              setShowToolsDropdown(false);
+            }}
+            className="p-2 rounded-xl bg-[#111D2D] hover:bg-[#16253B] text-[#94A3B8] hover:text-[#F5F7FA] border border-[#1E2E45] transition-all cursor-pointer relative"
+            title="Operational Notifications"
+            aria-label="Notifications"
+          >
+            <Bell className="w-4 h-4" />
+            {unreadNotifCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#FF5252] text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+                {unreadNotifCount}
+              </span>
+            )}
+          </button>
+
+          {showNotifDropdown && (
+            <>
+              <div
+                className="fixed inset-0 z-[2400]"
+                onClick={() => setShowNotifDropdown(false)}
+              />
+              <div className="absolute right-0 mt-2 w-80 max-w-[90vw] bg-[#0D1522] text-[#F5F7FA] rounded-2xl shadow-2xl border border-[#1E2E45] p-3 z-[2500] text-xs space-y-2 animate-in fade-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 border-b border-[#1E2E45]">
+                  <span className="font-bold text-[11px] text-[#19C6D2] uppercase tracking-wider">
+                    Notifications ({notifications.length})
+                  </span>
+                  <div className="flex items-center gap-2 text-[10px]">
+                    <button
+                      onClick={markAllNotificationsAsRead}
+                      className="text-[#94A3B8] hover:text-[#19C6D2] cursor-pointer"
+                    >
+                      Mark all read
+                    </button>
+                    <span>•</span>
+                    <button
+                      onClick={clearAllNotifications}
+                      className="text-[#64748B] hover:text-[#FF5252] cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+
+                <div className="max-h-72 overflow-y-auto space-y-1.5 pr-1">
+                  {notifications.length > 0 ? (
+                    notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className={`p-2.5 rounded-xl border transition-all ${
+                          !n.isRead
+                            ? 'bg-[#16253B] border-[#1E2E45]'
+                            : 'bg-[#111D2D]/60 border-[#1E2E45]/50 opacity-80'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <span className="font-bold text-[#F5F7FA] truncate text-xs">{n.title}</span>
+                          <span className="text-[9px] text-[#64748B] font-mono shrink-0">{n.timestamp}</span>
+                        </div>
+                        <p className="text-[11px] text-[#94A3B8] leading-tight">{n.message}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-[#64748B]">No notifications recorded</div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* More Tools Dropdown */}
         <div className="relative">
           <button
             onClick={() => {
@@ -499,12 +557,12 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
               setShowRoleDropdown(false);
               setShowNotifDropdown(false);
             }}
-            className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-white/15 transition-colors"
+            className="flex items-center gap-1.5 bg-[#111D2D] hover:bg-[#16253B] text-[#F5F7FA] px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-[#1E2E45] transition-colors cursor-pointer"
             title="Advanced Governance & Field Tools"
           >
-            <Wrench className="w-3.5 h-3.5 text-sky-300" />
-            <span className="hidden lg:inline">More Tools</span>
-            <ChevronDown className="w-3 h-3 opacity-70" />
+            <Wrench className="w-3.5 h-3.5 text-[#38BDF8]" />
+            <span className="hidden lg:inline">Tools</span>
+            <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
           </button>
 
           {showToolsDropdown && (
@@ -513,39 +571,26 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                 className="fixed inset-0 z-[2400]"
                 onClick={() => setShowToolsDropdown(false)}
               />
-              <div className="absolute right-0 mt-2 w-72 bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-2 z-[2500] text-xs space-y-1 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-3 py-2 border-b border-gray-100 font-bold text-gray-600 text-[10px] uppercase tracking-wider flex items-center justify-between">
-                  <span>Advanced Operations Tools</span>
-                  <span className="text-[9px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">HQ & Field</span>
+              <div className="absolute right-0 mt-2 w-72 bg-[#0D1522] text-[#F5F7FA] rounded-2xl shadow-2xl border border-[#1E2E45] p-2 z-[2500] text-xs space-y-1 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-3 py-2 border-b border-[#1E2E45] font-bold text-[#64748B] text-[10px] uppercase tracking-wider flex items-center justify-between">
+                  <span>Operations Tools</span>
+                  <span className="text-[9px] bg-[#19C6D2]/15 text-[#19C6D2] px-1.5 py-0.5 rounded font-bold">
+                    HQ &amp; Field
+                  </span>
                 </div>
 
-                {/* 0. NERALIS AI Sahayak Assistant */}
-                <button
-                  onClick={() => {
-                    toggleChatbot();
-                    setShowToolsDropdown(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-lg flex items-center gap-2.5 hover:bg-amber-50 text-gray-800 transition-colors"
-                >
-                  <Bot className="w-4 h-4 text-amber-600 shrink-0" />
-                  <div>
-                    <div className="font-bold text-gray-900">NERALIS AI Sahayak</div>
-                    <div className="text-[10px] text-gray-500">Ask questions, routing logic & live status</div>
-                  </div>
-                </button>
-
-                {/* 1. Parliament Star Question Report */}
+                {/* 1. Parliamentary Status Report */}
                 <button
                   onClick={() => {
                     setIsParliamentModalOpen(true);
                     setShowToolsDropdown(false);
                   }}
-                  className="w-full text-left px-3 py-2 rounded-lg flex items-center gap-2.5 hover:bg-[#EBF3FB] text-gray-800 transition-colors"
+                  className="w-full text-left px-3 py-2 rounded-xl flex items-center gap-2.5 hover:bg-[#16253B] text-[#F5F7FA] transition-colors cursor-pointer"
                 >
-                  <FileText className="w-4 h-4 text-blue-700 shrink-0" />
+                  <FileText className="w-4 h-4 text-[#20C997] shrink-0" />
                   <div>
-                    <div className="font-bold text-gray-900">Parliamentary Status Report</div>
-                    <div className="text-[10px] text-gray-500">Official export (PDF & Excel) for Lok Sabha</div>
+                    <div className="font-bold text-[#F5F7FA]">Parliamentary Report</div>
+                    <div className="text-[10px] text-[#94A3B8]">PDF &amp; Excel for Lok Sabha / MDoNER</div>
                   </div>
                 </button>
 
@@ -555,12 +600,12 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                     setIsUSSDModalOpen(true);
                     setShowToolsDropdown(false);
                   }}
-                  className="w-full text-left px-3 py-2 rounded-lg flex items-center gap-2.5 hover:bg-[#EBF3FB] text-gray-800 transition-colors"
+                  className="w-full text-left px-3 py-2 rounded-xl flex items-center gap-2.5 hover:bg-[#16253B] text-[#F5F7FA] transition-colors cursor-pointer"
                 >
-                  <PhoneCall className="w-4 h-4 text-emerald-700 shrink-0" />
+                  <PhoneCall className="w-4 h-4 text-[#FFB547] shrink-0" />
                   <div>
-                    <div className="font-bold text-gray-900">USSD *123# Simulator</div>
-                    <div className="text-[10px] text-gray-500">Feature phone zero-data highway inquiries</div>
+                    <div className="font-bold text-[#F5F7FA]">USSD *123# Simulator</div>
+                    <div className="text-[10px] text-[#94A3B8]">Feature phone zero-data corridor queries</div>
                   </div>
                 </button>
 
@@ -570,33 +615,38 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                     setIsModelMetricsModalOpen(true);
                     setShowToolsDropdown(false);
                   }}
-                  className="w-full text-left px-3 py-2 rounded-lg flex items-center gap-2.5 hover:bg-[#EBF3FB] text-gray-800 transition-colors"
+                  className="w-full text-left px-3 py-2 rounded-xl flex items-center gap-2.5 hover:bg-[#16253B] text-[#F5F7FA] transition-colors cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4 text-purple-700 shrink-0" />
+                  <Sparkles className="w-4 h-4 text-[#818CF8] shrink-0" />
                   <div>
-                    <div className="font-bold text-gray-900">AI Model Benchmark (NASA + IMD)</div>
-                    <div className="text-[10px] text-gray-500">Confusion matrix, ROC curve & feature importance</div>
+                    <div className="font-bold text-[#F5F7FA]">AI Benchmark (NASA + IMD)</div>
+                    <div className="text-[10px] text-[#94A3B8]">ROC curve, confusion matrix &amp; accuracy</div>
                   </div>
-
                 </button>
 
                 {/* 4. Demo Simulation Switch */}
-                <div className="border-t border-gray-100 pt-1 mt-1">
+                <div className="border-t border-[#1E2E45] pt-1 mt-1">
                   <button
                     onClick={() => {
                       toggleDemoMode();
                       setShowToolsDropdown(false);
                     }}
-                    className="w-full text-left px-3 py-2 rounded-lg flex items-center justify-between hover:bg-amber-50 text-gray-800 transition-colors"
+                    className="w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-[#16253B] text-[#F5F7FA] transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
-                      <FlaskConical className="w-4 h-4 text-amber-700" />
+                      <FlaskConical className="w-4 h-4 text-[#FFB547]" />
                       <div>
-                        <div className="font-bold text-gray-900">Demo Telemetry Simulator</div>
-                        <div className="text-[10px] text-gray-500">Toggle live vs synthetic test scenarios</div>
+                        <div className="font-bold text-[#F5F7FA]">Demo Simulation Feeds</div>
+                        <div className="text-[10px] text-[#94A3B8]">Toggle synthetic test scenarios</div>
                       </div>
                     </div>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isDemoMode ? 'bg-amber-200 text-amber-900' : 'bg-gray-100 text-gray-600'}`}>
+                    <span
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                        isDemoMode
+                          ? 'bg-[#FFB547]/20 text-[#FFB547] border border-[#FFB547]/30'
+                          : 'bg-[#111D2D] text-[#64748B]'
+                      }`}
+                    >
                       {isDemoMode ? 'ON' : 'OFF'}
                     </span>
                   </button>
@@ -607,46 +657,54 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
         </div>
 
         {/* Network Mode Switcher (4G / 3G / 2G / Offline) */}
-        <div className="flex items-center bg-black/20 rounded-lg p-0.5 border border-white/10 text-[11px]">
+        <div className="hidden sm:flex items-center bg-[#111D2D] rounded-xl p-0.5 border border-[#1E2E45] text-[11px]">
           <button
             onClick={() => setNetworkOverride('GOOD')}
-            className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkOverride === 'GOOD' || (networkOverride === 'AUTO' && networkMode === 'ONLINE') ? 'bg-emerald-500 text-white font-bold' : 'text-sky-200 hover:text-white'
+            className={`px-2 py-1 rounded-lg flex items-center gap-1 font-medium transition-colors cursor-pointer ${
+              networkOverride === 'GOOD' || (networkOverride === 'AUTO' && networkMode === 'ONLINE')
+                ? 'bg-[#20C997] text-[#080D16] font-bold'
+                : 'text-[#94A3B8] hover:text-[#F5F7FA]'
             }`}
             title="Full 4G / Broadband Online Mode"
           >
             <Wifi className="w-3 h-3" />
-            <span className="hidden 2xl:inline">4G</span>
+            <span className="hidden xl:inline">4G</span>
           </button>
           <button
             onClick={() => setNetworkOverride('LIMITED')}
-            className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkOverride === 'LIMITED' ? 'bg-amber-500 text-black font-bold' : 'text-sky-200 hover:text-white'
+            className={`px-2 py-1 rounded-lg flex items-center gap-1 font-medium transition-colors cursor-pointer ${
+              networkOverride === 'LIMITED'
+                ? 'bg-[#FFB547] text-[#080D16] font-bold'
+                : 'text-[#94A3B8] hover:text-[#F5F7FA]'
             }`}
             title="Simulate 3G Limited Lite Mode"
           >
             <SignalLow className="w-3 h-3" />
-            <span className="hidden 2xl:inline">3G</span>
+            <span className="hidden xl:inline">3G</span>
           </button>
           <button
             onClick={() => setNetworkOverride('CRITICAL')}
-            className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkOverride === 'CRITICAL' || networkMode === 'LOW_2G' ? 'bg-rose-600 text-white font-bold' : 'text-sky-200 hover:text-white'
+            className={`px-2 py-1 rounded-lg flex items-center gap-1 font-medium transition-colors cursor-pointer ${
+              networkOverride === 'CRITICAL' || networkMode === 'LOW_2G'
+                ? 'bg-[#FF5252] text-white font-bold'
+                : 'text-[#94A3B8] hover:text-[#F5F7FA]'
             }`}
             title="Simulate 2G Critical Bandwidth Mode"
           >
-            <SignalLow className="w-3 h-3 text-rose-200" />
-            <span className="hidden 2xl:inline">2G</span>
+            <SignalLow className="w-3 h-3" />
+            <span className="hidden xl:inline">2G</span>
           </button>
           <button
             onClick={() => setNetworkOverride('OFFLINE')}
-            className={`px-2 py-1 rounded flex items-center gap-1 font-medium transition-colors ${
-              networkOverride === 'OFFLINE' || networkMode === 'OFFLINE' ? 'bg-red-600 text-white font-bold' : 'text-sky-200 hover:text-white'
+            className={`px-2 py-1 rounded-lg flex items-center gap-1 font-medium transition-colors cursor-pointer ${
+              networkOverride === 'OFFLINE' || networkMode === 'OFFLINE'
+                ? 'bg-[#64748B] text-white font-bold'
+                : 'text-[#94A3B8] hover:text-[#F5F7FA]'
             }`}
             title="Simulate Zero Connectivity Offline Storage Mode"
           >
             <WifiOff className="w-3 h-3" />
-            <span className="hidden 2xl:inline">Offline</span>
+            <span className="hidden xl:inline">Off</span>
           </button>
         </div>
 
@@ -657,12 +715,13 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
               setShowLangDropdown(!showLangDropdown);
               setShowRoleDropdown(false);
               setShowNotifDropdown(false);
+              setShowToolsDropdown(false);
             }}
-            className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-white/15 transition-colors"
+            className="flex items-center gap-1.5 bg-[#111D2D] hover:bg-[#16253B] text-[#F5F7FA] px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-[#1E2E45] transition-colors cursor-pointer"
           >
-            <Globe className="w-3.5 h-3.5 text-amber-300" />
-            <span className="uppercase">{currentLanguage}</span>
-            <ChevronDown className="w-3 h-3 opacity-70" />
+            <Globe className="w-3.5 h-3.5 text-[#19C6D2]" />
+            <span className="uppercase font-mono">{currentLanguage}</span>
+            <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
           </button>
 
           {showLangDropdown && (
@@ -671,10 +730,10 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                 className="fixed inset-0 z-[2400]"
                 onClick={() => setShowLangDropdown(false)}
               />
-              <div className="absolute right-0 mt-2 w-72 sm:w-80 min-w-[280px] max-w-[90vw] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-2 z-[2500] text-xs space-y-1 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-3 py-2 border-b border-gray-100 font-bold text-gray-600 text-[10px] uppercase tracking-wider flex items-center justify-between">
-                  <span>Select NER Language (8 States)</span>
-                  <span className="text-[9px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono font-bold">
+              <div className="absolute right-0 mt-2 w-72 sm:w-80 min-w-[280px] max-w-[90vw] bg-[#0D1522] text-[#F5F7FA] rounded-2xl shadow-2xl border border-[#1E2E45] p-2 z-[2500] text-xs space-y-1 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-3 py-2 border-b border-[#1E2E45] font-bold text-[#64748B] text-[10px] uppercase tracking-wider flex items-center justify-between">
+                  <span>NER Languages (8 States)</span>
+                  <span className="text-[9px] bg-[#111D2D] text-[#19C6D2] px-1.5 py-0.5 rounded font-mono font-bold border border-[#1E2E45]">
                     Official
                   </span>
                 </div>
@@ -685,17 +744,17 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                       onClick={() => {
                         setLanguage(l.code);
                         setShowLangDropdown(false);
-                        addToast('Language Switched', `Interface language set to ${l.native} (${l.label}).`, 'INFO');
+                        addToast('Language Switched', `Interface set to ${l.native} (${l.label}).`, 'INFO');
                       }}
-                      className={`w-full text-left px-3 py-2 rounded-lg flex items-center justify-between hover:bg-[#EBF3FB] transition-colors ${
-                        currentLanguage === l.code ? 'bg-[#EBF3FB] text-[#1E3A5F] font-bold border border-blue-200' : ''
+                      className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-[#16253B] transition-colors cursor-pointer ${
+                        currentLanguage === l.code ? 'bg-[#16253B] text-[#19C6D2] font-bold border border-[#19C6D2]/30' : ''
                       }`}
                     >
                       <div className="min-w-0 flex-1 pr-2">
-                        <span className="font-semibold block text-gray-900">{l.native}</span>
-                        <span className="text-[10px] text-gray-500 block truncate">{l.states}</span>
+                        <span className="font-semibold block text-[#F5F7FA]">{l.native}</span>
+                        <span className="text-[10px] text-[#94A3B8] block truncate">{l.states}</span>
                       </div>
-                      <span className="shrink-0 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded uppercase font-mono font-bold">
+                      <span className="shrink-0 text-[10px] bg-[#111D2D] text-[#94A3B8] px-2 py-0.5 rounded uppercase font-mono font-bold border border-[#1E2E45]">
                         {l.code}
                       </span>
                     </button>
@@ -715,359 +774,140 @@ export const Navbar: React.FC<{ onMobileMenuToggle?: () => void }> = ({ onMobile
                 setShowRoleDropdown(!showRoleDropdown);
                 setShowLangDropdown(false);
                 setShowNotifDropdown(false);
+                setShowToolsDropdown(false);
               }}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/15 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[#111D2D] hover:bg-[#16253B] text-[#F5F7FA] border border-[#1E2E45] transition-all cursor-pointer"
               title="View Account Profile & Switch Governance Role"
             >
-              <div className="w-5 h-5 rounded-full bg-blue-500 text-white font-black text-[10px] flex items-center justify-center border border-white/30">
+              <div className="w-5 h-5 rounded-full bg-[#19C6D2] text-[#080D16] font-black text-[10px] flex items-center justify-center">
                 {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
               </div>
               <div className="hidden sm:block text-left min-w-0">
-                <span className="font-bold block text-[11px] truncate max-w-[120px]">
+                <span className="font-bold block text-[11px] truncate max-w-[100px]">
                   {currentUser.name.split(' ')[0]}
                 </span>
               </div>
-              <span className={`text-[9px] font-black px-1.5 py-0.2 rounded uppercase ${
-                userRole === 'STATE_ADMIN'
-                  ? 'bg-blue-400/20 text-blue-200 border border-blue-400/30'
-                  : userRole === 'DISTRICT_COLLECTOR'
-                  ? 'bg-purple-400/20 text-purple-200 border border-purple-400/30'
-                  : userRole === 'LOGISTICS_OPERATOR'
-                  ? 'bg-amber-400/20 text-amber-200 border border-amber-400/30'
-                  : userRole === 'FIELD_INSPECTOR'
-                  ? 'bg-teal-400/20 text-teal-200 border border-teal-400/30'
-                  : 'bg-emerald-400/20 text-emerald-200 border border-emerald-400/30'
-              }`}>
+              <span
+                className={`text-[9px] font-black px-1.5 py-0.2 rounded uppercase ${
+                  userRole === 'STATE_ADMIN'
+                    ? 'bg-[#438BFF]/20 text-[#438BFF] border border-[#438BFF]/30'
+                    : userRole === 'DISTRICT_COLLECTOR'
+                    ? 'bg-[#818CF8]/20 text-[#818CF8] border border-[#818CF8]/30'
+                    : userRole === 'LOGISTICS_OPERATOR'
+                    ? 'bg-[#FFB547]/20 text-[#FFB547] border border-[#FFB547]/30'
+                    : userRole === 'FIELD_INSPECTOR'
+                    ? 'bg-[#20C997]/20 text-[#20C997] border border-[#20C997]/30'
+                    : 'bg-[#64748B]/20 text-[#94A3B8] border border-[#64748B]/30'
+                }`}
+              >
                 {userRole === 'STATE_ADMIN'
                   ? 'ADMIN'
                   : userRole === 'DISTRICT_COLLECTOR'
-                  ? 'AUTHORITY'
+                  ? 'AUTH'
                   : userRole === 'LOGISTICS_OPERATOR'
                   ? 'FLEET'
                   : userRole === 'FIELD_INSPECTOR'
                   ? 'FIELD'
                   : 'PUBLIC'}
               </span>
-              <ChevronDown className="w-3 h-3 opacity-70" />
+              <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
             </button>
           ) : (
-            /* Logged Out: Direct Sign In / Sign Up Trigger */
+            /* Logged Out: Direct Sign In Trigger */
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => openAuthModal('SIGNIN')}
-                className="flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold px-3 py-1.5 rounded-lg text-xs shadow-xs transition-all hover:scale-102 cursor-pointer"
+                className="flex items-center gap-1.5 bg-[#19C6D2] hover:bg-[#16b2bd] text-[#080D16] font-extrabold px-3 py-1.5 rounded-xl text-xs shadow-sm transition-all cursor-pointer"
                 title="Sign In to NERALIS Portal"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span>Sign In</span>
               </button>
-              <button
-                onClick={() => openAuthModal('SIGNUP')}
-                className="hidden sm:flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-bold px-2.5 py-1.5 rounded-lg text-xs border border-white/20 transition-all cursor-pointer"
-                title="Create New Official Account"
-              >
-                <UserPlus className="w-3.5 h-3.5 text-sky-300" />
-                <span>Register</span>
-              </button>
             </div>
           )}
 
           {showRoleDropdown && currentUser && (
-            <div className="absolute right-0 mt-2 w-84 sm:w-96 min-w-[320px] max-w-[94vw] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-2 z-[2500] text-xs space-y-2 animate-in fade-in zoom-in-95 duration-150">
-              {/* Profile Card Header */}
-              <div className="p-3 bg-gradient-to-r from-[#17365D] to-[#1E3A5F] text-white rounded-lg space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-black text-sm border border-white/30">
-                      {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+            <>
+              <div
+                className="fixed inset-0 z-[2400]"
+                onClick={() => setShowRoleDropdown(false)}
+              />
+              <div className="absolute right-0 mt-2 w-80 sm:w-88 max-w-[94vw] bg-[#0D1522] text-[#F5F7FA] rounded-2xl shadow-2xl border border-[#1E2E45] p-3 z-[2500] text-xs space-y-3 animate-in fade-in zoom-in-95 duration-150">
+                {/* Profile Header */}
+                <div className="p-3 bg-[#111D2D] rounded-xl border border-[#1E2E45] space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-[#19C6D2]/20 border border-[#19C6D2]/40 flex items-center justify-center font-black text-sm text-[#19C6D2]">
+                        {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-black text-xs text-[#F5F7FA] truncate">{currentUser.name}</div>
+                        <div className="text-[11px] text-[#94A3B8] truncate">{currentUser.email}</div>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <div className="font-black text-xs text-white truncate">{currentUser.name}</div>
-                      <div className="text-[11px] text-sky-200 truncate">{currentUser.email}</div>
-                    </div>
-                  </div>
-                  <span className="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[9px] font-black px-2 py-0.5 rounded uppercase">
-                    {currentUser.frontend_role || userRole}
-                  </span>
-                </div>
-
-                {currentUser.organization && (
-                  <div className="text-[10px] text-sky-100/80 bg-black/20 px-2 py-1 rounded truncate">
-                    {currentUser.organization}
-                  </div>
-                )}
-              </div>
-
-              {/* Governance Role Switcher (Matching Screenshot) */}
-              <div className="space-y-1">
-                <div className="px-2 py-1 flex items-center justify-between">
-                  <span className="font-bold text-gray-600 text-[10px] uppercase tracking-wider">
-                    SWITCH GOVERNANCE ROLE
-                  </span>
-                  <span className="text-[9px] bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded font-mono font-bold">
-                    RBAC Mode
-                  </span>
-                </div>
-
-                {/* 1. Citizen / Public Traveler */}
-                <button
-                  onClick={() => { quickSwitchRole('CITIZEN'); setShowRoleDropdown(false); }}
-                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
-                    userRole === 'CITIZEN' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-emerald-300 font-medium' : ''
-                  }`}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                      <span>👥 Citizen / Public Traveler</span>
-                    </div>
-                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                      Read-only map, routing, alerts & live broadcasts
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded uppercase">
-                    PUBLIC
-                  </span>
-                </button>
-
-                {/* 2. State Admin */}
-                <button
-                  onClick={() => { quickSwitchRole('STATE_ADMIN'); setShowRoleDropdown(false); }}
-                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
-                    userRole === 'STATE_ADMIN' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-blue-300 font-medium' : ''
-                  }`}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                      <span>🏛️ State Admin (MDoNER HQ)</span>
-                    </div>
-                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                      Full author control, override road status & alerts
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded uppercase">
-                    ADMIN
-                  </span>
-                </button>
-
-                {/* 3. District Collector */}
-                <button
-                  onClick={() => { quickSwitchRole('DISTRICT_COLLECTOR'); setShowRoleDropdown(false); }}
-                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
-                    userRole === 'DISTRICT_COLLECTOR' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-purple-300 font-medium' : ''
-                  }`}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                      <span>🏢 District Collector / DM</span>
-                    </div>
-                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                      District approvals, relief convoys & emergency
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-[10px] bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded uppercase">
-                    AUTHORITY
-                  </span>
-                </button>
-
-                {/* 4. Logistics Operator */}
-                <button
-                  onClick={() => { quickSwitchRole('LOGISTICS_OPERATOR'); setShowRoleDropdown(false); }}
-                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
-                    userRole === 'LOGISTICS_OPERATOR' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-amber-300 font-medium' : ''
-                  }`}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                      <span>🚛 Logistics & Fleet Operator</span>
-                    </div>
-                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                      NavIC truck telemetry & warehouse routing
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded uppercase">
-                    FLEET
-                  </span>
-                </button>
-
-                {/* 5. Field Inspector */}
-                <button
-                  onClick={() => { quickSwitchRole('FIELD_INSPECTOR'); setShowRoleDropdown(false); }}
-                  className={`w-full text-left p-2.5 rounded-lg hover:bg-[#EBF3FB] flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
-                    userRole === 'FIELD_INSPECTOR' ? 'bg-[#EBF3FB] text-[#1E3A5F] border border-teal-300 font-medium' : ''
-                  }`}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                      <span>👷 Field Inspector (PWD / SDRF)</span>
-                    </div>
-                    <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
-                      On-ground damage logging & AR crack scans
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-[10px] bg-teal-100 text-teal-800 font-bold px-2 py-0.5 rounded uppercase">
-                    FIELD
-                  </span>
-                </button>
-              </div>
-
-              {/* Action Buttons: Sign In with Another Account & Sign Out */}
-              <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
-                <button
-                  onClick={() => {
-                    setShowRoleDropdown(false);
-                    openAuthModal('SIGNIN');
-                  }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700 hover:bg-blue-50 transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span>Switch Account</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setShowRoleDropdown(false);
-                    logout();
-                  }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Notifications Bell & Dropdown Box */}
-        <div className="relative">
-          <button
-            onClick={() => {
-              setShowNotifDropdown(!showNotifDropdown);
-              setShowLangDropdown(false);
-              setShowRoleDropdown(false);
-              if (!showNotifDropdown && unreadNotifCount > 0) {
-                markAllNotificationsAsRead();
-              }
-            }}
-            className="relative p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors border border-white/15 cursor-pointer"
-            title="Notification Center & Live Broadcasts"
-          >
-            <Bell className="w-4 h-4 text-white" />
-            {(unreadNotifCount > 0 || unackAlerts.length > 0) && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white font-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#17365D] animate-pulse">
-                {unreadNotifCount > 0 ? unreadNotifCount : unackAlerts.length}
-              </span>
-            )}
-          </button>
-
-          {showNotifDropdown && (
-            <div className="absolute right-0 mt-2 w-84 sm:w-96 min-w-[320px] max-w-[94vw] bg-white text-gray-800 rounded-xl shadow-2xl border border-gray-200 p-2 z-[2500] text-xs animate-in fade-in zoom-in-95 duration-150">
-              {/* Header */}
-              <div className="flex items-center justify-between pb-2 px-1 border-b border-gray-100">
-                <div className="flex items-center gap-1.5">
-                  <Bell className="w-4 h-4 text-[#1E3A5F]" />
-                  <span className="font-bold text-gray-900 text-xs">Live Intelligence & Alerts</span>
-                  {notifications.length > 0 && (
-                    <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded-full font-bold">
-                      {notifications.length}
+                    <span className="bg-[#19C6D2]/15 text-[#19C6D2] border border-[#19C6D2]/30 text-[9px] font-black px-2 py-0.5 rounded uppercase">
+                      {userRole}
                     </span>
+                  </div>
+
+                  {currentUser.organization && (
+                    <div className="text-[10px] text-[#94A3B8] bg-[#080D16] px-2 py-1 rounded truncate border border-[#1E2E45]/50">
+                      {currentUser.organization}
+                    </div>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  {notifications.length > 0 && (
-                    <>
-                      <button
-                        onClick={markAllNotificationsAsRead}
-                        className="text-[10px] text-gray-500 hover:text-blue-700 flex items-center gap-0.5 font-medium transition-colors"
-                        title="Mark all as read"
-                      >
-                        <CheckCheck className="w-3 h-3" /> Mark Read
-                      </button>
-                      <button
-                        onClick={clearAllNotifications}
-                        className="text-[10px] text-gray-400 hover:text-red-600 flex items-center gap-0.5 font-medium transition-colors"
-                        title="Clear notification history"
-                      >
-                        <Trash2 className="w-3 h-3" /> Clear
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
 
-              {/* Notification Stream Body */}
-              <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto mt-1 pr-0.5 space-y-1">
-                {notifications.length > 0 ? (
-                  notifications.map((n) => {
-                    const isDanger = n.tier === 'DANGER';
-                    const isWarning = n.tier === 'WARNING';
-                    const isSuccess = n.tier === 'SUCCESS';
-
-                    return (
-                      <div
-                        key={n.id}
-                        className={`p-2 rounded-lg transition-colors flex items-start gap-2.5 ${
-                          !n.isRead ? 'bg-blue-50/60 border-l-2 border-l-blue-600' : 'hover:bg-gray-50'
+                {/* Switch Role Section */}
+                <div className="space-y-1">
+                  <div className="px-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                    Switch Governance Role
+                  </div>
+                  <div className="space-y-1">
+                    {[
+                      { role: 'STATE_ADMIN', label: 'State Logistics Administrator (MDoNER / Assam PWD)', badge: 'FULL HQ' },
+                      { role: 'DISTRICT_COLLECTOR', label: 'District Magistrate / Collector (Kamrup / Tawang)', badge: 'DM / DDMA' },
+                      { role: 'LOGISTICS_OPERATOR', label: 'Logistics Fleet Operator (IOCL / Cold Chain)', badge: 'OPERATOR' },
+                      { role: 'FIELD_INSPECTOR', label: 'PWD Field Junior Engineer / Highway Patrol', badge: 'FIELD PWA' },
+                      { role: 'CITIZEN', label: 'Public Citizen / Transporter Inquiry', badge: 'PUBLIC' }
+                    ].map((r) => (
+                      <button
+                        key={r.role}
+                        onClick={() => {
+                          quickSwitchRole(r.role as UserRole);
+                          setShowRoleDropdown(false);
+                        }}
+                        className={`w-full text-left p-2 rounded-xl flex items-center justify-between transition-colors cursor-pointer ${
+                          userRole === r.role
+                            ? 'bg-[#16253B] text-[#19C6D2] font-bold border border-[#19C6D2]/40'
+                            : 'hover:bg-[#111D2D] text-[#94A3B8]'
                         }`}
                       >
-                        <div className="shrink-0 mt-0.5">
-                          {isDanger && <XCircle className="w-4 h-4 text-red-600" />}
-                          {isWarning && <AlertTriangle className="w-4 h-4 text-amber-500" />}
-                          {isSuccess && <CheckCircle className="w-4 h-4 text-emerald-600" />}
-                          {!isDanger && !isWarning && !isSuccess && <Info className="w-4 h-4 text-blue-600" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="font-bold text-gray-900 text-xs truncate">{n.title}</span>
-                            <span className="text-[9px] text-gray-400 shrink-0">{n.timestamp}</span>
-                          </div>
-                          <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{n.message}</p>
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : alerts.length > 0 ? (
-                  alerts.slice(0, 4).map((a) => (
-                    <div
-                      key={a.id}
-                      onClick={() => {
-                        openDrawer('ALERT', a);
-                        setShowNotifDropdown(false);
-                      }}
-                      className="p-2 rounded-lg hover:bg-red-50/70 cursor-pointer transition-colors flex items-start gap-2.5"
-                    >
-                      <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-1">
-                          <span className="font-bold text-gray-900 text-xs truncate">{a.title}</span>
-                          <span className="text-[9px] text-gray-400 shrink-0">{a.timestamp}</span>
-                        </div>
-                        <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{a.message_i18n?.en || a.title}</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="py-6 text-center text-gray-400 text-xs">
-                    <CheckCircle className="w-6 h-6 text-emerald-500 mx-auto mb-1 opacity-70" />
-                    <div>All systems operational</div>
-                    <div className="text-[10px] text-gray-400">No active alerts or incident notifications.</div>
+                        <span className="truncate pr-2">{r.label}</span>
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#111D2D] text-[#F5F7FA] border border-[#1E2E45] shrink-0">
+                          {r.badge}
+                        </span>
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
+
+                {/* Sign Out Button */}
+                <div className="pt-2 border-t border-[#1E2E45]">
+                  <button
+                    onClick={() => {
+                      logout();
+                      setShowRoleDropdown(false);
+                    }}
+                    className="w-full py-2 px-3 rounded-xl bg-[#FF5252]/10 hover:bg-[#FF5252]/20 text-[#FF5252] border border-[#FF5252]/30 font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
-
-        {/* Global Click-Outside overlay for dropdowns */}
-        {(showLangDropdown || showRoleDropdown || showNotifDropdown) && (
-          <div
-            onClick={() => {
-              setShowLangDropdown(false);
-              setShowRoleDropdown(false);
-              setShowNotifDropdown(false);
-            }}
-            className="fixed inset-0 z-[2400] bg-transparent"
-          />
-        )}
       </div>
     </header>
   );

@@ -24,25 +24,36 @@ import { FieldReportingApp } from './components/modules/FieldReportingApp';
 import { AnalyticsDashboard } from './components/modules/AnalyticsDashboard';
 import { OfflineMultilingual } from './components/modules/OfflineMultilingual';
 
-import { ArrowLeft, Home, ChevronRight, Sparkles } from 'lucide-react';
+import {
+  ArrowLeft,
+  Home,
+  ChevronRight,
+  Sparkles,
+  Map,
+  Route,
+  Truck,
+  BellRing,
+  Smartphone,
+  Menu
+} from 'lucide-react';
 import type { ActiveModule } from './context/PlatformContext';
 
 const getModuleMeta = (mod: ActiveModule) => {
   switch (mod) {
     case 'ACCESSIBILITY':
-      return { title: 'Command Center — Regional GIS Grid', short: 'Command Center' };
+      return { title: 'GIS Command Center — Northeast Regional Grid', short: 'GIS Grid' };
     case 'ROUTE':
       return { title: 'Multi-Modal Route Optimizer & Alternatives', short: 'Route Optimizer' };
     case 'FLEET':
       return { title: 'Real-Time Fleet Telematics & NavIC Tracking', short: 'Fleet Telemetry' };
     case 'PREDICTION':
-      return { title: '6 to 72-Hour Disruption Forecasting Engine', short: 'Disruption Forecast' };
+      return { title: 'Predictive Disruption & Digital Twin Simulation', short: 'Risk Intelligence' };
     case 'ALERT':
-      return { title: 'Multilingual Broadcast & Emergency Alerts', short: 'Alert Broadcast' };
+      return { title: 'Emergency Alert Broadcast & CAP Center', short: 'Alert Broadcast' };
     case 'FIELD_APP':
-      return { title: 'PWA Field Inspector & Verification Portal', short: 'Field Reporting' };
+      return { title: 'PWA Field Inspector & Incident Reporting', short: 'Field Reporting' };
     case 'ANALYTICS':
-      return { title: 'Logistics Command & Governance Analytics', short: 'Command Analytics' };
+      return { title: 'Operational Analytics & Strategic Governance', short: 'Command Analytics' };
     case 'OFFLINE_RESILIENCE':
       return { title: 'Offline-First Resilience & Multilingual Sync', short: 'Offline Sync' };
     default:
@@ -51,32 +62,30 @@ const getModuleMeta = (mod: ActiveModule) => {
 };
 
 const MainLayout: React.FC = () => {
-  const { activeModule, goBack, goToLanding, previousModule, isSidebarCollapsed, setIsSidebarCollapsed } = usePlatform();
+  const {
+    activeModule,
+    navigateToModule,
+    goBack,
+    goToLanding,
+    previousModule
+  } = usePlatform();
   const currentMeta = getModuleMeta(activeModule);
   const prevMeta = previousModule ? getModuleMeta(previousModule) : null;
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#080D16] text-[#F5F7FA] flex flex-col font-sans select-none pb-16 lg:pb-0">
       {/* Top Navbar */}
       <Navbar onMobileMenuToggle={() => setMobileMenuOpen((v) => !v)} />
 
-      {/* Connectivity & Low-Network Lite Mode Banner */}
+      {/* Connectivity Banner (Adaptive 4G/3G/2G/Offline) */}
       <ConnectivityBanner />
 
       {/* KPI Status Chips Bar */}
       <KPIBar />
 
-      {/* Main Body with Sidebar + Content */}
+      {/* Main Body with Sidebar + Dynamic Module Canvas */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Mobile Sidebar Overlay Backdrop */}
-        {mobileMenuOpen && (
-          <div
-            className="fixed inset-0 bg-black/50 z-[3000] lg:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-        )}
-
         {/* Left Navigation Sidebar */}
         <Sidebar
           mobileOpen={mobileMenuOpen}
@@ -86,20 +95,20 @@ const MainLayout: React.FC = () => {
         {/* Dynamic Center Module Canvas */}
         {activeModule === 'ACCESSIBILITY' ? (
           /* Full-Bleed Map Landing Layout (Edge-to-Edge Canvas) */
-          <main className="flex-1 overflow-hidden relative flex flex-col bg-slate-900">
+          <main className="flex-1 overflow-hidden relative flex flex-col bg-[#080D16]">
             <AccessibilityMonitor />
           </main>
         ) : (
           /* Secondary Module Container with Universal Back Navigation Bar */
-          <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 bg-[#F8FAFC]">
+          <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 bg-[#080D16]">
             <div className="max-w-7xl mx-auto space-y-3 sm:space-y-4">
               {/* Universal Navigation Header Bar */}
-              <div className="bg-white border border-[#D1D5DB] rounded-xl p-2.5 sm:p-3 shadow-xs flex flex-wrap items-center justify-between gap-2">
+              <div className="bg-[#111D2D] border border-[#1E2E45] rounded-xl p-2.5 sm:p-3 shadow-md flex flex-wrap items-center justify-between gap-2">
                 {/* Back Button and Breadcrumb Trail */}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={goBack}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#1E3A5F] hover:bg-[#2563A8] text-white rounded-lg text-xs font-bold shadow-xs transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#16253B] hover:bg-[#1C304B] text-[#19C6D2] border border-[#1E2E45] hover:border-[#19C6D2]/50 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
                     title={`Back to ${prevMeta ? prevMeta.short : 'Main GIS Map'}`}
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
@@ -108,25 +117,25 @@ const MainLayout: React.FC = () => {
 
                   <button
                     onClick={goToLanding}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition-colors"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#0D1522] hover:bg-[#16253B] text-[#94A3B8] hover:text-[#F5F7FA] border border-[#1E2E45] rounded-lg text-xs font-bold transition-colors cursor-pointer"
                     title="Return to Landing Page (Main GIS Map)"
                   >
-                    <Home className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="hidden sm:inline">Map</span>
+                    <Home className="w-3.5 h-3.5 text-[#19C6D2]" />
+                    <span className="hidden sm:inline">GIS Map</span>
                   </button>
 
-                  <div className="hidden md:flex items-center gap-1 text-xs text-gray-500">
-                    <div className="h-4 w-px bg-gray-300 mx-1" />
-                    <span onClick={goToLanding} className="hover:text-blue-700 cursor-pointer font-medium">Home</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                    <span className="font-bold text-[#1E3A5F] truncate max-w-[200px]">{currentMeta.short}</span>
+                  <div className="hidden md:flex items-center gap-1 text-xs text-[#64748B]">
+                    <div className="h-4 w-px bg-[#1E2E45] mx-1" />
+                    <span onClick={goToLanding} className="hover:text-[#19C6D2] cursor-pointer font-medium">Command</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-[#64748B]" />
+                    <span className="font-bold text-[#F5F7FA] truncate max-w-[240px]">{currentMeta.short}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs font-bold">
-                  <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-1 rounded-full flex items-center gap-1 text-[10px]">
-                    <Sparkles className="w-3 h-3 text-blue-600" />
-                    <span className="hidden sm:inline">NER Logistics Grid</span>
+                  <span className="bg-[#19C6D2]/10 text-[#19C6D2] border border-[#19C6D2]/30 px-2.5 py-1 rounded-full flex items-center gap-1 text-[11px] font-mono">
+                    <Sparkles className="w-3 h-3 text-[#19C6D2]" />
+                    <span className="hidden sm:inline">NER Logistics Grid v2.0</span>
                     <span className="sm:hidden">NERALIS</span>
                   </span>
                 </div>
@@ -144,6 +153,77 @@ const MainLayout: React.FC = () => {
           </main>
         )}
       </div>
+
+      {/* Mobile Bottom Navigation Bar (Thumb Friendly for Android/iPhone) */}
+      <nav className="fixed bottom-0 inset-x-0 h-14 bg-[#0D1522]/95 backdrop-blur-md border-t border-[#1E2E45] z-[3400] lg:hidden flex items-center justify-around px-2 pb-safe shadow-2xl">
+        <button
+          onClick={() => navigateToModule('ACCESSIBILITY')}
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+            activeModule === 'ACCESSIBILITY'
+              ? 'text-[#19C6D2] font-bold'
+              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+          }`}
+        >
+          <Map className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px]">GIS Map</span>
+        </button>
+
+        <button
+          onClick={() => navigateToModule('ROUTE')}
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+            activeModule === 'ROUTE'
+              ? 'text-[#19C6D2] font-bold'
+              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+          }`}
+        >
+          <Route className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px]">Route</span>
+        </button>
+
+        <button
+          onClick={() => navigateToModule('FLEET')}
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+            activeModule === 'FLEET'
+              ? 'text-[#19C6D2] font-bold'
+              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+          }`}
+        >
+          <Truck className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px]">Fleet</span>
+        </button>
+
+        <button
+          onClick={() => navigateToModule('ALERT')}
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+            activeModule === 'ALERT'
+              ? 'text-[#19C6D2] font-bold'
+              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+          }`}
+        >
+          <BellRing className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px]">Alerts</span>
+        </button>
+
+        <button
+          onClick={() => navigateToModule('FIELD_APP')}
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+            activeModule === 'FIELD_APP'
+              ? 'text-[#19C6D2] font-bold'
+              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+          }`}
+        >
+          <Smartphone className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px]">Field</span>
+        </button>
+
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[#94A3B8] hover:text-[#F5F7FA] transition-all"
+        >
+          <Menu className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px]">More</span>
+        </button>
+      </nav>
 
       {/* Slide-out Entity Inspector Drawer (480px) */}
       <InfoDrawer />

@@ -51,10 +51,10 @@ const stateDisruptionData = [
 ];
 
 const commodityDistribution = [
-  { name: 'Food & PDS Grains', value: 45, color: '#1E3A5F' },
-  { name: 'Cold-Chain Vaccines & Blood', value: 20, color: '#0F6B6B' },
-  { name: 'Construction & Steel', value: 18, color: '#B85C00' },
-  { name: 'Winter Fuel & LPG', value: 17, color: '#2563A8' },
+  { name: 'Food & PDS Grains', value: 45, color: '#19C6D2' },
+  { name: 'Cold-Chain Vaccines & Blood', value: 20, color: '#20C997' },
+  { name: 'Construction & Steel', value: 18, color: '#FFB547' },
+  { name: 'Winter Fuel & LPG', value: 17, color: '#438BFF' },
 ];
 
 export const AnalyticsDashboard: React.FC = () => {
@@ -101,36 +101,41 @@ export const AnalyticsDashboard: React.FC = () => {
   };
 
   const copyWidgetSnippet = () => {
-    const code = `<iframe src="https://neralis.gov.in/embed/map?state=AS&theme=light" width="100%" height="450" frameborder="0"></iframe>`;
+    const code = `<iframe src="https://neralis-frontend.onrender.com/embed/map?state=AS&theme=dark" width="100%" height="450" frameborder="0"></iframe>`;
     navigator.clipboard.writeText(code);
     setCopiedSnippet(true);
     addToast('Snippet Copied', 'Embeddable HTML iframe copied to clipboard.', 'INFO');
     setTimeout(() => setCopiedSnippet(false), 3000);
   };
 
+  const filteredCorridors = corridors.filter((c) => {
+    if (tableFilter === 'ALL') return true;
+    return c.status === tableFilter;
+  });
+
   return (
     <div className="space-y-4">
       {/* Top Banner */}
-      <div className="bg-white p-4 rounded-xl border border-[#D1D5DB] flex flex-wrap items-center justify-between gap-3 shadow-xs">
+      <div className="card-command flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-black text-[#1E3A5F]">
-            {t('module_7')} — Centralised Logistics Command & Analytics
+          <h2 className="text-base font-black text-[#F5F7FA]">
+            {t('module_7')} — Strategic Logistics Analytics &amp; Command Center
           </h2>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs text-[#94A3B8] mt-0.5">
             Macro KPIs, 3-Year ROI analytics, disruption logs, and state comparative governance scorecards
           </p>
         </div>
 
-        <div className="flex gap-2">
-          <button onClick={handleExportCSV} className="btn-secondary text-xs py-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button onClick={handleExportCSV} className="btn-secondary text-xs py-2 px-3">
             <Download className="w-3.5 h-3.5" /> CSV
           </button>
-          <button onClick={handleExportExcel} className="btn-secondary text-xs py-2">
-            <Download className="w-3.5 h-3.5 text-emerald-700" /> Excel
+          <button onClick={handleExportExcel} className="btn-secondary text-xs py-2 px-3">
+            <Download className="w-3.5 h-3.5 text-[#20C997]" /> Excel
           </button>
           <button
             onClick={() => setIsParliamentModalOpen(true)}
-            className="btn-primary text-xs py-2 shadow-xs"
+            className="btn-primary text-xs py-2 px-3.5 shadow-sm"
           >
             <FileText className="w-3.5 h-3.5" /> Parliament Report (PDF)
           </button>
@@ -139,42 +144,42 @@ export const AnalyticsDashboard: React.FC = () => {
 
       {/* 3 Executive High-Level Analytics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-[#D1D5DB] shadow-xs space-y-1">
-          <span className="text-[10px] uppercase font-bold text-gray-500">
+        <div className="card-command space-y-1">
+          <span className="text-[10px] uppercase font-bold text-[#64748B]">
             Regional Delivery Delay Reduction
           </span>
-          <div className="text-2xl font-black text-emerald-700 flex items-center gap-2">
-            14.2% <TrendingDown className="w-5 h-5 text-emerald-600" />
+          <div className="text-2xl font-black text-[#20C997] flex items-center gap-2 font-mono">
+            14.2% <TrendingDown className="w-5 h-5 text-[#20C997]" />
           </div>
-          <p className="text-[11px] text-gray-600">Reduced from 45% baseline (₹420 Cr/yr saved)</p>
+          <p className="text-[11px] text-[#94A3B8]">Reduced from 45% baseline (₹420 Cr/yr saved)</p>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-[#D1D5DB] shadow-xs space-y-1">
-          <span className="text-[10px] uppercase font-bold text-gray-500">
+        <div className="card-command space-y-1">
+          <span className="text-[10px] uppercase font-bold text-[#64748B]">
             PHC Essential Medicine Stockouts
           </span>
-          <div className="text-2xl font-black text-blue-700">3.8%</div>
-          <p className="text-[11px] text-gray-600">Reduced from 34% monsoon stockouts</p>
+          <div className="text-2xl font-black text-[#38BDF8] font-mono">3.8%</div>
+          <p className="text-[11px] text-[#94A3B8]">Reduced from 34% monsoon stockouts</p>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-[#D1D5DB] shadow-xs space-y-1">
-          <span className="text-[10px] uppercase font-bold text-gray-500">
+        <div className="card-command space-y-1">
+          <span className="text-[10px] uppercase font-bold text-[#64748B]">
             Public Investment ROI
           </span>
-          <div className="text-2xl font-black text-[#1E3A5F]">29.2× ROI</div>
-          <p className="text-[11px] text-gray-600">₹32.8 Cr TCO vs ₹960+ Cr/yr benefit</p>
+          <div className="text-2xl font-black text-[#19C6D2] font-mono">29.2× ROI</div>
+          <p className="text-[11px] text-[#94A3B8]">₹32.8 Cr TCO vs ₹960+ Cr/yr benefit</p>
         </div>
       </div>
 
       {/* Two Column Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Chart 1: Delay Reduction Over Time (7 cols) */}
-        <div className="lg:col-span-7 bg-white p-5 rounded-xl border border-[#D1D5DB] shadow-xs space-y-3 text-xs">
+        <div className="lg:col-span-7 card-command space-y-3 text-xs">
           <div className="flex items-center justify-between">
-            <span className="font-bold text-[#1E3A5F] text-xs uppercase">
+            <span className="font-bold text-[#F5F7FA] text-xs uppercase">
               Monsoon Delivery Delay Rate Reduction Curve (%)
             </span>
-            <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">
+            <span className="text-[10px] bg-[#20C997]/15 text-[#20C997] border border-[#20C997]/30 font-bold px-2 py-0.5 rounded">
               Target &lt; 15% Achieved
             </span>
           </div>
@@ -184,17 +189,19 @@ export const AnalyticsDashboard: React.FC = () => {
               <BarChart data={delayTrendData}>
                 <XAxis dataKey="month" stroke="#64748b" fontSize={10} />
                 <YAxis domain={[0, 50]} stroke="#64748b" fontSize={10} />
-                <Tooltip />
-                <Bar dataKey="delayRate" fill="#2563A8" radius={[4, 4, 0, 0]} name="Actual Delay %" />
-                <Bar dataKey="target" fill="#0F6B6B" radius={[4, 4, 0, 0]} name="National Target %" />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#111D2D', borderColor: '#1E2E45', borderRadius: '8px', color: '#F5F7FA' }}
+                />
+                <Bar dataKey="delayRate" fill="#438BFF" radius={[4, 4, 0, 0]} name="Actual Delay %" />
+                <Bar dataKey="target" fill="#19C6D2" radius={[4, 4, 0, 0]} name="National Target %" />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Chart 2: Freight Commodity Share (5 cols) */}
-        <div className="lg:col-span-5 bg-white p-5 rounded-xl border border-[#D1D5DB] shadow-xs space-y-3 text-xs">
-          <span className="font-bold text-[#1E3A5F] text-xs uppercase block">
+        <div className="lg:col-span-5 card-command space-y-3 text-xs">
+          <span className="font-bold text-[#F5F7FA] text-xs uppercase block">
             Critical Freight Volume Breakdown
           </span>
 
@@ -214,8 +221,10 @@ export const AnalyticsDashboard: React.FC = () => {
                     <Cell key={`cell-${idx}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
-                <Legend iconSize={8} wrapperStyle={{ fontSize: '10px' }} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#111D2D', borderColor: '#1E2E45', borderRadius: '8px', color: '#F5F7FA' }}
+                />
+                <Legend iconSize={8} wrapperStyle={{ fontSize: '10px', color: '#94A3B8' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -223,17 +232,17 @@ export const AnalyticsDashboard: React.FC = () => {
       </div>
 
       {/* Disruption Log Table */}
-      <div className="bg-white p-5 rounded-xl border border-[#D1D5DB] shadow-xs space-y-3 text-xs">
+      <div className="card-command space-y-3 text-xs">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-bold text-[#1E3A5F] text-xs uppercase">
-            Master Corridor Disruption & Structural Log
+          <span className="font-bold text-[#19C6D2] text-xs uppercase">
+            Master Corridor Disruption &amp; Structural Health Log
           </span>
-          <div className="flex items-center gap-1">
-            <Filter className="w-3.5 h-3.5 text-gray-500" />
+          <div className="flex items-center gap-1.5">
+            <Filter className="w-3.5 h-3.5 text-[#64748B]" />
             <select
               value={tableFilter}
               onChange={(e) => setTableFilter(e.target.value)}
-              className="bg-gray-50 border border-gray-300 rounded px-2 py-1 text-xs"
+              className="bg-[#0D1522] border border-[#1E2E45] rounded-xl px-2.5 py-1 text-xs text-[#F5F7FA] cursor-pointer"
             >
               <option value="ALL">All Statuses</option>
               <option value="OPEN">Open Only</option>
@@ -243,77 +252,64 @@ export const AnalyticsDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="border border-gray-200 rounded-lg overflow-x-auto">
-          <table className="w-full text-left table-official min-w-[600px]">
+        <div className="border border-[#1E2E45] rounded-xl overflow-x-auto">
+          <table className="table-command min-w-[600px]">
             <thead>
               <tr>
                 <th>Corridor ID</th>
                 <th>Corridor Name</th>
-                <th>Distance</th>
-                <th>Live Status</th>
+                <th>Distance (km)</th>
+                <th>Status</th>
                 <th>Hazard Risk</th>
-                <th>Max Weight</th>
+                <th>Bridge Clearance</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {corridors
-                .filter((c) => tableFilter === 'ALL' || c.status === tableFilter)
-                .map((c) => (
-                  <tr key={c.id}>
-                    <td className="font-mono font-bold text-[#1E3A5F]">{c.id}</td>
-                    <td className="font-bold text-gray-900">{c.name}</td>
-                    <td>{c.distance_km} km</td>
-                    <td>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          c.status === 'OPEN'
-                            ? 'badge-open'
-                            : c.status === 'RESTRICTED'
-                            ? 'badge-restricted'
-                            : c.status === 'DEGRADED'
-                            ? 'badge-degraded'
-                            : 'badge-closed'
-                        }`}
-                      >
-                        {c.status}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="font-bold text-amber-800">{c.risk_score}%</span>
-                    </td>
-                    <td>{c.weight_limit_tons} Tons</td>
-                  </tr>
-                ))}
+              {filteredCorridors.slice(0, 10).map((c) => (
+                <tr key={c.id}>
+                  <td className="font-mono font-bold text-[#19C6D2]">{c.id}</td>
+                  <td className="font-bold text-[#F5F7FA]">{c.name}</td>
+                  <td className="font-mono">{c.distance_km} km</td>
+                  <td>
+                    <span
+                      className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                        c.status === 'OPEN'
+                          ? 'badge-open'
+                          : c.status === 'RESTRICTED'
+                          ? 'badge-restricted'
+                          : c.status === 'DEGRADED'
+                          ? 'badge-degraded'
+                          : 'badge-closed'
+                      }`}
+                    >
+                      {c.status}
+                    </span>
+                  </td>
+                  <td>
+                    <span
+                      className={`font-bold font-mono ${
+                        c.risk_score >= 60 ? 'text-[#FF5252]' : c.risk_score >= 35 ? 'text-[#FFB547]' : 'text-[#20C997]'
+                      }`}
+                    >
+                      {c.risk_score}%
+                    </span>
+                  </td>
+                  <td>
+                    <span className="font-mono text-[#F5F7FA]">{c.weight_limit_tons} MT</span>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => addToast('Corridor Inspected', `${c.name} diagnostics logged.`, 'INFO')}
+                      className="text-[#19C6D2] hover:underline font-bold text-[11px] cursor-pointer"
+                    >
+                      View Details &rarr;
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* State IT Portal REST API Sandbox */}
-      <div className="bg-slate-900 text-white p-5 rounded-2xl border border-slate-700 shadow-xl space-y-3 text-xs">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Code2 className="w-5 h-5 text-sky-400" />
-            <div>
-              <h3 className="font-black text-sm text-white uppercase">
-                State IT Portal REST API & Embeddable Widget Sandbox
-              </h3>
-              <p className="text-[11px] text-slate-400">
-                Enables all 8 State Government disaster portals to integrate live NERALIS GIS widgets
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={copyWidgetSnippet}
-            className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5"
-          >
-            {copiedSnippet ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copiedSnippet ? 'Copied' : 'Copy Iframe Code'}</span>
-          </button>
-        </div>
-
-        <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-[11px] text-sky-300">
-          <code>&lt;iframe src="https://neralis.gov.in/embed/map?state=AS&amp;theme=light" width="100%" height="450" frameborder="0"&gt;&lt;/iframe&gt;</code>
         </div>
       </div>
     </div>

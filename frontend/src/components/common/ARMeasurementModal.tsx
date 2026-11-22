@@ -36,81 +36,81 @@ export const ARMeasurementModal: React.FC<{ onApplyMeasurements?: (data: { crack
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[3000] flex items-center justify-center p-4">
-      <div className="bg-slate-900 text-white rounded-2xl w-full max-w-lg overflow-hidden border border-slate-700 shadow-2xl relative">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[6000] flex items-center justify-center p-4 animate-fadeIn">
+      <div className="bg-[#0D1522] text-[#F5F7FA] rounded-2xl w-full max-w-lg overflow-hidden border border-cyan-500/20 shadow-2xl relative">
         {/* Top bar */}
-        <div className="bg-slate-800/80 px-4 py-3 flex items-center justify-between border-b border-slate-700">
+        <div className="bg-[#0A101D] px-4 py-3 flex items-center justify-between border-b border-[#1E2E45]">
           <div className="flex items-center gap-2">
-            <Ruler className="w-4 h-4 text-emerald-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-              AR Pavement & Landslide Dimension Scanner
+            <Ruler className="w-4 h-4 text-[#19C6D2]" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#19C6D2]">
+              AR Pavement &amp; Landslide Dimension Scanner
             </span>
           </div>
-          <button onClick={() => setIsARModalOpen(false)} className="text-gray-400 hover:text-white">
+          <button onClick={() => setIsARModalOpen(false)} className="text-[#64748B] hover:text-[#F5F7FA] p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Viewport simulation */}
-        <div className="relative h-72 bg-gradient-to-b from-slate-950 to-slate-800 flex items-center justify-center overflow-hidden">
+        <div className="relative h-72 bg-gradient-to-b from-[#080D16] to-[#0D1522] flex items-center justify-center overflow-hidden">
           {/* Simulated camera background */}
           <img
             src="https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80"
             alt="Pavement view"
-            className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
+            className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-overlay"
           />
 
           {/* AR Overlay Lines & Reticle */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="relative w-48 h-48 border border-emerald-500/40 rounded-lg flex items-center justify-center">
-              <Crosshair className="w-10 h-10 text-emerald-400 animate-pulse" />
+            <div className="relative w-48 h-48 border border-cyan-500/40 rounded-xl flex items-center justify-center">
+              <Crosshair className="w-10 h-10 text-[#19C6D2] animate-pulse" />
               {/* AR Laser Dimension vector */}
-              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-emerald-400 shadow-[0_0_8px_#34d399]"></div>
-              <div className="absolute top-2 left-2 bg-black/70 px-1.5 py-0.5 rounded text-[10px] text-emerald-300 font-mono">
+              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-[#19C6D2] shadow-[0_0_8px_#19C6D2]"></div>
+              <div className="absolute top-2 left-2 bg-[#080D16]/90 border border-cyan-500/30 px-2 py-0.5 rounded text-[10px] text-[#19C6D2] font-mono">
                 L: {crackLength} m
               </div>
-              <div className="absolute bottom-2 right-2 bg-black/70 px-1.5 py-0.5 rounded text-[10px] text-amber-300 font-mono">
+              <div className="absolute bottom-2 right-2 bg-[#080D16]/90 border border-amber-500/30 px-2 py-0.5 rounded text-[10px] text-[#FFB547] font-mono">
                 D: {potholeDepth} cm
               </div>
             </div>
           </div>
 
           {measurementStep === 'MEASURING' && (
-            <div className="absolute inset-0 bg-emerald-950/60 backdrop-blur-xs flex items-center justify-center gap-2 text-xs font-bold text-emerald-300">
-              <Sparkles className="w-5 h-5 animate-spin" /> LiDAR Mesh Point-Cloud Computing...
+            <div className="absolute inset-0 bg-[#080D16]/80 backdrop-blur-xs flex items-center justify-center gap-2 text-xs font-bold text-[#19C6D2]">
+              <Sparkles className="w-5 h-5 animate-spin text-[#19C6D2]" /> LiDAR Mesh Point-Cloud Computing...
             </div>
           )}
         </div>
 
         {/* Bottom stats & action */}
-        <div className="p-4 bg-slate-900 space-y-3">
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="bg-slate-800 p-2 rounded-lg border border-slate-700">
-              <div className="text-[10px] text-gray-400">Crack Span</div>
-              <div className="text-base font-bold text-emerald-400 font-mono">{crackLength} m</div>
+        <div className="p-4 bg-[#0D1522] space-y-3.5 border-t border-[#1E2E45]">
+          <div className="grid grid-cols-3 gap-2.5 text-center">
+            <div className="bg-[#111D2D] p-2.5 rounded-xl border border-[#1E2E45]">
+              <div className="text-[10px] text-[#64748B] uppercase font-bold">Crack Span</div>
+              <div className="text-base font-bold text-[#19C6D2] font-mono mt-0.5">{crackLength} m</div>
             </div>
-            <div className="bg-slate-800 p-2 rounded-lg border border-slate-700">
-              <div className="text-[10px] text-gray-400">Pothole Depth</div>
-              <div className="text-base font-bold text-amber-400 font-mono">{potholeDepth} cm</div>
+            <div className="bg-[#111D2D] p-2.5 rounded-xl border border-[#1E2E45]">
+              <div className="text-[10px] text-[#64748B] uppercase font-bold">Pothole Depth</div>
+              <div className="text-base font-bold text-[#FFB547] font-mono mt-0.5">{potholeDepth} cm</div>
             </div>
-            <div className="bg-slate-800 p-2 rounded-lg border border-slate-700">
-              <div className="text-[10px] text-gray-400">Debris Est.</div>
-              <div className="text-base font-bold text-sky-400 font-mono">{debrisVol} m³</div>
+            <div className="bg-[#111D2D] p-2.5 rounded-xl border border-[#1E2E45]">
+              <div className="text-[10px] text-[#64748B] uppercase font-bold">Debris Est.</div>
+              <div className="text-base font-bold text-[#438BFF] font-mono mt-0.5">{debrisVol} m³</div>
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2.5 pt-1">
             <button
               onClick={handleSimulateScan}
-              className="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 border border-slate-600"
+              className="flex-1 btn-secondary text-xs py-2.5 justify-center cursor-pointer"
             >
-              <Camera className="w-3.5 h-3.5" /> Re-scan LiDAR Mesh
+              <Camera className="w-4 h-4 mr-1 text-[#19C6D2]" /> Re-Scan Mesh
             </button>
             <button
               onClick={handleApply}
-              className="flex-1 bg-[#1E3A5F] hover:bg-[#2563A8] text-white py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 border border-sky-400/40 shadow-sm"
+              className="flex-1 btn-primary text-xs py-2.5 justify-center cursor-pointer shadow-command-card"
             >
-              <Check className="w-4 h-4" /> Inject into Field Report
+              <Check className="w-4 h-4 mr-1 text-slate-900" /> Apply to Form
             </button>
           </div>
         </div>

@@ -5,74 +5,179 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: dark;
+  }
+
   body {
-    @apply bg-[#F8FAFC] text-[#374151] font-sans antialiased;
+    @apply bg-[#080D16] text-[#F5F7FA] font-sans antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Custom Modern Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #080D16;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1E2E45;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2A3F5E;
   }
 }
 
-/* Custom official Government of India style UI components */
+/* Enterprise Command Center Component Styles */
+.card-official,
+.card-command {
+  @apply bg-[#111D2D] border border-[#1E2E45] rounded-xl p-4 shadow-command-card transition-all;
+}
+
+.glass-panel {
+  @apply bg-[#111D2D]/90 backdrop-blur-md border border-[#1E2E45] shadow-command-card;
+}
+
 .btn-primary {
-  @apply bg-[#1E3A5F] hover:bg-[#152a45] text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm inline-flex items-center gap-2;
+  @apply bg-[#19C6D2] hover:bg-[#16b2bd] active:scale-[0.98] text-[#080D16] font-bold px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
 .btn-secondary {
-  @apply bg-white hover:bg-[#EBF3FB] text-[#1E3A5F] border border-[#1E3A5F] font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-2;
+  @apply bg-[#16253B] hover:bg-[#1C304B] active:scale-[0.98] text-[#F5F7FA] border border-[#1E2E45] hover:border-[#438BFF]/50 font-semibold px-4 py-2.5 rounded-lg transition-all inline-flex items-center justify-center gap-2 cursor-pointer;
+}
+
+.btn-blue {
+  @apply bg-[#438BFF] hover:bg-[#3377eb] active:scale-[0.98] text-white font-bold px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
 .btn-danger {
-  @apply bg-[#9B1B1B] hover:bg-[#7f1515] text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm inline-flex items-center gap-2;
+  @apply bg-[#FF5252] hover:bg-[#e04343] active:scale-[0.98] text-white font-bold px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
-.card-official {
-  @apply bg-white border border-[#D1D5DB] rounded-lg p-4 shadow-[0_2px_4px_rgba(0,0,0,0.04)];
-}
-
+/* Operational Status Badges */
 .badge-open {
-  @apply bg-[#0F6B6B] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#20C997]/15 text-[#20C997] border border-[#20C997]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
 }
 
 .badge-restricted {
-  @apply bg-[#B85C00] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#FFB547]/15 text-[#FFB547] border border-[#FFB547]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
 }
 
 .badge-degraded {
-  @apply bg-[#ea580c] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#ea580c]/15 text-[#f97316] border border-[#f97316]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
 }
 
 .badge-closed {
-  @apply bg-[#9B1B1B] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#FF5252]/15 text-[#FF5252] border border-[#FF5252]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
 }
 
 .badge-unknown {
-  @apply bg-[#6b7280] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#64748B]/15 text-[#94A3B8] border border-[#64748B]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
 }
 
 .badge-seasonal {
-  @apply bg-[#2563A8] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#438BFF]/15 text-[#438BFF] border border-[#438BFF]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
 }
 
-/* Table styles */
-.table-official th {
-  @apply bg-[#1E3A5F] text-white font-semibold text-xs tracking-wider uppercase px-4 py-3 text-left;
+/* Command Center Data Tables */
+.table-official,
+.table-command {
+  @apply w-full text-left text-xs border-collapse;
 }
 
-.table-official tr:nth-child(even) {
-  @apply bg-[#EBF3FB]/50;
+.table-official th,
+.table-command th {
+  @apply bg-[#0D1522] text-[#94A3B8] font-bold text-[11px] tracking-wider uppercase px-4 py-3 border-b border-[#1E2E45];
 }
 
-.table-official tr:nth-child(odd) {
-  @apply bg-white;
+.table-official tr:nth-child(even),
+.table-command tr:nth-child(even) {
+  @apply bg-[#111D2D]/60;
 }
 
-.table-official td {
-  @apply px-4 py-3 text-sm text-[#374151] border-b border-[#D1D5DB]/60;
+.table-official tr:nth-child(odd),
+.table-command tr:nth-child(odd) {
+  @apply bg-[#0D1522]/40;
 }
 
-/* Custom map styling */
+.table-official tr:hover,
+.table-command tr:hover {
+  @apply bg-[#16253B]/80;
+}
+
+.table-official td,
+.table-command td {
+  @apply px-4 py-3 text-xs text-[#F5F7FA] border-b border-[#1E2E45]/60;
+}
+
+/* Leaflet Dark Command Theme Overrides */
 .leaflet-container {
   font-family: 'Inter', sans-serif !important;
   width: 100%;
   height: 100%;
-  border-radius: 0.5rem;
+  background-color: #080D16 !important;
+}
+
+/* Dark Popup Container */
+.leaflet-popup-content-wrapper {
+  background-color: #111D2D !important;
+  color: #F5F7FA !important;
+  border: 1px solid #1E2E45 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(25, 198, 210, 0.2) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-tip {
+  background-color: #111D2D !important;
+  border: 1px solid #1E2E45 !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-close-button {
+  color: #94A3B8 !important;
+  padding: 6px !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #F5F7FA !important;
+}
+
+/* Leaflet Zoom and attribution controls */
+.leaflet-bar a {
+  background-color: #111D2D !important;
+  color: #F5F7FA !important;
+  border-bottom: 1px solid #1E2E45 !important;
+}
+
+.leaflet-bar a:hover {
+  background-color: #16253B !important;
+  color: #19C6D2 !important;
+}
+
+.leaflet-control-attribution {
+  background-color: rgba(8, 13, 22, 0.85) !important;
+  color: #64748B !important;
+  font-size: 9px !important;
+  border-top-left-radius: 6px;
+}
+
+.leaflet-control-attribution a {
+  color: #94A3B8 !important;
+}
+
+/* Mobile Safe Areas */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0.5rem);
 }

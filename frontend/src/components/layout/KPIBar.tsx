@@ -5,10 +5,11 @@ import {
   AlertTriangle,
   CheckCircle2,
   Truck,
-  ClipboardList,
-  RefreshCw,
   TrendingUp,
-  MapPin
+  RefreshCw,
+  Activity,
+  ShieldAlert,
+  Radio
 } from 'lucide-react';
 
 export const KPIBar: React.FC = () => {
@@ -24,6 +25,7 @@ export const KPIBar: React.FC = () => {
   const activeAlertsCount = alerts.filter((a) => !a.acknowledged).length || 3;
   const totalAlertsCount = alerts.length || 8;
   const activeVehiclesCount = vehicles.length || 42;
+  const movingVehiclesCount = vehicles.filter(v => v.speed_kmh > 0).length || 38;
 
   const handleSync = async () => {
     if (isSyncing) return;
@@ -40,102 +42,115 @@ export const KPIBar: React.FC = () => {
   };
 
   return (
-    <div className="bg-white border-b border-[#D1D5DB] px-3 sm:px-4 py-1.5 sm:py-2 flex flex-wrap items-center justify-between gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)] z-10">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 sm:gap-2 lg:gap-2.5 w-full xl:w-auto flex-1 min-w-0">
-        {/* Chip 1: Accessibility (Teal) */}
-        <div className="bg-[#F0FDF4] border border-emerald-200 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 min-w-0">
-          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-            <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0F6B6B]" />
+    <div className="bg-[#0D1522] border-b border-[#1E2E45] px-3 sm:px-4 lg:px-6 py-2 flex flex-wrap items-center justify-between gap-2 shadow-md z-10">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 lg:gap-3 w-full xl:w-auto flex-1 min-w-0">
+        {/* KPI 1: Corridor Accessibility (Teal / Cyan) */}
+        <div className="bg-[#111D2D] border border-[#1E2E45] hover:border-[#19C6D2]/40 rounded-xl px-3 py-2 flex items-center gap-2.5 transition-all min-w-0 group">
+          <div className="w-8 h-8 rounded-lg bg-[#19C6D2]/15 border border-[#19C6D2]/30 flex items-center justify-center shrink-0 text-[#19C6D2] group-hover:scale-105 transition-transform">
+            <CheckCircle2 className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-emerald-800 tracking-wider truncate">
-              Accessibility
+            <div className="text-[10px] uppercase font-bold text-[#94A3B8] tracking-wider truncate flex items-center gap-1">
+              <span>Accessibility</span>
             </div>
-            <div className="text-xs font-black text-gray-900 leading-tight truncate">
-              {openPct}% <span className="text-[10px] font-normal text-emerald-700 hidden sm:inline">• {openCorridors}/{totalCorridors} roads</span>
+            <div className="text-sm font-black text-[#F5F7FA] leading-tight truncate">
+              {openPct}%{' '}
+              <span className="text-[10px] font-medium text-[#20C997] hidden sm:inline">
+                • {openCorridors}/{totalCorridors} Open
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Chip 2: High Risk Corridors (Amber) */}
-        <div className="bg-[#FFFBEB] border border-amber-200 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 min-w-0">
-          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-            <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B85C00]" />
+        {/* KPI 2: High Risk Corridors (Amber) */}
+        <div className="bg-[#111D2D] border border-[#1E2E45] hover:border-[#FFB547]/40 rounded-xl px-3 py-2 flex items-center gap-2.5 transition-all min-w-0 group">
+          <div className="w-8 h-8 rounded-lg bg-[#FFB547]/15 border border-[#FFB547]/30 flex items-center justify-center shrink-0 text-[#FFB547] group-hover:scale-105 transition-transform">
+            <TrendingUp className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-amber-800 tracking-wider truncate">
+            <div className="text-[10px] uppercase font-bold text-[#94A3B8] tracking-wider truncate">
               High Risk
             </div>
-            <div className="text-xs font-black text-gray-900 leading-tight truncate">
-              0{highRiskCorridors} <span className="text-[10px] font-normal text-amber-700 hidden sm:inline">corridors • +2</span>
+            <div className="text-sm font-black text-[#F5F7FA] leading-tight truncate">
+              0{highRiskCorridors}{' '}
+              <span className="text-[10px] font-medium text-[#FFB547] hidden sm:inline">
+                Corridors (Risk &ge;60%)
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Chip 3: Active Vehicles (Blue) */}
-        <div className="bg-[#EFF6FF] border border-blue-200 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 min-w-0">
-          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-            <Truck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2563A8]" />
+        {/* KPI 3: Active Fleet Telematics (Blue) */}
+        <div className="bg-[#111D2D] border border-[#1E2E45] hover:border-[#438BFF]/40 rounded-xl px-3 py-2 flex items-center gap-2.5 transition-all min-w-0 group">
+          <div className="w-8 h-8 rounded-lg bg-[#438BFF]/15 border border-[#438BFF]/30 flex items-center justify-center shrink-0 text-[#438BFF] group-hover:scale-105 transition-transform">
+            <Truck className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-[#17365D] tracking-wider truncate">
-              Vehicles
+            <div className="text-[10px] uppercase font-bold text-[#94A3B8] tracking-wider truncate">
+              Fleet Tracking
             </div>
-            <div className="text-xs font-black text-gray-900 leading-tight truncate">
-              {activeVehiclesCount} <span className="text-[10px] font-normal text-blue-700 hidden sm:inline">• 98% reporting</span>
+            <div className="text-sm font-black text-[#F5F7FA] leading-tight truncate">
+              {activeVehiclesCount}{' '}
+              <span className="text-[10px] font-medium text-[#38BDF8] hidden sm:inline">
+                • {movingVehiclesCount} En Route
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Chip 4: Active Alerts (Red) */}
-        <div className="bg-[#FEF2F2] border border-red-200 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 min-w-0">
-          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-            <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#9B1B1B]" />
+        {/* KPI 4: Active Alerts (Critical Red) */}
+        <div className="bg-[#111D2D] border border-[#1E2E45] hover:border-[#FF5252]/40 rounded-xl px-3 py-2 flex items-center gap-2.5 transition-all min-w-0 group">
+          <div className="w-8 h-8 rounded-lg bg-[#FF5252]/15 border border-[#FF5252]/30 flex items-center justify-center shrink-0 text-[#FF5252] group-hover:scale-105 transition-transform">
+            <AlertTriangle className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-red-800 tracking-wider truncate">
-              Alerts
+            <div className="text-[10px] uppercase font-bold text-[#94A3B8] tracking-wider truncate">
+              Active Alerts
             </div>
-            <div className="text-xs font-black text-gray-900 leading-tight truncate">
-              0{activeAlertsCount} <span className="text-[10px] font-normal text-red-700 hidden sm:inline">critical • 0{totalAlertsCount}</span>
+            <div className="text-sm font-black text-[#F5F7FA] leading-tight truncate">
+              0{activeAlertsCount}{' '}
+              <span className="text-[10px] font-medium text-[#FF5252] hidden sm:inline">
+                Critical • 0{totalAlertsCount} Total
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Chip 5: Data Freshness (Live Dot - Clickable to Sync) */}
+        {/* KPI 5: Live Feeds & Telemetry (Clickable Sync) */}
         <div
           onClick={handleSync}
-          className="bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 cursor-pointer rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-2 sm:gap-2.5 col-span-2 sm:col-span-1 transition-all min-w-0"
+          className="bg-[#111D2D] border border-[#1E2E45] hover:border-[#20C997]/50 hover:bg-[#16253B] cursor-pointer rounded-xl px-3 py-2 flex items-center gap-2.5 col-span-2 sm:col-span-1 transition-all min-w-0 group"
           title="Click to Refresh Data & Sync Telemetry"
         >
-          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
-            <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700 ${isSyncing ? 'animate-spin text-blue-600' : ''}`} />
+          <div className="w-8 h-8 rounded-lg bg-[#20C997]/15 border border-[#20C997]/30 flex items-center justify-center shrink-0 text-[#20C997] group-hover:scale-105 transition-transform">
+            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin text-[#19C6D2]' : 'text-[#20C997]'}`} />
           </div>
-          <div className="min-w-0">
-            <div className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-600 tracking-wider truncate">
-              Freshness
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] uppercase font-bold text-[#94A3B8] tracking-wider truncate flex items-center justify-between">
+              <span>Telemetry Freshness</span>
+              <span className="text-[9px] text-[#20C997] font-mono hidden xs:inline">LIVE</span>
             </div>
-            <div className="text-xs font-bold text-gray-900 flex items-center gap-1.5 truncate">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{isSyncing ? 'Syncing...' : 'Live'}</span>
+            <div className="text-xs font-bold text-[#F5F7FA] flex items-center gap-1.5 truncate mt-0.5">
+              <span className="w-2 h-2 rounded-full bg-[#20C997] animate-pulse" />
+              <span>{isSyncing ? 'Syncing...' : 'Real-Time Sync'}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Manual Refresh & Sync Button */}
+      {/* Manual Refresh & Sync Button on large screens */}
       <button
         onClick={handleSync}
         disabled={isSyncing}
-        className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all border flex items-center gap-1.5 text-xs font-bold cursor-pointer hidden xl:flex ${
+        className={`px-3 py-2 rounded-xl transition-all border flex items-center gap-2 text-xs font-bold cursor-pointer hidden xl:flex ${
           isSyncing
-            ? 'bg-blue-100 text-blue-800 border-blue-300'
-            : 'text-gray-700 hover:text-[#1E3A5F] hover:bg-[#EBF3FB] border-gray-300 bg-gray-50/80 shadow-xs'
+            ? 'bg-[#19C6D2]/20 text-[#19C6D2] border-[#19C6D2]/40'
+            : 'text-[#F5F7FA] hover:text-[#19C6D2] hover:bg-[#16253B] border-[#1E2E45] bg-[#111D2D]'
         }`}
         title="Sync Live Telemetry, Outbox & Forecasts"
       >
-        <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-blue-600' : 'text-gray-600'}`} />
-        <span>{isSyncing ? 'Syncing...' : 'Sync Feeds'}</span>
+        <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-[#19C6D2]' : 'text-[#94A3B8]'}`} />
+        <span>{isSyncing ? 'Syncing...' : 'Sync Telemetry'}</span>
       </button>
     </div>
   );
