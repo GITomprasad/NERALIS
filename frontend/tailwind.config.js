@@ -53,10 +53,10 @@ export default {
         '480': '480px',
       },
       boxShadow: {
-        'command-card': '0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(30, 46, 69, 0.6)',
-        'command-glow': '0 0 15px rgba(25, 198, 210, 0.25)',
-        'command-blue': '0 0 15px rgba(67, 139, 255, 0.25)',
-        'command-critical': '0 0 15px rgba(255, 82, 82, 0.3)',
+        'command-card': '0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4)',
+        'command-glow': '0 0 0 1px rgba(14, 165, 233, 0.2)',
+        'command-blue': '0 0 0 1px rgba(56, 189, 248, 0.2)',
+        'command-critical': '0 0 0 1px rgba(239, 68, 68, 0.25)',
       }
     },
   },

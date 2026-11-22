@@ -64,39 +64,38 @@ const RouteBoundsFitter: React.FC<{ highlightRoute?: any }> = ({ highlightRoute 
   return null;
 };
 
-// High-tech DivIcons for dark GIS command mode
+// Clean, high-contrast DivIcons (Linear / Palantir Enterprise style)
 const vehicleIcon = L.divIcon({
   className: 'vehicle-icon',
-  html: `<div style="background: linear-gradient(135deg, #16253B, #0D1522); width: 30px; height: 30px; border-radius: 8px; border: 2px solid #19C6D2; box-shadow: 0 0 12px rgba(25, 198, 210, 0.45); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">🚛</div>`,
-  iconSize: [30, 30],
-  iconAnchor: [15, 15]
+  html: `<div style="background: #0F172A; width: 28px; height: 28px; border-radius: 6px; border: 1.5px solid #0EA5E9; box-shadow: 0 2px 5px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px;">🚛</div>`,
+  iconSize: [28, 28],
+  iconAnchor: [14, 14]
 });
 
 const bridgeIcon = L.divIcon({
   className: 'bridge-icon',
-  html: `<div style="background: linear-gradient(135deg, #2D1A00, #1F1200); width: 28px; height: 28px; border-radius: 50%; border: 2px solid #FFB547; box-shadow: 0 0 12px rgba(255, 181, 71, 0.45); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px;">🌉</div>`,
-  iconSize: [28, 28],
-  iconAnchor: [14, 14]
+  html: `<div style="background: #0F172A; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #F59E0B; box-shadow: 0 2px 5px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">🌉</div>`,
+  iconSize: [26, 26],
+  iconAnchor: [13, 13]
 });
 
 const depotIcon = L.divIcon({
   className: 'depot-icon',
-  html: `<div style="background: linear-gradient(135deg, #0A2926, #061917); width: 28px; height: 28px; border-radius: 8px; border: 2px solid #20C997; box-shadow: 0 0 12px rgba(32, 201, 151, 0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px;">🏢</div>`,
-  iconSize: [28, 28],
-  iconAnchor: [14, 14]
+  html: `<div style="background: #0F172A; width: 26px; height: 26px; border-radius: 6px; border: 1.5px solid #10B981; box-shadow: 0 2px 5px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">🏢</div>`,
+  iconSize: [26, 26],
+  iconAnchor: [13, 13]
 });
 
 const originIcon = (label: string = 'A') => L.divIcon({
   className: 'origin-marker-pin',
   html: `
     <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%);">
-      <div style="position: absolute; width: 34px; height: 34px; border-radius: 50%; background: rgba(16, 185, 129, 0.35); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
-      <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #059669 0%, #047857 100%); border: 2.5px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 12px; font-family: ui-sans-serif, system-ui, sans-serif;">
+      <div style="width: 26px; height: 26px; border-radius: 50%; background: #059669; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 11px; font-family: Inter, system-ui, sans-serif;">
         ${label}
       </div>
     </div>
   `,
-  iconSize: [34, 34],
+  iconSize: [26, 26],
   iconAnchor: [0, 0]
 });
 
@@ -104,13 +103,12 @@ const destinationIcon = (label: string = '🎯') => L.divIcon({
   className: 'destination-marker-pin',
   html: `
     <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%);">
-      <div style="position: absolute; width: 38px; height: 38px; border-radius: 50%; background: rgba(225, 29, 72, 0.35); animation: ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
-      <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border: 2.5px solid #ffffff; box-shadow: 0 4px 12px rgba(225,29,72,0.6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 13px; font-family: ui-sans-serif, system-ui, sans-serif;">
+      <div style="width: 28px; height: 28px; border-radius: 50%; background: #DC2626; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 12px; font-family: Inter, system-ui, sans-serif;">
         ${label}
       </div>
     </div>
   `,
-  iconSize: [38, 38],
+  iconSize: [28, 28],
   iconAnchor: [0, 0]
 });
 
@@ -118,12 +116,12 @@ const waypointIcon = (index: number) => L.divIcon({
   className: 'transit-waypoint-pin',
   html: `
     <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%);">
-      <div style="width: 24px; height: 24px; border-radius: 50%; background: #1E3A5F; border: 2px solid #ffffff; box-shadow: 0 2px 8px rgba(30,58,95,0.5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 11px; font-family: ui-sans-serif, system-ui, sans-serif;">
+      <div style="width: 22px; height: 22px; border-radius: 50%; background: #1E293B; border: 1.5px solid #ffffff; box-shadow: 0 2px 5px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 10px; font-family: Inter, system-ui, sans-serif;">
         ${index}
       </div>
     </div>
   `,
-  iconSize: [24, 24],
+  iconSize: [22, 22],
   iconAnchor: [0, 0]
 });
 export interface NerGisMapProps {
@@ -226,7 +224,8 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
   const [showVehicles, setShowVehicles] = useState(initialShowVehicles);
   const [showDistricts, setShowDistricts] = useState(initialShowDistricts);
   const [showLayersMenu, setShowLayersMenu] = useState(false);
-  const [mapTheme, setMapTheme] = useState<'DARK' | 'LIGHT'>('DARK');
+  // Default to clean, muted light geographical basemap as requested for GIS enterprise command contrast
+  const [mapTheme, setMapTheme] = useState<'LIGHT' | 'DARK'>('LIGHT');
 
   // Fullscreen State & Handlers
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -290,29 +289,31 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'OPEN':
-        return '#20C997'; // Emerald / Mint safe
+        return '#10B981'; // Emerald safe
       case 'RESTRICTED':
-        return '#FFB547'; // Amber warning
+        return '#F59E0B'; // Amber warning
       case 'DEGRADED':
         return '#F97316'; // Orange-red
       case 'CLOSED':
-        return '#FF5252'; // Critical red
+        return '#EF4444'; // Critical red
       case 'SEASONAL':
-        return '#438BFF'; // Cyan blue
+        return '#3B82F6'; // Cyan blue
       default:
         return '#64748B';
     }
   };
 
+  // Enterprise GIS Tile Provider: CartoDB Positron (light muted) and Dark Matter
+  // Watermark-free, high-speed global CDN, optimal contrast for emergency logistics corridors
+  const configuredTile = (import.meta as any).env?.VITE_MAP_TILE_URL;
   const tileUrl =
-    mapTheme === 'DARK'
+    configuredTile ||
+    (mapTheme === 'DARK'
       ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png');
 
   const tileAttr =
-    mapTheme === 'DARK'
-      ? '&copy; <a href="https://carto.com/attributions">CARTO</a> | ISRO Bhuvan GIS'
-      : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | ISRO Bhuvan GIS';
+    '&copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> | ISRO Bhuvan GIS';
 
   return (
     <div
@@ -336,6 +337,8 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
         <TileLayer
           attribution={tileAttr}
           url={tileUrl}
+          subdomains="abcd"
+          maxZoom={19}
         />
 
         {/* 1. Road Segments Polylines */}
@@ -764,26 +767,26 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
       </div>
 
       {/* Map Legend (Bottom-Left) */}
-      <div className="absolute bottom-3 left-3 z-[1000] bg-[#0D1522]/95 backdrop-blur-md p-3 rounded-2xl border border-[#1E2E45] shadow-xl text-[11px] space-y-1.5 max-w-[200px] xs:max-w-none">
-        <div className="font-bold text-[#19C6D2] text-[10px] uppercase tracking-wider mb-1 flex items-center justify-between">
+      <div className="absolute bottom-3 left-3 z-[1000] bg-[#0F172A]/90 backdrop-blur-md px-3 py-2.5 rounded-xl border border-[#1E293B] shadow-lg text-[11px] space-y-1.5 max-w-[200px] xs:max-w-none">
+        <div className="font-semibold text-[#0EA5E9] text-[10px] uppercase tracking-wider mb-1 flex items-center justify-between gap-3">
           <span>Corridor Status</span>
           <span className="text-[9px] text-[#64748B] font-mono">89 NODES</span>
         </div>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#20C997]"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
             <span className="text-[#94A3B8] text-[10px]">Open</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FFB547]"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span>
             <span className="text-[#94A3B8] text-[10px]">Restricted</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#f97316]"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#F97316]"></span>
             <span className="text-[#94A3B8] text-[10px]">Degraded</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FF5252]"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]"></span>
             <span className="text-[#94A3B8] text-[10px]">Closed</span>
           </div>
         </div>

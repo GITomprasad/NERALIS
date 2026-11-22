@@ -74,7 +74,7 @@ const MainLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   return (
-    <div className="min-h-screen bg-[#080D16] text-[#F5F7FA] flex flex-col font-sans select-none pb-16 lg:pb-0">
+    <div className="min-h-screen bg-[#0A0F18] text-[#F5F7FA] flex flex-col font-sans select-none pb-14 lg:pb-0">
       {/* Top Navbar */}
       <Navbar onMobileMenuToggle={() => setMobileMenuOpen((v) => !v)} />
 
@@ -95,20 +95,20 @@ const MainLayout: React.FC = () => {
         {/* Dynamic Center Module Canvas */}
         {activeModule === 'ACCESSIBILITY' ? (
           /* Full-Bleed Map Landing Layout (Edge-to-Edge Canvas) */
-          <main className="flex-1 overflow-hidden relative flex flex-col bg-[#080D16]">
+          <main className="flex-1 overflow-hidden relative flex flex-col bg-[#0A0F18]">
             <AccessibilityMonitor />
           </main>
         ) : (
           /* Secondary Module Container with Universal Back Navigation Bar */
-          <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 bg-[#080D16]">
+          <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 bg-[#0A0F18]">
             <div className="max-w-7xl mx-auto space-y-3 sm:space-y-4">
               {/* Universal Navigation Header Bar */}
-              <div className="bg-[#111D2D] border border-[#1E2E45] rounded-xl p-2.5 sm:p-3 shadow-md flex flex-wrap items-center justify-between gap-2">
+              <div className="bg-[#0F1726] border border-[#1E293B] rounded-xl p-2.5 sm:p-3 flex flex-wrap items-center justify-between gap-2">
                 {/* Back Button and Breadcrumb Trail */}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={goBack}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#16253B] hover:bg-[#1C304B] text-[#19C6D2] border border-[#1E2E45] hover:border-[#19C6D2]/50 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#162235] hover:bg-[#1C304B] text-[#0EA5E9] border border-[#1E293B] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
                     title={`Back to ${prevMeta ? prevMeta.short : 'Main GIS Map'}`}
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
@@ -117,24 +117,24 @@ const MainLayout: React.FC = () => {
 
                   <button
                     onClick={goToLanding}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#0D1522] hover:bg-[#16253B] text-[#94A3B8] hover:text-[#F5F7FA] border border-[#1E2E45] rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#0A0F18] hover:bg-[#162235] text-[#94A3B8] hover:text-[#F5F7FA] border border-[#1E293B] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
                     title="Return to Landing Page (Main GIS Map)"
                   >
-                    <Home className="w-3.5 h-3.5 text-[#19C6D2]" />
+                    <Home className="w-3.5 h-3.5 text-[#0EA5E9]" />
                     <span className="hidden sm:inline">GIS Map</span>
                   </button>
 
                   <div className="hidden md:flex items-center gap-1 text-xs text-[#64748B]">
-                    <div className="h-4 w-px bg-[#1E2E45] mx-1" />
-                    <span onClick={goToLanding} className="hover:text-[#19C6D2] cursor-pointer font-medium">Command</span>
+                    <div className="h-4 w-px bg-[#1E293B] mx-1" />
+                    <span onClick={goToLanding} className="hover:text-[#0EA5E9] cursor-pointer font-medium">Command</span>
                     <ChevronRight className="w-3.5 h-3.5 text-[#64748B]" />
-                    <span className="font-bold text-[#F5F7FA] truncate max-w-[240px]">{currentMeta.short}</span>
+                    <span className="font-semibold text-[#F5F7FA] truncate max-w-[240px]">{currentMeta.short}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs font-bold">
-                  <span className="bg-[#19C6D2]/10 text-[#19C6D2] border border-[#19C6D2]/30 px-2.5 py-1 rounded-full flex items-center gap-1 text-[11px] font-mono">
-                    <Sparkles className="w-3 h-3 text-[#19C6D2]" />
+                <div className="flex items-center gap-2 text-xs font-semibold">
+                  <span className="bg-[#0EA5E9]/10 text-[#0EA5E9] border border-[#0EA5E9]/20 px-2.5 py-1 rounded-full flex items-center gap-1 text-[11px] font-mono">
+                    <Sparkles className="w-3 h-3 text-[#0EA5E9]" />
                     <span className="hidden sm:inline">NER Logistics Grid v2.0</span>
                     <span className="sm:hidden">NERALIS</span>
                   </span>
@@ -155,12 +155,12 @@ const MainLayout: React.FC = () => {
       </div>
 
       {/* Mobile Bottom Navigation Bar (Thumb Friendly for Android/iPhone) */}
-      <nav className="fixed bottom-0 inset-x-0 h-14 bg-[#0D1522]/95 backdrop-blur-md border-t border-[#1E2E45] z-[3400] lg:hidden flex items-center justify-around px-2 pb-safe shadow-2xl">
+      <nav className="fixed bottom-0 inset-x-0 h-14 bg-[#0A0F18]/95 backdrop-blur-md border-t border-[#1E293B] z-[3400] lg:hidden flex items-center justify-around px-2 pb-safe shadow-xl">
         <button
           onClick={() => navigateToModule('ACCESSIBILITY')}
-          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'ACCESSIBILITY'
-              ? 'text-[#19C6D2] font-bold'
+              ? 'text-[#0EA5E9] font-semibold'
               : 'text-[#94A3B8] hover:text-[#F5F7FA]'
           }`}
         >
@@ -170,9 +170,9 @@ const MainLayout: React.FC = () => {
 
         <button
           onClick={() => navigateToModule('ROUTE')}
-          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'ROUTE'
-              ? 'text-[#19C6D2] font-bold'
+              ? 'text-[#0EA5E9] font-semibold'
               : 'text-[#94A3B8] hover:text-[#F5F7FA]'
           }`}
         >
@@ -182,9 +182,9 @@ const MainLayout: React.FC = () => {
 
         <button
           onClick={() => navigateToModule('FLEET')}
-          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'FLEET'
-              ? 'text-[#19C6D2] font-bold'
+              ? 'text-[#0EA5E9] font-semibold'
               : 'text-[#94A3B8] hover:text-[#F5F7FA]'
           }`}
         >
@@ -194,9 +194,9 @@ const MainLayout: React.FC = () => {
 
         <button
           onClick={() => navigateToModule('ALERT')}
-          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'ALERT'
-              ? 'text-[#19C6D2] font-bold'
+              ? 'text-[#0EA5E9] font-semibold'
               : 'text-[#94A3B8] hover:text-[#F5F7FA]'
           }`}
         >
@@ -206,9 +206,9 @@ const MainLayout: React.FC = () => {
 
         <button
           onClick={() => navigateToModule('FIELD_APP')}
-          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all ${
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'FIELD_APP'
-              ? 'text-[#19C6D2] font-bold'
+              ? 'text-[#0EA5E9] font-semibold'
               : 'text-[#94A3B8] hover:text-[#F5F7FA]'
           }`}
         >
@@ -218,7 +218,7 @@ const MainLayout: React.FC = () => {
 
         <button
           onClick={() => setMobileMenuOpen(true)}
-          className="flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[#94A3B8] hover:text-[#F5F7FA] transition-all"
+          className="flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[#94A3B8] hover:text-[#F5F7FA] transition-colors"
         >
           <Menu className="w-4 h-4 mb-0.5" />
           <span className="text-[10px]">More</span>

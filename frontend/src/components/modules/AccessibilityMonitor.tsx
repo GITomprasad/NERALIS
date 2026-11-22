@@ -62,10 +62,10 @@ export const AccessibilityMonitor: React.FC = () => {
   });
 
   return (
-    <div className="w-full h-full flex flex-col relative bg-[#080D16]">
+    <div className="w-full h-full flex flex-col relative bg-[#0A0F18]">
       {/* TAB 1: FULL-COVERAGE LIVE GIS MAP */}
       {activeTab === 'MAP' && (
-        <div className="relative w-full flex-1 h-[calc(100vh-112px)] min-h-[460px] overflow-hidden bg-[#080D16]">
+        <div className="relative w-full flex-1 h-[calc(100vh-112px)] min-h-[460px] overflow-hidden bg-[#0A0F18]">
           {/* Main Map Edge-to-Edge */}
           <NerGisMap
             height="100%"
@@ -77,51 +77,45 @@ export const AccessibilityMonitor: React.FC = () => {
             initialShowDistricts={true}
           />
 
-          {/* Floating Top Glassmorphism HUD Controls */}
+          {/* Floating Top Controls */}
           <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 z-[1000] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
             {/* Left Title & Status Indicator */}
-            <div className="pointer-events-auto bg-[#0D1522]/90 backdrop-blur-md px-3 py-2 rounded-2xl border border-[#1E2E45] shadow-command-card flex items-center gap-2.5">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#19C6D2] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#19C6D2]"></span>
-              </span>
+            <div className="pointer-events-auto bg-[#0F1726]/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#1E293B] shadow-md flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-[#10B981]" />
               <div>
-                <div className="flex items-center gap-2 font-black text-xs text-[#F5F7FA]">
+                <div className="flex items-center gap-2 font-semibold text-xs text-[#F5F7FA]">
                   <span className="hidden sm:inline">NER GIS Command Center</span>
                   <span className="sm:hidden">NER Grid</span>
-                  <span className="bg-[#19C6D2]/15 text-[#19C6D2] border border-[#19C6D2]/30 text-[10px] px-2 py-0.5 rounded-full font-mono font-bold">
-                    89 Districts Live
+                  <span className="bg-[#0EA5E9]/10 text-[#0EA5E9] border border-[#0EA5E9]/20 text-[10px] px-1.5 py-0.2 rounded font-mono font-medium">
+                    89 Districts
                   </span>
-                </div>
-                <div className="text-[10px] text-[#94A3B8] hidden md:block">
-                  Live satellite telemetry, bridge sensors &amp; corridor hazards
                 </div>
               </div>
             </div>
 
             {/* Center Tab Switcher */}
-            <div className="pointer-events-auto bg-[#0D1522]/90 backdrop-blur-md p-1 rounded-2xl border border-[#1E2E45] shadow-command-card flex items-center gap-1 text-xs font-bold overflow-x-auto max-w-[95vw] sm:max-w-none">
+            <div className="pointer-events-auto bg-[#0F1726]/90 backdrop-blur-md p-1 rounded-xl border border-[#1E293B] shadow-md flex items-center gap-1 text-xs font-medium overflow-x-auto max-w-[95vw] sm:max-w-none">
               <button
                 onClick={() => setActiveTab('MAP')}
-                className="px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 bg-[#19C6D2] text-[#080D16] shadow-sm whitespace-nowrap cursor-pointer font-extrabold"
+                className="px-3 py-1 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer bg-[#0EA5E9] text-white font-semibold"
               >
                 🗺️ <span className="hidden sm:inline">GIS</span> Map
               </button>
               <button
                 onClick={() => setActiveTab('DISTRICTS')}
-                className="px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#16253B] whitespace-nowrap cursor-pointer"
+                className="px-3 py-1 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#162235]"
               >
                 📍 <span className="hidden sm:inline">89 </span>Districts
               </button>
               <button
                 onClick={() => setActiveTab('BRIDGES')}
-                className="px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#16253B] whitespace-nowrap cursor-pointer"
+                className="px-3 py-1 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#162235]"
               >
                 🌉 Bridges <span className="hidden sm:inline">({bridges.length})</span>
               </button>
               <button
                 onClick={() => setActiveTab('SATELLITE')}
-                className="px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#16253B] whitespace-nowrap cursor-pointer"
+                className="px-3 py-1 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#162235]"
               >
                 🛰️ Sentinel-2
               </button>
@@ -130,38 +124,38 @@ export const AccessibilityMonitor: React.FC = () => {
             {/* Right: State Filter & Intelligence Toggle */}
             <div className="pointer-events-auto flex items-center gap-2">
               {/* State Filter Dropdown */}
-              <div className="bg-[#0D1522]/90 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-[#1E2E45] shadow-command-card flex items-center gap-2 text-xs font-bold">
-                <Filter className="w-3.5 h-3.5 text-[#19C6D2]" />
+              <div className="bg-[#0F1726]/90 backdrop-blur-md px-2.5 py-1 rounded-xl border border-[#1E293B] shadow-md flex items-center gap-1.5 text-xs font-medium">
+                <Filter className="w-3.5 h-3.5 text-[#0EA5E9]" />
                 <span className="text-[#94A3B8] text-[10px] hidden md:inline">State:</span>
                 <select
                   value={selectedStateFilter}
                   onChange={(e) => setSelectedStateFilter(e.target.value)}
-                  className="bg-transparent text-[#F5F7FA] text-xs font-bold focus:outline-none cursor-pointer"
+                  className="bg-transparent text-[#F5F7FA] text-xs font-semibold focus:outline-none cursor-pointer"
                 >
-                  <option value="ALL" className="bg-[#0D1522] text-[#F5F7FA]">All 8 States</option>
-                  <option value="AS" className="bg-[#0D1522] text-[#F5F7FA]">Assam (AS)</option>
-                  <option value="AR" className="bg-[#0D1522] text-[#F5F7FA]">Arunachal (AR)</option>
-                  <option value="MN" className="bg-[#0D1522] text-[#F5F7FA]">Manipur (MN)</option>
-                  <option value="ML" className="bg-[#0D1522] text-[#F5F7FA]">Meghalaya (ML)</option>
-                  <option value="MZ" className="bg-[#0D1522] text-[#F5F7FA]">Mizoram (MZ)</option>
-                  <option value="NL" className="bg-[#0D1522] text-[#F5F7FA]">Nagaland (NL)</option>
-                  <option value="SK" className="bg-[#0D1522] text-[#F5F7FA]">Sikkim (SK)</option>
-                  <option value="TR" className="bg-[#0D1522] text-[#F5F7FA]">Tripura (TR)</option>
+                  <option value="ALL" className="bg-[#0A0F18] text-[#F5F7FA]">All 8 States</option>
+                  <option value="AS" className="bg-[#0A0F18] text-[#F5F7FA]">Assam (AS)</option>
+                  <option value="AR" className="bg-[#0A0F18] text-[#F5F7FA]">Arunachal (AR)</option>
+                  <option value="MN" className="bg-[#0A0F18] text-[#F5F7FA]">Manipur (MN)</option>
+                  <option value="ML" className="bg-[#0A0F18] text-[#F5F7FA]">Meghalaya (ML)</option>
+                  <option value="MZ" className="bg-[#0A0F18] text-[#F5F7FA]">Mizoram (MZ)</option>
+                  <option value="NL" className="bg-[#0A0F18] text-[#F5F7FA]">Nagaland (NL)</option>
+                  <option value="SK" className="bg-[#0A0F18] text-[#F5F7FA]">Sikkim (SK)</option>
+                  <option value="TR" className="bg-[#0A0F18] text-[#F5F7FA]">Tripura (TR)</option>
                 </select>
               </div>
 
               {/* Toggle Intelligence Panel Button */}
               <button
                 onClick={() => setIsIntelPanelOpen(!isIntelPanelOpen)}
-                className={`p-2 rounded-2xl border shadow-command-card text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`p-1.5 rounded-xl border text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                   isIntelPanelOpen
-                    ? 'bg-[#19C6D2] text-[#080D16] border-[#19C6D2]'
-                    : 'bg-[#0D1522]/90 hover:bg-[#16253B] text-[#F5F7FA] border-[#1E2E45]'
+                    ? 'bg-[#0EA5E9] text-white border-[#0EA5E9]'
+                    : 'bg-[#0F1726]/90 hover:bg-[#162235] text-[#F5F7FA] border-[#1E293B]'
                 }`}
                 title="Toggle Risk Intelligence Stream"
               >
-                <ShieldAlert className="w-4 h-4" />
-                <span className="hidden xl:inline">Intel Stream</span>
+                <ShieldAlert className="w-4 h-4 text-[#F59E0B]" />
+                <span className="hidden xl:inline">Intel</span>
               </button>
             </div>
           </div>

@@ -402,60 +402,47 @@ export const ChatbotWidget: React.FC = () => {
 
   return (
     <>
-      {/* 1. Floating Launch Pill / Button */}
+      {/* 1. Small Discreet Assistant Trigger Button (Bottom-Right) */}
       {!isChatbotOpen && (
-        <div className="fixed bottom-5 right-5 z-[5500] animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed bottom-4 right-4 z-[4000]">
           <button
             onClick={toggleChatbot}
-            className="group relative flex items-center gap-2.5 bg-[#0D1522] hover:bg-[#111D2D] text-[#F5F7FA] px-4 py-3 rounded-full shadow-2xl hover:shadow-cyan-500/25 border border-cyan-500/40 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-command-glow"
-            title="Open NERALIS AI Sahayak Copilot"
+            className="w-10 h-10 rounded-full bg-[#0F1726] hover:bg-[#162235] text-[#F5F7FA] border border-[#1E293B] hover:border-[#0EA5E9] shadow-lg flex items-center justify-center transition-colors cursor-pointer"
+            title="Open NERALIS Sahayak AI Assistant"
+            aria-label="Open AI Assistant"
           >
-            {/* Glowing Pulse Ring */}
-            <span className="absolute -inset-1 rounded-full bg-cyan-500/20 opacity-30 blur-xs group-hover:opacity-60 transition duration-300 animate-pulse" />
-
-            <div className="relative flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-cyan-500/20 text-[#19C6D2] border border-cyan-500/40 flex items-center justify-center font-black shadow-xs">
-                <Bot className="w-4 h-4" />
-              </div>
-              <div className="text-left">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-black text-xs tracking-wide text-[#F5F7FA]">NERALIS Sahayak</span>
-                  <span className="w-2 h-2 rounded-full bg-[#20C997] animate-ping" />
-                </div>
-                <span className="text-[10px] text-[#19C6D2] font-medium block">AI Operations Copilot</span>
-              </div>
-            </div>
+            <Bot className="w-5 h-5 text-[#0EA5E9]" />
           </button>
         </div>
       )}
 
-      {/* 2. Floating AI Assistant Chat Dialog Window */}
+      {/* 2. Sleek AI Assistant Chat Dialog Window */}
       {isChatbotOpen && (
         <div
-          className={`fixed z-[6000] bg-[#0D1522] rounded-2xl shadow-2xl border border-cyan-500/30 flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in slide-in-from-bottom-5 ${
+          className={`fixed z-[4500] bg-[#0A0F18] rounded-xl shadow-2xl border border-[#1E293B] flex flex-col overflow-hidden transition-all duration-150 ${
             isExpanded
-              ? 'inset-4 sm:inset-10 max-w-5xl mx-auto'
-              : 'bottom-5 right-3 sm:right-6 w-[94vw] sm:w-[440px] h-[600px] max-h-[86vh]'
+              ? 'inset-4 sm:inset-8 max-w-5xl mx-auto'
+              : 'bottom-4 right-4 w-[380px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-5rem)]'
           }`}
         >
           {/* Header */}
-          <div className="bg-[#0A101D] text-[#F5F7FA] p-3.5 flex items-center justify-between shadow-xs select-none shrink-0 border-b border-[#1E2E45]">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-[#19C6D2] border border-cyan-500/40 flex items-center justify-center font-black shadow-xs shrink-0">
-                <Bot className="w-5 h-5 text-[#19C6D2]" />
+          <div className="bg-[#0F1726] text-[#F5F7FA] px-3.5 py-2.5 flex items-center justify-between select-none shrink-0 border-b border-[#1E293B]">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-[#162235] border border-[#1E293B] flex items-center justify-center shrink-0">
+                <Bot className="w-4 h-4 text-[#0EA5E9]" />
               </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-black text-sm tracking-wide text-[#F5F7FA] truncate">
-                    NERALIS AI Sahayak
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-xs tracking-tight text-[#F5F7FA] truncate">
+                    NERALIS Assistant
                   </span>
-                  <span className="text-[9px] bg-cyan-500/20 text-[#19C6D2] px-1.5 py-0.5 rounded font-bold uppercase border border-cyan-500/30">
-                    Copilot
+                  <span className="text-[9px] bg-[#0EA5E9]/10 text-[#0EA5E9] px-1 py-0.2 rounded font-semibold uppercase border border-[#0EA5E9]/20">
+                    AI
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-[10px] text-[#94A3B8]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#20C997] animate-pulse" />
-                  <span>8 States • 89 Districts • MDoNER</span>
+                <div className="text-[10px] text-[#64748B] flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
+                  <span>89 NER Districts</span>
                 </div>
               </div>
             </div>
@@ -469,8 +456,8 @@ export const ChatbotWidget: React.FC = () => {
                   if (autoSpeak) window.speechSynthesis?.cancel();
                   addToast('Voice Narration', autoSpeak ? 'Voice output muted.' : 'Voice output enabled.', 'INFO');
                 }}
-                className={`p-1.5 rounded-lg transition-colors cursor-pointer border ${
-                  autoSpeak ? 'bg-[#FFB547] text-slate-900 border-amber-400 font-bold' : 'bg-[#111D2D] hover:bg-[#1E2E45] text-[#94A3B8] border-[#1E2E45]'
+                className={`p-1 rounded-md transition-colors cursor-pointer border ${
+                  autoSpeak ? 'bg-[#F59E0B] text-slate-900 border-amber-400 font-bold' : 'bg-[#0F1726] hover:bg-[#162235] text-[#94A3B8] border-[#1E293B]'
                 }`}
                 title={autoSpeak ? 'Mute Speech Synthesis' : 'Enable Voice Audio Output'}
               >
@@ -480,7 +467,7 @@ export const ChatbotWidget: React.FC = () => {
               {/* Clear History */}
               <button
                 onClick={clearChatHistory}
-                className="p-1.5 rounded-lg bg-[#111D2D] hover:bg-[#1E2E45] text-[#94A3B8] hover:text-[#FF5252] transition-colors cursor-pointer border border-[#1E2E45]"
+                className="p-1 rounded-md bg-[#0F1726] hover:bg-[#162235] text-[#94A3B8] hover:text-[#EF4444] transition-colors cursor-pointer border border-[#1E293B]"
                 title="Clear Chat History"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -489,8 +476,8 @@ export const ChatbotWidget: React.FC = () => {
               {/* Expand / Minimize */}
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="hidden sm:block p-1.5 rounded-lg bg-[#111D2D] hover:bg-[#1E2E45] text-[#94A3B8] hover:text-[#F5F7FA] transition-colors cursor-pointer border border-[#1E2E45]"
-                title={isExpanded ? 'Restore Normal Window' : 'Expand to Full Screen'}
+                className="hidden sm:block p-1 rounded-md bg-[#0F1726] hover:bg-[#162235] text-[#94A3B8] hover:text-[#F5F7FA] transition-colors cursor-pointer border border-[#1E293B]"
+                title={isExpanded ? 'Restore Normal Window' : 'Expand Window'}
               >
                 {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
               </button>
@@ -498,8 +485,8 @@ export const ChatbotWidget: React.FC = () => {
               {/* Close */}
               <button
                 onClick={toggleChatbot}
-                className="p-1.5 rounded-lg bg-[#111D2D] hover:bg-red-950/80 text-[#94A3B8] hover:text-rose-300 transition-colors cursor-pointer border border-[#1E2E45] hover:border-red-500/40"
-                title="Close AI Assistant"
+                className="p-1 rounded-md bg-[#0F1726] hover:bg-[#162235] text-[#94A3B8] hover:text-[#EF4444] transition-colors cursor-pointer border border-[#1E293B]"
+                title="Close Assistant"
               >
                 <X className="w-4 h-4" />
               </button>
