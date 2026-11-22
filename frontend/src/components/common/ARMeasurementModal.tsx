@@ -37,16 +37,16 @@ export const ARMeasurementModal: React.FC<{ onApplyMeasurements?: (data: { crack
 
   return (
     <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[6000] flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-[#FCF6F5] text-[#252124] rounded-2xl w-full max-w-lg overflow-hidden border border-[#E7DAD8] shadow-2xl relative">
+      <div className="bg-[#E7E8D1] text-[#30342F] rounded-2xl w-full max-w-lg overflow-hidden border border-[#D6D8C8] shadow-2xl relative">
         {/* Top bar */}
-        <div className="bg-[#FCF6F5] px-4 py-3 flex items-center justify-between border-b border-[#E7DAD8]">
+        <div className="bg-[#E7E8D1] px-4 py-3 flex items-center justify-between border-b border-[#D6D8C8]">
           <div className="flex items-center gap-2">
-            <Ruler className="w-4 h-4 text-[#990011]" />
-            <span className="text-xs font-bold uppercase tracking-wider text-[#990011]">
+            <Ruler className="w-4 h-4 text-[#B85042]" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#B85042]">
               AR Pavement &amp; Landslide Dimension Scanner
             </span>
           </div>
-          <button onClick={() => setIsARModalOpen(false)} className="text-[#786D6D] hover:text-[#252124] p-1">
+          <button onClick={() => setIsARModalOpen(false)} className="text-[#74796F] hover:text-[#30342F] p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -62,40 +62,40 @@ export const ARMeasurementModal: React.FC<{ onApplyMeasurements?: (data: { crack
 
           {/* AR Overlay Lines & Reticle */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="relative w-48 h-48 border border-[#990011]/40 rounded-xl flex items-center justify-center">
-              <Crosshair className="w-10 h-10 text-[#990011] animate-pulse" />
+            <div className="relative w-48 h-48 border border-[#B85042]/40 rounded-xl flex items-center justify-center">
+              <Crosshair className="w-10 h-10 text-[#B85042] animate-pulse" />
               {/* AR Laser Dimension vector */}
-              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-[#990011] shadow-[0_0_8px_#19C6D2]"></div>
-              <div className="absolute top-2 left-2 bg-[#FCF6F5]/90 border border-[#990011]/30 px-2 py-0.5 rounded text-[10px] text-[#990011] font-mono">
+              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-[#B85042] shadow-[0_0_8px_#19C6D2]"></div>
+              <div className="absolute top-2 left-2 bg-[#E7E8D1]/90 border border-[#B85042]/30 px-2 py-0.5 rounded text-[10px] text-[#B85042] font-mono">
                 L: {crackLength} m
               </div>
-              <div className="absolute bottom-2 right-2 bg-[#FCF6F5]/90 border border-amber-500/30 px-2 py-0.5 rounded text-[10px] text-[#FFB547] font-mono">
+              <div className="absolute bottom-2 right-2 bg-[#E7E8D1]/90 border border-amber-500/30 px-2 py-0.5 rounded text-[10px] text-[#FFB547] font-mono">
                 D: {potholeDepth} cm
               </div>
             </div>
           </div>
 
           {measurementStep === 'MEASURING' && (
-            <div className="absolute inset-0 bg-[#FCF6F5]/80 backdrop-blur-xs flex items-center justify-center gap-2 text-xs font-bold text-[#990011]">
-              <Sparkles className="w-5 h-5 animate-spin text-[#990011]" /> LiDAR Mesh Point-Cloud Computing...
+            <div className="absolute inset-0 bg-[#E7E8D1]/80 backdrop-blur-xs flex items-center justify-center gap-2 text-xs font-bold text-[#B85042]">
+              <Sparkles className="w-5 h-5 animate-spin text-[#B85042]" /> LiDAR Mesh Point-Cloud Computing...
             </div>
           )}
         </div>
 
         {/* Bottom stats & action */}
-        <div className="p-4 bg-[#FCF6F5] space-y-3.5 border-t border-[#E7DAD8]">
+        <div className="p-4 bg-[#E7E8D1] space-y-3.5 border-t border-[#D6D8C8]">
           <div className="grid grid-cols-3 gap-2.5 text-center">
-            <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#E7DAD8]">
-              <div className="text-[10px] text-[#786D6D] uppercase font-bold">Crack Span</div>
-              <div className="text-base font-bold text-[#990011] font-mono mt-0.5">{crackLength} m</div>
+            <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#D6D8C8]">
+              <div className="text-[10px] text-[#74796F] uppercase font-bold">Crack Span</div>
+              <div className="text-base font-bold text-[#B85042] font-mono mt-0.5">{crackLength} m</div>
             </div>
-            <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#E7DAD8]">
-              <div className="text-[10px] text-[#786D6D] uppercase font-bold">Pothole Depth</div>
+            <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#D6D8C8]">
+              <div className="text-[10px] text-[#74796F] uppercase font-bold">Pothole Depth</div>
               <div className="text-base font-bold text-[#FFB547] font-mono mt-0.5">{potholeDepth} cm</div>
             </div>
-            <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#E7DAD8]">
-              <div className="text-[10px] text-[#786D6D] uppercase font-bold">Debris Est.</div>
-              <div className="text-base font-bold text-[#438BFF] font-mono mt-0.5">{debrisVol} m³</div>
+            <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#D6D8C8]">
+              <div className="text-[10px] text-[#74796F] uppercase font-bold">Debris Est.</div>
+              <div className="text-base font-bold text-[#A7BEAE] font-mono mt-0.5">{debrisVol} m³</div>
             </div>
           </div>
 
@@ -104,7 +104,7 @@ export const ARMeasurementModal: React.FC<{ onApplyMeasurements?: (data: { crack
               onClick={handleSimulateScan}
               className="flex-1 btn-secondary text-xs py-2.5 justify-center cursor-pointer"
             >
-              <Camera className="w-4 h-4 mr-1 text-[#990011]" /> Re-Scan Mesh
+              <Camera className="w-4 h-4 mr-1 text-[#B85042]" /> Re-Scan Mesh
             </button>
             <button
               onClick={handleApply}

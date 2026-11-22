@@ -135,15 +135,15 @@ export const PredictiveIntelligence: React.FC = () => {
       <div className="card-command flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-black text-[#252124]">
+            <h2 className="text-base font-black text-[#30342F]">
               {t('module_4')} — 6 to 72-Hour Disruption Forecasting
             </h2>
-            <span className="bg-[#818CF8]/15 text-[#818CF8] border border-[#818CF8]/30 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 font-mono">
-              <Sparkles className="w-3 h-3 text-[#818CF8]" />
+            <span className="bg-[#818CF8]/15 text-[#A7BEAE] border border-[#818CF8]/30 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 font-mono">
+              <Sparkles className="w-3 h-3 text-[#A7BEAE]" />
               Balanced Random Forest: 85.1% Acc
             </span>
           </div>
-          <p className="text-xs text-[#786D6D] mt-0.5">
+          <p className="text-xs text-[#74796F] mt-0.5">
             Predictive intelligence engine trained on NASA Landslide Catalog &amp; IMD Historical Automated Weather Stations
           </p>
         </div>
@@ -153,7 +153,7 @@ export const PredictiveIntelligence: React.FC = () => {
             onClick={() => setIsModelMetricsModalOpen(true)}
             className="btn-secondary text-xs py-2 px-3.5 flex items-center gap-1.5"
           >
-            <BarChart2 className="w-3.5 h-3.5 text-[#990011]" />
+            <BarChart2 className="w-3.5 h-3.5 text-[#B85042]" />
             <span>Inspect AI Model Benchmark</span>
           </button>
         </div>
@@ -162,8 +162,8 @@ export const PredictiveIntelligence: React.FC = () => {
       {/* Time Horizon Slider Bar */}
       <div className="card-command p-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Sliders className="w-4 h-4 text-[#990011]" />
-          <span className="text-xs font-bold text-[#252124]">Forecast Horizon:</span>
+          <Sliders className="w-4 h-4 text-[#B85042]" />
+          <span className="text-xs font-bold text-[#30342F]">Forecast Horizon:</span>
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -173,8 +173,8 @@ export const PredictiveIntelligence: React.FC = () => {
               onClick={() => setForecastHorizon(hrs)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 forecastHorizon === hrs
-                  ? 'bg-[#990011] text-white shadow-sm font-black'
-                  : 'bg-[#FCF6F5] text-[#786D6D] hover:bg-[#EDE4E2] hover:text-[#252124] border border-[#E7DAD8]'
+                  ? 'bg-[#B85042] text-white shadow-sm font-black'
+                  : 'bg-[#E7E8D1] text-[#74796F] hover:bg-[#D5D8C3] hover:text-[#30342F] border border-[#D6D8C8]'
               }`}
             >
               +{hrs} Hours
@@ -185,42 +185,42 @@ export const PredictiveIntelligence: React.FC = () => {
 
       {/* Dedicated Model Performance Benchmark Panel */}
       <div className="card-command border-[#818CF8]/30 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E7DAD8] pb-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#D6D8C8] pb-2.5">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#818CF8]" />
-            <h3 className="font-black text-xs text-[#252124] uppercase tracking-wide">
+            <Sparkles className="w-4 h-4 text-[#A7BEAE]" />
+            <h3 className="font-black text-xs text-[#30342F] uppercase tracking-wide">
               NASA &amp; IMD Disruption Model Benchmark Telemetry
             </h3>
           </div>
-          <span className="text-[10px] bg-[#818CF8]/15 text-[#818CF8] border border-[#818CF8]/30 font-bold px-2 py-0.5 rounded font-mono">
+          <span className="text-[10px] bg-[#818CF8]/15 text-[#A7BEAE] border border-[#818CF8]/30 font-bold px-2 py-0.5 rounded font-mono">
             NERALIS-NASA-IMD-Real-v1.0
           </span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
-          <div className="bg-[#FCF6F5] p-3 rounded-xl border border-[#E7DAD8]">
-            <div className="text-[10px] text-[#786D6D] font-bold uppercase">Raw Accuracy</div>
-            <div className="text-sm font-black text-[#20C997] mt-0.5 font-mono">85.1%</div>
-            <div className="text-[9px] text-[#786D6D] font-semibold">84% Medium Base</div>
+          <div className="bg-[#E7E8D1] p-3 rounded-xl border border-[#D6D8C8]">
+            <div className="text-[10px] text-[#74796F] font-bold uppercase">Raw Accuracy</div>
+            <div className="text-sm font-black text-[#A7BEAE] mt-0.5 font-mono">85.1%</div>
+            <div className="text-[9px] text-[#74796F] font-semibold">84% Medium Base</div>
           </div>
-          <div className="bg-[#FCF6F5] p-3 rounded-xl border border-[#E7DAD8]">
-            <div className="text-[10px] text-[#786D6D] font-bold uppercase">Balanced Acc</div>
-            <div className="text-sm font-black text-[#818CF8] mt-0.5 font-mono">52.4%</div>
-            <div className="text-[9px] text-[#818CF8] font-semibold">Honest Multi-Class</div>
+          <div className="bg-[#E7E8D1] p-3 rounded-xl border border-[#D6D8C8]">
+            <div className="text-[10px] text-[#74796F] font-bold uppercase">Balanced Acc</div>
+            <div className="text-sm font-black text-[#A7BEAE] mt-0.5 font-mono">52.4%</div>
+            <div className="text-[9px] text-[#A7BEAE] font-semibold">Honest Multi-Class</div>
           </div>
-          <div className="bg-[#FCF6F5] p-3 rounded-xl border border-[#E7DAD8]">
-            <div className="text-[10px] text-[#786D6D] font-bold uppercase">Macro F1</div>
-            <div className="text-sm font-black text-[#438BFF] mt-0.5 font-mono">0.556</div>
-            <div className="text-[9px] text-[#438BFF] font-semibold">Balanced F1</div>
+          <div className="bg-[#E7E8D1] p-3 rounded-xl border border-[#D6D8C8]">
+            <div className="text-[10px] text-[#74796F] font-bold uppercase">Macro F1</div>
+            <div className="text-sm font-black text-[#A7BEAE] mt-0.5 font-mono">0.556</div>
+            <div className="text-[9px] text-[#A7BEAE] font-semibold">Balanced F1</div>
           </div>
-          <div className="bg-[#FCF6F5] p-3 rounded-xl border border-[#E7DAD8]">
-            <div className="text-[10px] text-[#786D6D] font-bold uppercase">ROC-AUC</div>
-            <div className="text-sm font-black text-[#990011] mt-0.5 font-mono">0.884</div>
-            <div className="text-[9px] text-[#990011] font-semibold">OOF CV Split</div>
+          <div className="bg-[#E7E8D1] p-3 rounded-xl border border-[#D6D8C8]">
+            <div className="text-[10px] text-[#74796F] font-bold uppercase">ROC-AUC</div>
+            <div className="text-sm font-black text-[#B85042] mt-0.5 font-mono">0.884</div>
+            <div className="text-[9px] text-[#B85042] font-semibold">OOF CV Split</div>
           </div>
-          <div className="bg-[#FCF6F5] p-3 rounded-xl border border-[#E7DAD8] col-span-2 sm:col-span-1">
-            <div className="text-[10px] text-[#786D6D] font-bold uppercase">Training Baseline</div>
-            <div className="text-xs font-bold text-[#252124] mt-0.5">NASA + IMD Historical</div>
+          <div className="bg-[#E7E8D1] p-3 rounded-xl border border-[#D6D8C8] col-span-2 sm:col-span-1">
+            <div className="text-[10px] text-[#74796F] font-bold uppercase">Training Baseline</div>
+            <div className="text-xs font-bold text-[#30342F] mt-0.5">NASA + IMD Historical</div>
           </div>
         </div>
       </div>
@@ -245,8 +245,8 @@ export const PredictiveIntelligence: React.FC = () => {
               {/* Card Header */}
               <div className="flex items-start justify-between gap-2 mb-2.5">
                 <div>
-                  <h3 className="font-black text-sm text-[#252124]">{pred.corridor_name || pred.name}</h3>
-                  <div className="text-[11px] font-bold text-[#786D6D] mt-0.5 flex items-center gap-1.5">
+                  <h3 className="font-black text-sm text-[#30342F]">{pred.corridor_name || pred.name}</h3>
+                  <div className="text-[11px] font-bold text-[#74796F] mt-0.5 flex items-center gap-1.5">
                     <CloudLightning className="w-3.5 h-3.5 text-[#FFB547]" />
                     <span>Likely Cause: {pred.predicted_event || 'Heavy rainfall & slope saturation'}</span>
                   </div>
@@ -260,42 +260,42 @@ export const PredictiveIntelligence: React.FC = () => {
                       dataItem={pred}
                     />
                   </div>
-                  <div className={`text-sm font-black mt-1 font-mono ${isCritical ? 'text-[#FF5252]' : isHigh ? 'text-[#FFB547]' : 'text-[#818CF8]'}`}>
+                  <div className={`text-sm font-black mt-1 font-mono ${isCritical ? 'text-[#FF5252]' : isHigh ? 'text-[#FFB547]' : 'text-[#A7BEAE]'}`}>
                     {pred.predicted_risk_pct}% • {isCritical ? 'CRITICAL' : isHigh ? 'HIGH' : 'ELEVATED'}
                   </div>
                 </div>
               </div>
 
               {/* Evidence & XAI Factors */}
-              <div className="bg-[#FCF6F5] p-3 rounded-xl border border-[#E7DAD8] mb-2.5 space-y-1.5 text-[11px]">
-                <div className="text-[10px] font-bold text-[#786D6D] uppercase flex items-center justify-between">
-                  <span className="flex items-center gap-1 text-[#990011]">
-                    <Cpu className="w-3 h-3 text-[#990011]" /> Empirical Risk Factors
+              <div className="bg-[#E7E8D1] p-3 rounded-xl border border-[#D6D8C8] mb-2.5 space-y-1.5 text-[11px]">
+                <div className="text-[10px] font-bold text-[#74796F] uppercase flex items-center justify-between">
+                  <span className="flex items-center gap-1 text-[#B85042]">
+                    <Cpu className="w-3 h-3 text-[#B85042]" /> Empirical Risk Factors
                   </span>
-                  <span className="text-[#818CF8] font-bold">Confidence: {pred.ai_confidence_pct || 98.7}%</span>
+                  <span className="text-[#A7BEAE] font-bold">Confidence: {pred.ai_confidence_pct || 98.7}%</span>
                 </div>
 
-                <div className="text-[#786D6D] leading-relaxed space-y-1">
+                <div className="text-[#74796F] leading-relaxed space-y-1">
                   {pred.top_contributing_factors && pred.top_contributing_factors.length > 0 ? (
                     pred.top_contributing_factors.map((f: any, i: number) => (
                       <div key={i}>
-                        • <strong className="text-[#252124]">{f.factor}</strong> ({f.impact_pct}% weight) — <span className="text-[#786D6D]">{f.source}</span>
+                        • <strong className="text-[#30342F]">{f.factor}</strong> ({f.impact_pct}% weight) — <span className="text-[#74796F]">{f.source}</span>
                       </div>
                     ))
                   ) : (
                     <div>
-                      • <strong className="text-[#252124]">Rainfall Forecast:</strong> {pred.weather_input?.rainfall_72h_mm || 180} mm (72h cumulative)<br />
-                      • <strong className="text-[#252124]">Terrain &amp; Soil:</strong> {pred.weather_input?.soil_moisture_pct || 88}% soil saturation on steep incline
+                      • <strong className="text-[#30342F]">Rainfall Forecast:</strong> {pred.weather_input?.rainfall_72h_mm || 180} mm (72h cumulative)<br />
+                      • <strong className="text-[#30342F]">Terrain &amp; Soil:</strong> {pred.weather_input?.soil_moisture_pct || 88}% soil saturation on steep incline
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Recommendation & Action Button */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[#E7DAD8] text-[11px]">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[#D6D8C8] text-[11px]">
                 <div className="flex-1 min-w-[180px]">
-                  <span className="font-bold text-[#252124]">Recommendation: </span>
-                  <span className="text-[#786D6D]">{pred.recommended_action || 'Pre-position emergency supplies.'}</span>
+                  <span className="font-bold text-[#30342F]">Recommendation: </span>
+                  <span className="text-[#74796F]">{pred.recommended_action || 'Pre-position emergency supplies.'}</span>
                 </div>
                 <button
                   onClick={() => addToast('Corridor Impact Computed', `Bypass route calculated for ${pred.corridor_name || pred.name}.`, 'INFO')}
@@ -313,31 +313,31 @@ export const PredictiveIntelligence: React.FC = () => {
       <div className="card-command space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Boxes className="w-4 h-4 text-[#20C997]" />
-            <h3 className="font-black text-xs text-[#252124] uppercase tracking-wide">
+            <Boxes className="w-4 h-4 text-[#A7BEAE]" />
+            <h3 className="font-black text-xs text-[#30342F] uppercase tracking-wide">
               Automated Supply Pre-Positioning Advisories (AI Logistics Buffers)
             </h3>
           </div>
-          <span className="text-[10px] bg-[#20C997]/15 text-[#20C997] border border-[#20C997]/30 font-bold px-2 py-0.5 rounded">
+          <span className="text-[10px] bg-[#A7BEAE]/15 text-[#A7BEAE] border border-[#A7BEAE]/30 font-bold px-2 py-0.5 rounded">
             {advisories.length} Active Convoy Recommendations
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {advisories.map((adv) => (
-            <div key={adv.id} className="p-3.5 bg-[#FCF6F5] rounded-xl border border-[#E7DAD8] space-y-2">
+            <div key={adv.id} className="p-3.5 bg-[#E7E8D1] rounded-xl border border-[#D6D8C8] space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-black text-[11px] text-[#990011] font-mono">{adv.id}</span>
+                <span className="font-black text-[11px] text-[#B85042] font-mono">{adv.id}</span>
                 <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${adv.urgency === 'CRITICAL' || adv.urgency === 'EMERGENCY' ? 'badge-closed' : 'badge-restricted'}`}>
                   {adv.urgency}
                 </span>
               </div>
-              <div className="font-bold text-xs text-[#252124]">{adv.target_district}</div>
-              <p className="text-[11px] text-[#786D6D] leading-relaxed">{adv.reason}</p>
-              <div className="bg-[#FFFFFF] p-2.5 rounded-lg border border-[#E7DAD8] text-[10px] space-y-1">
-                <div className="font-bold text-[#786D6D]">Recommended Window:</div>
-                <div className="text-[#20C997] font-medium font-mono">{adv.recommended_convoy_window}</div>
-                <div className="text-[#786D6D] font-semibold mt-1">Autonomy Gained: +{adv.days_of_autonomy_gained} Days</div>
+              <div className="font-bold text-xs text-[#30342F]">{adv.target_district}</div>
+              <p className="text-[11px] text-[#74796F] leading-relaxed">{adv.reason}</p>
+              <div className="bg-[#FFFFFF] p-2.5 rounded-lg border border-[#D6D8C8] text-[10px] space-y-1">
+                <div className="font-bold text-[#74796F]">Recommended Window:</div>
+                <div className="text-[#A7BEAE] font-medium font-mono">{adv.recommended_convoy_window}</div>
+                <div className="text-[#74796F] font-semibold mt-1">Autonomy Gained: +{adv.days_of_autonomy_gained} Days</div>
               </div>
             </div>
           ))}
@@ -346,10 +346,10 @@ export const PredictiveIntelligence: React.FC = () => {
 
       {/* Digital Twin "What-If" Simulation */}
       <div className="card-command space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E7DAD8] pb-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#D6D8C8] pb-2.5">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-[#FFB547]" />
-            <h3 className="font-black text-xs text-[#252124] uppercase tracking-wide">
+            <h3 className="font-black text-xs text-[#30342F] uppercase tracking-wide">
               Digital Twin "What-If" Scenario Simulation Engine
             </h3>
           </div>
@@ -368,18 +368,18 @@ export const PredictiveIntelligence: React.FC = () => {
               }}
               className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                 selectedScenario.id === scn.id
-                  ? 'bg-[#EDE4E2] border-[#FFB547] shadow-command-card'
-                  : 'bg-[#FCF6F5] border-[#E7DAD8] hover:bg-[#FFFFFF]'
+                  ? 'bg-[#D5D8C3] border-[#FFB547] shadow-command-card'
+                  : 'bg-[#E7E8D1] border-[#D6D8C8] hover:bg-[#FFFFFF]'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[10px] font-mono text-[#FFB547] font-bold">{scn.id}</span>
-                <span className="text-[9px] bg-[#FFFFFF] text-[#786D6D] px-1.5 py-0.2 rounded border border-[#E7DAD8]">
+                <span className="text-[9px] bg-[#FFFFFF] text-[#74796F] px-1.5 py-0.2 rounded border border-[#D6D8C8]">
                   {scn.incidentType}
                 </span>
               </div>
-              <div className="font-bold text-xs text-[#252124] line-clamp-1">{scn.name}</div>
-              <div className="text-[10px] text-[#786D6D] mt-1 line-clamp-2">{scn.description}</div>
+              <div className="font-bold text-xs text-[#30342F] line-clamp-1">{scn.name}</div>
+              <div className="text-[10px] text-[#74796F] mt-1 line-clamp-2">{scn.description}</div>
             </button>
           ))}
         </div>
@@ -394,23 +394,23 @@ export const PredictiveIntelligence: React.FC = () => {
               </span>
               <button
                 onClick={handleResetDigitalTwin}
-                className="text-[11px] font-bold text-[#786D6D] hover:text-[#252124] cursor-pointer"
+                className="text-[11px] font-bold text-[#74796F] hover:text-[#30342F] cursor-pointer"
               >
                 Clear Simulation
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-              <div className="bg-[#FCF6F5] p-2.5 rounded-lg border border-[#E7DAD8]">
-                <div className="text-[10px] text-[#786D6D]">Isolated Districts</div>
+              <div className="bg-[#E7E8D1] p-2.5 rounded-lg border border-[#D6D8C8]">
+                <div className="text-[10px] text-[#74796F]">Isolated Districts</div>
                 <div className="text-sm font-black text-[#FF5252] font-mono">{digitalTwinResult.isolated_districts?.length || 3} Districts</div>
               </div>
-              <div className="bg-[#FCF6F5] p-2.5 rounded-lg border border-[#E7DAD8]">
-                <div className="text-[10px] text-[#786D6D]">Delayed Freight Convoy</div>
+              <div className="bg-[#E7E8D1] p-2.5 rounded-lg border border-[#D6D8C8]">
+                <div className="text-[10px] text-[#74796F]">Delayed Freight Convoy</div>
                 <div className="text-sm font-black text-[#FFB547] font-mono">18 Convoys (340 MT)</div>
               </div>
-              <div className="bg-[#FCF6F5] p-2.5 rounded-lg border border-[#E7DAD8]">
-                <div className="text-[10px] text-[#786D6D]">Bypass Routing</div>
-                <div className="text-sm font-black text-[#20C997] font-mono">Brahmaputra NW-2 Barge Ready</div>
+              <div className="bg-[#E7E8D1] p-2.5 rounded-lg border border-[#D6D8C8]">
+                <div className="text-[10px] text-[#74796F]">Bypass Routing</div>
+                <div className="text-sm font-black text-[#A7BEAE] font-mono">Brahmaputra NW-2 Barge Ready</div>
               </div>
             </div>
           </div>

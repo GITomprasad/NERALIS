@@ -318,15 +318,15 @@ export const ChatbotWidget: React.FC = () => {
           // Headers
           if (trimmed.startsWith('### ')) {
             return (
-              <h4 key={idx} className="font-black text-sm text-[#19C6D2] mt-2 mb-1 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#19C6D2]" />
+              <h4 key={idx} className="font-black text-sm text-[#B85042] mt-2 mb-1 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#B85042]" />
                 <span>{trimmed.replace('### ', '')}</span>
               </h4>
             );
           }
           if (trimmed.startsWith('## ')) {
             return (
-              <h3 key={idx} className="font-black text-sm text-[#19C6D2] mt-2 mb-1">
+              <h3 key={idx} className="font-black text-sm text-[#B85042] mt-2 mb-1">
                 {trimmed.replace('## ', '')}
               </h3>
             );
@@ -346,8 +346,8 @@ export const ChatbotWidget: React.FC = () => {
             const textContent = trimmed.substring(2);
             return (
               <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
-                <span className="text-[#19C6D2] font-bold">•</span>
-                <div className="flex-1 text-[#F5F7FA]">{formatInlineMarkup(textContent)}</div>
+                <span className="text-[#B85042] font-bold">•</span>
+                <div className="flex-1 text-[#30342F]">{formatInlineMarkup(textContent)}</div>
               </div>
             );
           }
@@ -358,14 +358,14 @@ export const ChatbotWidget: React.FC = () => {
             if (match) {
               return (
                 <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
-                  <span className="font-bold text-[#438BFF] text-[11px] font-mono">{match[1]}</span>
-                  <div className="flex-1 text-[#F5F7FA]">{formatInlineMarkup(match[2])}</div>
+                  <span className="font-bold text-[#A7BEAE] text-[11px] font-mono">{match[1]}</span>
+                  <div className="flex-1 text-[#30342F]">{formatInlineMarkup(match[2])}</div>
                 </div>
               );
             }
           }
 
-          return <p key={idx} className="text-[#F5F7FA]">{formatInlineMarkup(trimmed)}</p>;
+          return <p key={idx} className="text-[#30342F]">{formatInlineMarkup(trimmed)}</p>;
         })}
       </div>
     );
@@ -377,21 +377,21 @@ export const ChatbotWidget: React.FC = () => {
     return parts.map((part, index) => {
       if (part.startsWith('**') && part.endsWith('**')) {
         return (
-          <strong key={index} className="font-bold text-[#252124]">
+          <strong key={index} className="font-bold text-[#30342F]">
             {part.slice(2, -2)}
           </strong>
         );
       }
       if (part.startsWith('`') && part.endsWith('`')) {
         return (
-          <code key={index} className="bg-[#EDE4E2] text-[#990011] font-mono text-[10px] px-1 py-0.5 rounded border border-[#E7DAD8]">
+          <code key={index} className="bg-[#D5D8C3] text-[#B85042] font-mono text-[10px] px-1 py-0.5 rounded border border-[#D6D8C8]">
             {part.slice(1, -1)}
           </code>
         );
       }
       if (part.startsWith('*') && part.endsWith('*')) {
         return (
-          <em key={index} className="italic text-[#786D6D]">
+          <em key={index} className="italic text-[#74796F]">
             {part.slice(1, -1)}
           </em>
         );
@@ -407,7 +407,7 @@ export const ChatbotWidget: React.FC = () => {
         <div className="fixed bottom-4 right-4 z-[4000]">
           <button
             onClick={toggleChatbot}
-            className="w-11 h-11 rounded-full bg-[#990011] hover:bg-[#80000e] text-white border-2 border-white/20 shadow-lg flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
+            className="w-11 h-11 rounded-full bg-[#B85042] hover:bg-[#9E4336] text-white border-2 border-white/20 shadow-lg flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
             title="Open NERALIS Sahayak AI Assistant"
             aria-label="Open AI Assistant"
           >
@@ -419,29 +419,29 @@ export const ChatbotWidget: React.FC = () => {
       {/* 2. Sleek AI Assistant Chat Dialog Window - Cherry Red + Soft Off-White */}
       {isChatbotOpen && (
         <div
-          className={`fixed z-[4500] bg-[#FFFFFF] rounded-xl shadow-2xl border border-[#E7DAD8] flex flex-col overflow-hidden transition-all duration-150 ${
+          className={`fixed z-[4500] bg-[#FFFFFF] rounded-xl shadow-2xl border border-[#D6D8C8] flex flex-col overflow-hidden transition-all duration-150 ${
             isExpanded
               ? 'inset-4 sm:inset-8 max-w-5xl mx-auto'
               : 'bottom-4 right-4 w-[380px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-5rem)]'
           }`}
         >
           {/* Header */}
-          <div className="bg-[#FCF6F5] text-[#252124] px-3.5 py-2.5 flex items-center justify-between select-none shrink-0 border-b border-[#E7DAD8]">
+          <div className="bg-[#E7E8D1] text-[#30342F] px-3.5 py-2.5 flex items-center justify-between select-none shrink-0 border-b border-[#D6D8C8]">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-[#EDE4E2] border border-[#E7DAD8] flex items-center justify-center shrink-0">
-                <Bot className="w-4 h-4 text-[#990011]" />
+              <div className="w-7 h-7 rounded-lg bg-[#D5D8C3] border border-[#D6D8C8] flex items-center justify-center shrink-0">
+                <Bot className="w-4 h-4 text-[#B85042]" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-xs tracking-tight text-[#252124] truncate">
+                  <span className="font-semibold text-xs tracking-tight text-[#30342F] truncate">
                     NERALIS Sahayak
                   </span>
-                  <span className="text-[9px] bg-[#990011]/10 text-[#990011] px-1 py-0.2 rounded font-semibold uppercase border border-[#990011]/20">
+                  <span className="text-[9px] bg-[#B85042]/10 text-[#B85042] px-1 py-0.2 rounded font-semibold uppercase border border-[#B85042]/20">
                     AI
                   </span>
                 </div>
-                <div className="text-[10px] text-[#786D6D] flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
+                <div className="text-[10px] text-[#74796F] flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#A7BEAE]" />
                   <span>89 NER Districts</span>
                 </div>
               </div>
@@ -457,7 +457,7 @@ export const ChatbotWidget: React.FC = () => {
                   addToast('Voice Narration', autoSpeak ? 'Voice output muted.' : 'Voice output enabled.', 'INFO');
                 }}
                 className={`p-1 rounded-md transition-colors cursor-pointer border ${
-                  autoSpeak ? 'bg-[#D97706] text-white border-amber-600 font-bold' : 'bg-[#FFFFFF] hover:bg-[#EDE4E2] text-[#786D6D] border-[#E7DAD8]'
+                  autoSpeak ? 'bg-[#D97706] text-white border-amber-600 font-bold' : 'bg-[#FFFFFF] hover:bg-[#D5D8C3] text-[#74796F] border-[#D6D8C8]'
                 }`}
                 title={autoSpeak ? 'Mute Speech Synthesis' : 'Enable Voice Audio Output'}
               >
@@ -467,7 +467,7 @@ export const ChatbotWidget: React.FC = () => {
               {/* Clear History */}
               <button
                 onClick={clearChatHistory}
-                className="p-1 rounded-md bg-[#FFFFFF] hover:bg-[#EDE4E2] text-[#786D6D] hover:text-[#990011] transition-colors cursor-pointer border border-[#E7DAD8]"
+                className="p-1 rounded-md bg-[#FFFFFF] hover:bg-[#D5D8C3] text-[#74796F] hover:text-[#B85042] transition-colors cursor-pointer border border-[#D6D8C8]"
                 title="Clear Chat History"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -476,7 +476,7 @@ export const ChatbotWidget: React.FC = () => {
               {/* Expand / Minimize */}
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="hidden sm:block p-1 rounded-md bg-[#FFFFFF] hover:bg-[#EDE4E2] text-[#786D6D] hover:text-[#252124] transition-colors cursor-pointer border border-[#E7DAD8]"
+                className="hidden sm:block p-1 rounded-md bg-[#FFFFFF] hover:bg-[#D5D8C3] text-[#74796F] hover:text-[#30342F] transition-colors cursor-pointer border border-[#D6D8C8]"
                 title={isExpanded ? 'Restore Normal Window' : 'Expand Window'}
               >
                 {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
@@ -485,7 +485,7 @@ export const ChatbotWidget: React.FC = () => {
               {/* Close */}
               <button
                 onClick={toggleChatbot}
-                className="p-1 rounded-md bg-[#FFFFFF] hover:bg-[#EDE4E2] text-[#786D6D] hover:text-[#990011] transition-colors cursor-pointer border border-[#E7DAD8]"
+                className="p-1 rounded-md bg-[#FFFFFF] hover:bg-[#D5D8C3] text-[#74796F] hover:text-[#B85042] transition-colors cursor-pointer border border-[#D6D8C8]"
                 title="Close Assistant"
               >
                 <X className="w-4 h-4" />
@@ -494,21 +494,21 @@ export const ChatbotWidget: React.FC = () => {
           </div>
 
           {/* Network Mode Status Banner */}
-          <div className="bg-[#EDE4E2] border-b border-[#E7DAD8] px-3 py-1.5 flex items-center justify-between text-[10px] text-[#786D6D] shrink-0 font-medium">
+          <div className="bg-[#D5D8C3] border-b border-[#D6D8C8] px-3 py-1.5 flex items-center justify-between text-[10px] text-[#74796F] shrink-0 font-medium">
             <div className="flex items-center gap-1.5">
               {networkMode === 'OFFLINE' ? (
                 <>
-                  <WifiOff className="w-3 h-3 text-[#990011]" />
-                  <span className="text-[#990011] font-bold">Offline Intelligence Active</span>
+                  <WifiOff className="w-3 h-3 text-[#B85042]" />
+                  <span className="text-[#B85042] font-bold">Offline Intelligence Active</span>
                 </>
               ) : (
                 <>
-                  <Wifi className="w-3 h-3 text-[#10B981]" />
-                  <span className="text-[#047857] font-bold">Live Evidence Engine Connected</span>
+                  <Wifi className="w-3 h-3 text-[#A7BEAE]" />
+                  <span className="text-[#2C5242] font-bold">Live Evidence Engine Connected</span>
                 </>
               )}
             </div>
-            <div className="flex items-center gap-1 text-[9px] text-[#786D6D] font-mono">
+            <div className="flex items-center gap-1 text-[9px] text-[#74796F] font-mono">
               <span>Lang: {currentLanguage.toUpperCase()}</span>
               <span>•</span>
               <span>GBDT v3.4</span>
@@ -516,7 +516,7 @@ export const ChatbotWidget: React.FC = () => {
           </div>
 
           {/* Chat Messages Feed */}
-          <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 bg-[#FCF6F5]">
+          <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 bg-[#E7E8D1]">
             {messages.map((msg) => {
               const isUser = msg.sender === 'user';
               return (
@@ -525,7 +525,7 @@ export const ChatbotWidget: React.FC = () => {
                   className={`flex gap-2.5 ${isUser ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-150`}
                 >
                   {!isUser && (
-                    <div className="w-6 h-6 rounded-lg bg-[#EDE4E2] text-[#990011] border border-[#E7DAD8] flex items-center justify-center font-bold shrink-0 mt-0.5">
+                    <div className="w-6 h-6 rounded-lg bg-[#D5D8C3] text-[#B85042] border border-[#D6D8C8] flex items-center justify-center font-bold shrink-0 mt-0.5">
                       <Bot className="w-3.5 h-3.5" />
                     </div>
                   )}
@@ -535,8 +535,8 @@ export const ChatbotWidget: React.FC = () => {
                     <div
                       className={`p-3 rounded-2xl shadow-sm text-xs ${
                         isUser
-                          ? 'bg-[#990011] text-white rounded-tr-xs'
-                          : 'bg-[#FFFFFF] text-[#252124] border border-[#E7DAD8] rounded-tl-xs'
+                          ? 'bg-[#B85042] text-white rounded-tr-xs'
+                          : 'bg-[#FFFFFF] text-[#30342F] border border-[#D6D8C8] rounded-tl-xs'
                       }`}
                     >
                       {isUser ? (
@@ -553,28 +553,28 @@ export const ChatbotWidget: React.FC = () => {
                           <button
                             key={aIdx}
                             onClick={() => handleActionClick(act)}
-                            className="bg-[#EDE4E2] hover:bg-[#E7DAD8] text-[#990011] border border-[#E7DAD8] font-bold px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1.5 shadow-xs transition-all hover:scale-102 cursor-pointer"
+                            className="bg-[#D5D8C3] hover:bg-[#E7E8D1] text-[#B85042] border border-[#D6D8C8] font-bold px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1.5 shadow-xs transition-all hover:scale-102 cursor-pointer"
                           >
                             <span>{act.label}</span>
-                            <ArrowRight className="w-3 h-3 text-[#990011]" />
+                            <ArrowRight className="w-3 h-3 text-[#B85042]" />
                           </button>
                         ))}
                       </div>
                     )}
 
                     {/* Message Metadata & Copy/Audio controls */}
-                    <div className={`flex items-center gap-2 text-[10px] text-[#786D6D] px-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`flex items-center gap-2 text-[10px] text-[#74796F] px-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
                       <span>{msg.timestamp}</span>
                       {!isUser && (
                         <>
                           <span>•</span>
                           <button
                             onClick={() => copyToClipboard(msg.text, msg.id)}
-                            className="hover:text-[#252124] flex items-center gap-0.5 cursor-pointer"
+                            className="hover:text-[#30342F] flex items-center gap-0.5 cursor-pointer"
                             title="Copy answer"
                           >
                             {copiedMsgId === msg.id ? (
-                              <Check className="w-3 h-3 text-[#10B981]" />
+                              <Check className="w-3 h-3 text-[#A7BEAE]" />
                             ) : (
                               <Copy className="w-3 h-3" />
                             )}
@@ -583,7 +583,7 @@ export const ChatbotWidget: React.FC = () => {
                           <span>•</span>
                           <button
                             onClick={() => speakText(msg.text)}
-                            className="hover:text-[#252124] flex items-center gap-0.5 cursor-pointer"
+                            className="hover:text-[#30342F] flex items-center gap-0.5 cursor-pointer"
                             title="Read answer out loud"
                           >
                             <Volume2 className="w-3 h-3" />
@@ -596,8 +596,8 @@ export const ChatbotWidget: React.FC = () => {
                     {/* Suggested Follow-up Prompt Chips */}
                     {!isUser && msg.suggestions && msg.suggestions.length > 0 && (
                       <div className="space-y-1.5 pt-1">
-                        <div className="text-[9px] font-bold text-[#786D6D] uppercase tracking-wider flex items-center gap-1">
-                          <Sparkles className="w-2.5 h-2.5 text-[#990011]" />
+                        <div className="text-[9px] font-bold text-[#74796F] uppercase tracking-wider flex items-center gap-1">
+                          <Sparkles className="w-2.5 h-2.5 text-[#B85042]" />
                           Suggested Queries:
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -605,7 +605,7 @@ export const ChatbotWidget: React.FC = () => {
                             <button
                               key={sIdx}
                               onClick={() => handleSendMessage(sug)}
-                              className="bg-[#FFFFFF] hover:bg-[#EDE4E2] text-[#252124] border border-[#E7DAD8] px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors cursor-pointer text-left shadow-xs"
+                              className="bg-[#FFFFFF] hover:bg-[#D5D8C3] text-[#30342F] border border-[#D6D8C8] px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors cursor-pointer text-left shadow-xs"
                             >
                               {sug}
                             </button>
@@ -620,9 +620,9 @@ export const ChatbotWidget: React.FC = () => {
 
             {/* Loading Indicator */}
             {isLoading && (
-              <div className="flex items-center gap-2 text-xs text-[#252124] bg-[#FFFFFF] p-2.5 rounded-xl border border-[#E7DAD8] max-w-[220px] shadow-sm">
-                <RefreshCw className="w-3.5 h-3.5 text-[#990011] animate-spin" />
-                <span className="font-semibold text-[#252124]">Synthesizing GIS data...</span>
+              <div className="flex items-center gap-2 text-xs text-[#30342F] bg-[#FFFFFF] p-2.5 rounded-xl border border-[#D6D8C8] max-w-[220px] shadow-sm">
+                <RefreshCw className="w-3.5 h-3.5 text-[#B85042] animate-spin" />
+                <span className="font-semibold text-[#30342F]">Synthesizing GIS data...</span>
               </div>
             )}
 
@@ -630,7 +630,7 @@ export const ChatbotWidget: React.FC = () => {
           </div>
 
           {/* Footer Input Bar */}
-          <div className="p-3 bg-[#FFFFFF] border-t border-[#E7DAD8] shrink-0 space-y-2">
+          <div className="p-3 bg-[#FFFFFF] border-t border-[#D6D8C8] shrink-0 space-y-2">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -644,8 +644,8 @@ export const ChatbotWidget: React.FC = () => {
                 onClick={handleToggleVoiceInput}
                 className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
                   isListening
-                    ? 'bg-[#990011] text-white border-red-700 animate-pulse'
-                    : 'bg-[#FCF6F5] hover:bg-[#EDE4E2] text-[#786D6D] border-[#E7DAD8]'
+                    ? 'bg-[#B85042] text-white border-red-700 animate-pulse'
+                    : 'bg-[#E7E8D1] hover:bg-[#D5D8C3] text-[#74796F] border-[#D6D8C8]'
                 }`}
                 title={isListening ? 'Listening... Click to cancel' : 'Click to Speak (Voice Input)'}
               >
@@ -659,7 +659,7 @@ export const ChatbotWidget: React.FC = () => {
                 value={inputQuery}
                 onChange={(e) => setInputQuery(e.target.value)}
                 placeholder={isListening ? 'Listening to your question...' : 'Ask about routes, districts, alerts, models, or offline...'}
-                className="flex-1 bg-[#FCF6F5] text-[#252124] placeholder-[#786D6D] text-xs rounded-xl px-3.5 py-2.5 border border-[#E7DAD8] focus:outline-none focus:border-[#990011] focus:ring-1 focus:ring-[#990011]/30 transition-all"
+                className="flex-1 bg-[#E7E8D1] text-[#30342F] placeholder-[#74796F] text-xs rounded-xl px-3.5 py-2.5 border border-[#D6D8C8] focus:outline-none focus:border-[#B85042] focus:ring-1 focus:ring-[#B85042]/30 transition-all"
               />
 
               {/* Send Button */}
@@ -673,9 +673,9 @@ export const ChatbotWidget: React.FC = () => {
               </button>
             </form>
 
-            <div className="flex items-center justify-between text-[9px] text-[#786D6D] px-1">
+            <div className="flex items-center justify-between text-[9px] text-[#74796F] px-1">
               <span>Official MDoNER Logistics Intelligence</span>
-              <span className="font-mono text-[#990011]">Press Enter to send</span>
+              <span className="font-mono text-[#B85042]">Press Enter to send</span>
             </div>
           </div>
         </div>
