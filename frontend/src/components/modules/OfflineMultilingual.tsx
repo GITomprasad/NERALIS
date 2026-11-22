@@ -64,10 +64,10 @@ export const OfflineMultilingual: React.FC = () => {
       {/* Header */}
       <div className="card-command flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-black text-[#30342F]">
+          <h2 className="text-base font-black text-[#29372D]">
             {t('module_8')} — Offline-First Architecture &amp; Multilingual Resilience
           </h2>
-          <p className="text-xs text-[#74796F] mt-0.5">
+          <p className="text-xs text-[#68766C] mt-0.5">
             Connectivity-Aware Lite Mode, Vector tile caching, delta synchronization, 2G bandwidth compression (under 2 KB payloads), and native 8-language support
           </p>
         </div>
@@ -83,14 +83,14 @@ export const OfflineMultilingual: React.FC = () => {
 
       {/* Network Connectivity Simulator Controls */}
       <div className="card-command space-y-3 text-xs">
-        <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#D6D8C8]">
+        <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-[#DFE5DD]">
           <div>
-            <span className="font-bold text-[#B85042] text-xs uppercase block">
+            <span className="font-bold text-[#1B3022] text-xs uppercase block">
               Field Connectivity Telemetry &amp; Network Simulation (Hardware: {effectiveConnectionType.toUpperCase()})
             </span>
-            <span className="text-[10px] text-[#74796F]">Auto-adapts to browser online/offline events, RTT, and effective network type</span>
+            <span className="text-[10px] text-[#68766C]">Auto-adapts to browser online/offline events, RTT, and effective network type</span>
           </div>
-          <span className={`px-2.5 py-1 rounded-full text-xs font-bold font-mono ${isLiteMode ? 'bg-[#FFB547]/20 text-[#FFB547] border border-[#FFB547]/30' : 'bg-[#A7BEAE]/20 text-[#A7BEAE] border border-[#A7BEAE]/30'}`}>
+          <span className={`px-2.5 py-1 rounded-full text-xs font-bold font-mono ${isLiteMode ? 'bg-[#FFB547]/20 text-[#FFB547] border border-[#FFB547]/30' : 'bg-[#7C9082]/20 text-[#7C9082] border border-[#7C9082]/30'}`}>
             {isLiteMode ? '⚠ LITE MODE ACTIVE' : '✓ 4G FULL STREAM'}
           </span>
         </div>
@@ -100,16 +100,16 @@ export const OfflineMultilingual: React.FC = () => {
             onClick={() => setNetworkOverride('AUTO')}
             className={`p-3.5 rounded-xl border text-left flex items-start gap-2.5 transition-all cursor-pointer ${
               networkOverride === 'AUTO'
-                ? 'bg-[#D5D8C3] border-[#B85042] shadow-command-glow'
-                : 'bg-[#E7E8D1] border-[#D6D8C8] hover:bg-[#FFFFFF]'
+                ? 'bg-[#DCE4DB] border-[#1B3022] shadow-command-glow'
+                : 'bg-[#F4F5F0] border-[#DFE5DD] hover:bg-[#FFFFFF]'
             }`}
           >
-            <div className="w-7 h-7 rounded-lg bg-[#B85042]/15 border border-[#B85042]/30 flex items-center justify-center shrink-0">
-              <Radio className="w-3.5 h-3.5 text-[#B85042]" />
+            <div className="w-7 h-7 rounded-lg bg-[#1B3022]/15 border border-[#1B3022]/30 flex items-center justify-center shrink-0">
+              <Radio className="w-3.5 h-3.5 text-[#1B3022]" />
             </div>
             <div>
-              <div className="font-bold text-[#30342F] text-xs">Auto Network Detection</div>
-              <div className="text-[10px] text-[#74796F] mt-0.5">Real-time hardware telemetry ({effectiveConnectionType})</div>
+              <div className="font-bold text-[#29372D] text-xs">Auto Network Detection</div>
+              <div className="text-[10px] text-[#68766C] mt-0.5">Real-time hardware telemetry ({effectiveConnectionType})</div>
             </div>
           </button>
 
@@ -117,16 +117,16 @@ export const OfflineMultilingual: React.FC = () => {
             onClick={() => setNetworkOverride('GOOD')}
             className={`p-3.5 rounded-xl border text-left flex items-start gap-2.5 transition-all cursor-pointer ${
               networkOverride === 'GOOD'
-                ? 'bg-[#D5D8C3] border-[#A7BEAE] shadow-sm'
-                : 'bg-[#E7E8D1] border-[#D6D8C8] hover:bg-[#FFFFFF]'
+                ? 'bg-[#DCE4DB] border-[#7C9082] shadow-sm'
+                : 'bg-[#F4F5F0] border-[#DFE5DD] hover:bg-[#FFFFFF]'
             }`}
           >
-            <div className="w-7 h-7 rounded-lg bg-[#A7BEAE]/15 border border-[#A7BEAE]/30 flex items-center justify-center shrink-0">
-              <Wifi className="w-3.5 h-3.5 text-[#A7BEAE]" />
+            <div className="w-7 h-7 rounded-lg bg-[#7C9082]/15 border border-[#7C9082]/30 flex items-center justify-center shrink-0">
+              <Wifi className="w-3.5 h-3.5 text-[#7C9082]" />
             </div>
             <div>
-              <div className="font-bold text-[#30342F] text-xs">4G / Broadband Online</div>
-              <div className="text-[10px] text-[#74796F] mt-0.5">Full vector map, live MQTT telemetry &amp; cloud sync</div>
+              <div className="font-bold text-[#29372D] text-xs">4G / Broadband Online</div>
+              <div className="text-[10px] text-[#68766C] mt-0.5">Full vector map, live MQTT telemetry &amp; cloud sync</div>
             </div>
           </button>
 
@@ -134,16 +134,16 @@ export const OfflineMultilingual: React.FC = () => {
             onClick={() => setNetworkOverride('LIMITED')}
             className={`p-3.5 rounded-xl border text-left flex items-start gap-2.5 transition-all cursor-pointer ${
               networkOverride === 'LIMITED'
-                ? 'bg-[#D5D8C3] border-[#FFB547] shadow-sm'
-                : 'bg-[#E7E8D1] border-[#D6D8C8] hover:bg-[#FFFFFF]'
+                ? 'bg-[#DCE4DB] border-[#FFB547] shadow-sm'
+                : 'bg-[#F4F5F0] border-[#DFE5DD] hover:bg-[#FFFFFF]'
             }`}
           >
             <div className="w-7 h-7 rounded-lg bg-[#FFB547]/15 border border-[#FFB547]/30 flex items-center justify-center shrink-0">
               <SignalLow className="w-3.5 h-3.5 text-[#FFB547]" />
             </div>
             <div>
-              <div className="font-bold text-[#30342F] text-xs">3G / Limited Lite Mode</div>
-              <div className="text-[10px] text-[#74796F] mt-0.5">Throttled polling, reduced graphics load</div>
+              <div className="font-bold text-[#29372D] text-xs">3G / Limited Lite Mode</div>
+              <div className="text-[10px] text-[#68766C] mt-0.5">Throttled polling, reduced graphics load</div>
             </div>
           </button>
 
@@ -151,16 +151,16 @@ export const OfflineMultilingual: React.FC = () => {
             onClick={() => setNetworkOverride('OFFLINE')}
             className={`p-3.5 rounded-xl border text-left flex items-start gap-2.5 transition-all cursor-pointer ${
               networkOverride === 'OFFLINE'
-                ? 'bg-[#D5D8C3] border-[#FF5252] shadow-sm'
-                : 'bg-[#E7E8D1] border-[#D6D8C8] hover:bg-[#FFFFFF]'
+                ? 'bg-[#DCE4DB] border-[#FF5252] shadow-sm'
+                : 'bg-[#F4F5F0] border-[#DFE5DD] hover:bg-[#FFFFFF]'
             }`}
           >
             <div className="w-7 h-7 rounded-lg bg-[#FF5252]/15 border border-[#FF5252]/30 flex items-center justify-center shrink-0">
               <WifiOff className="w-3.5 h-3.5 text-[#FF5252]" />
             </div>
             <div>
-              <div className="font-bold text-[#30342F] text-xs">Offline / 2G Deadzone</div>
-              <div className="text-[10px] text-[#74796F] mt-0.5">IndexedDB cached snapshot &amp; USSD fallback</div>
+              <div className="font-bold text-[#29372D] text-xs">Offline / 2G Deadzone</div>
+              <div className="text-[10px] text-[#68766C] mt-0.5">IndexedDB cached snapshot &amp; USSD fallback</div>
             </div>
           </button>
         </div>
@@ -168,11 +168,11 @@ export const OfflineMultilingual: React.FC = () => {
 
       {/* Bandwidth Optimisation Techniques (Quantified Benchmark Table) */}
       <div className="card-command space-y-3 text-xs">
-        <span className="font-bold text-[#B85042] text-xs uppercase block">
+        <span className="font-bold text-[#1B3022] text-xs uppercase block">
           Bandwidth Optimisation Techniques &amp; Savings Metrics
         </span>
 
-        <div className="border border-[#D6D8C8] rounded-xl overflow-x-auto">
+        <div className="border border-[#DFE5DD] rounded-xl overflow-x-auto">
           <table className="table-command min-w-[550px]">
             <thead>
               <tr>
@@ -183,29 +183,29 @@ export const OfflineMultilingual: React.FC = () => {
             </thead>
             <tbody>
               <tr>
-                <td className="font-bold text-[#30342F]">Vector Map Tiles (MapLibre)</td>
+                <td className="font-bold text-[#29372D]">Vector Map Tiles (MapLibre)</td>
                 <td>10× smaller than raster png tiles; vector rendering on-device</td>
-                <td className="font-bold text-[#A7BEAE] font-mono">90% Map Data Saving</td>
+                <td className="font-bold text-[#7C9082] font-mono">90% Map Data Saving</td>
               </tr>
               <tr>
-                <td className="font-bold text-[#30342F]">Delta Sync Protocol</td>
+                <td className="font-bold text-[#29372D]">Delta Sync Protocol</td>
                 <td>Only changed attribute fields sent over wire instead of whole record</td>
-                <td className="font-bold text-[#A7BEAE] font-mono">75–80% Bandwidth Saving</td>
+                <td className="font-bold text-[#7C9082] font-mono">75–80% Bandwidth Saving</td>
               </tr>
               <tr>
-                <td className="font-bold text-[#30342F]">Automated Image Compression</td>
+                <td className="font-bold text-[#29372D]">Automated Image Compression</td>
                 <td>Field damage photos auto-compressed to ≤ 200 KB before upload</td>
-                <td className="font-bold text-[#A7BEAE] font-mono">85% Photo Size Saving</td>
+                <td className="font-bold text-[#7C9082] font-mono">85% Photo Size Saving</td>
               </tr>
               <tr>
-                <td className="font-bold text-[#30342F]">SMS Keyword API</td>
+                <td className="font-bold text-[#29372D]">SMS Keyword API</td>
                 <td>Critical route status via SMS: 'ROAD NH37' returns current status</td>
-                <td className="font-bold text-[#A7BEAE] font-mono">Zero Internet Data Needed</td>
+                <td className="font-bold text-[#7C9082] font-mono">Zero Internet Data Needed</td>
               </tr>
               <tr>
-                <td className="font-bold text-[#30342F]">USSD Gateway (*123#)</td>
+                <td className="font-bold text-[#29372D]">USSD Gateway (*123#)</td>
                 <td>Interactive menu functional on 2G feature phones</td>
-                <td className="font-bold text-[#A7BEAE] font-mono">100% Feature-Phone Compatible</td>
+                <td className="font-bold text-[#7C9082] font-mono">100% Feature-Phone Compatible</td>
               </tr>
             </tbody>
           </table>
@@ -216,9 +216,9 @@ export const OfflineMultilingual: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left: Pre-Downloaded Offline District Packages (6 cols) */}
         <div className="lg:col-span-6 card-command space-y-3 text-xs">
-          <div className="flex items-center justify-between pb-2 border-b border-[#D6D8C8]">
-            <span className="font-bold text-[#B85042] text-xs uppercase flex items-center gap-1.5">
-              <Database className="w-4 h-4 text-[#B85042]" /> Offline Vector Tile Packages (MBTiles)
+          <div className="flex items-center justify-between pb-2 border-b border-[#DFE5DD]">
+            <span className="font-bold text-[#1B3022] text-xs uppercase flex items-center gap-1.5">
+              <Database className="w-4 h-4 text-[#1B3022]" /> Offline Vector Tile Packages (MBTiles)
             </span>
             <button
               onClick={handleTriggerSync}
@@ -234,14 +234,14 @@ export const OfflineMultilingual: React.FC = () => {
             {cachedDistricts.map((d, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between p-3 bg-[#E7E8D1] rounded-xl border border-[#D6D8C8]"
+                className="flex items-center justify-between p-3 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD]"
               >
                 <div>
-                  <div className="font-bold text-[#30342F]">{d.name}</div>
-                  <div className="text-[10px] text-[#74796F]">{d.tiles.toLocaleString()} Vector Tiles Cached</div>
+                  <div className="font-bold text-[#29372D]">{d.name}</div>
+                  <div className="text-[10px] text-[#68766C]">{d.tiles.toLocaleString()} Vector Tiles Cached</div>
                 </div>
                 <div className="text-right">
-                  <span className="bg-[#A7BEAE]/20 text-[#A7BEAE] border border-[#A7BEAE]/30 font-bold px-2 py-0.5 rounded text-[10px] font-mono">
+                  <span className="bg-[#7C9082]/20 text-[#7C9082] border border-[#7C9082]/30 font-bold px-2 py-0.5 rounded text-[10px] font-mono">
                     {d.status} ({d.size})
                   </span>
                 </div>
@@ -252,9 +252,9 @@ export const OfflineMultilingual: React.FC = () => {
 
         {/* Right: Multilingual Coverage Matrix (6 cols) */}
         <div className="lg:col-span-6 card-command space-y-3 text-xs">
-          <div className="pb-2 border-b border-[#D6D8C8]">
-            <span className="font-bold text-[#B85042] text-xs uppercase flex items-center gap-1.5">
-              <Globe className="w-4 h-4 text-[#A7BEAE]" /> 8 Northeast States Multilingual Coverage
+          <div className="pb-2 border-b border-[#DFE5DD]">
+            <span className="font-bold text-[#1B3022] text-xs uppercase flex items-center gap-1.5">
+              <Globe className="w-4 h-4 text-[#7C9082]" /> 8 Northeast States Multilingual Coverage
             </span>
           </div>
 
@@ -268,17 +268,17 @@ export const OfflineMultilingual: React.FC = () => {
                 }}
                 className={`p-3 rounded-xl border cursor-pointer transition-all ${
                   currentLanguage === l.code
-                    ? 'bg-[#D5D8C3] border-[#B85042] font-bold shadow-command-glow'
-                    : 'bg-[#E7E8D1] border-[#D6D8C8] hover:bg-[#FFFFFF]'
+                    ? 'bg-[#DCE4DB] border-[#1B3022] font-bold shadow-command-glow'
+                    : 'bg-[#F4F5F0] border-[#DFE5DD] hover:bg-[#FFFFFF]'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#30342F]">{l.native}</span>
-                  <span className="text-[9px] bg-[#FFFFFF] text-[#74796F] px-1.5 py-0.5 rounded border border-[#D6D8C8] uppercase font-mono">
+                  <span className="text-xs text-[#29372D]">{l.native}</span>
+                  <span className="text-[9px] bg-[#FFFFFF] text-[#68766C] px-1.5 py-0.5 rounded border border-[#DFE5DD] uppercase font-mono">
                     {l.code}
                   </span>
                 </div>
-                <div className="text-[10px] text-[#74796F] mt-0.5">{l.states}</div>
+                <div className="text-[10px] text-[#68766C] mt-0.5">{l.states}</div>
               </div>
             ))}
           </div>

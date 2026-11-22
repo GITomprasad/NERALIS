@@ -261,14 +261,14 @@ export const FieldReportingApp: React.FC = () => {
       <div className="card-command flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-black text-[#30342F]">
+            <h2 className="text-base font-black text-[#29372D]">
               {t('module_6')} — PWA Field Operations &amp; Incident Reporting
             </h2>
-            <span className="bg-[#A7BEAE]/15 text-[#A7BEAE] border border-[#A7BEAE]/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono">
+            <span className="bg-[#7C9082]/15 text-[#7C9082] border border-[#7C9082]/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono">
               Offline-First Mobile PWA
             </span>
           </div>
-          <p className="text-xs text-[#74796F] mt-0.5">
+          <p className="text-xs text-[#68766C] mt-0.5">
             Offline-first ground incident reports, GPS geotagging, AR crack measurement, digital sign-off, and one-tap satellite SOS
           </p>
         </div>
@@ -291,29 +291,29 @@ export const FieldReportingApp: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left: Mobile-Friendly Field Report Form (7 cols) */}
         <div className="lg:col-span-7 card-command space-y-4 text-xs">
-          <div className="flex items-center justify-between border-b border-[#D6D8C8] pb-3">
-            <span className="font-extrabold text-[#B85042] text-xs uppercase flex items-center gap-2">
-              <Camera className="w-4 h-4 text-[#B85042]" /> Incident Submission Form
+          <div className="flex items-center justify-between border-b border-[#DFE5DD] pb-3">
+            <span className="font-extrabold text-[#1B3022] text-xs uppercase flex items-center gap-2">
+              <Camera className="w-4 h-4 text-[#1B3022]" /> Incident Submission Form
             </span>
             {networkMode === 'OFFLINE' ? (
               <span className="bg-[#FF5252]/15 text-[#FF5252] border border-[#FF5252]/30 font-bold px-2 py-0.5 rounded-full text-[10px] flex items-center gap-1 font-mono">
                 <WifiOff className="w-3 h-3" /> Offline Mode ({outbox.length} in Outbox)
               </span>
             ) : (
-              <span className="bg-[#A7BEAE]/15 text-[#A7BEAE] border border-[#A7BEAE]/30 font-bold px-2 py-0.5 rounded-full text-[10px] flex items-center gap-1 font-mono">
-                <ShieldCheck className="w-3 h-3 text-[#A7BEAE]" /> Direct Sync Online
+              <span className="bg-[#7C9082]/15 text-[#7C9082] border border-[#7C9082]/30 font-bold px-2 py-0.5 rounded-full text-[10px] flex items-center gap-1 font-mono">
+                <ShieldCheck className="w-3 h-3 text-[#7C9082]" /> Direct Sync Online
               </span>
             )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Step 1: Location, State, District & GPS */}
-            <div className="space-y-3 p-3.5 bg-[#E7E8D1] rounded-xl border border-[#D6D8C8]">
+            <div className="space-y-3 p-3.5 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD]">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-[#30342F] uppercase flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-[#B85042]" /> Step 1: Location &amp; GPS Coordinates
+                <span className="font-bold text-[#29372D] uppercase flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-[#1B3022]" /> Step 1: Location &amp; GPS Coordinates
                 </span>
-                <span className="text-[10px] bg-[#A7BEAE]/15 text-[#A7BEAE] border border-[#A7BEAE]/30 font-bold px-2 py-0.5 rounded font-mono">
+                <span className="text-[10px] bg-[#7C9082]/15 text-[#7C9082] border border-[#7C9082]/30 font-bold px-2 py-0.5 rounded font-mono">
                   {currentCoords.lat}° N, {currentCoords.lng}° E
                 </span>
               </div>
@@ -321,39 +321,39 @@ export const FieldReportingApp: React.FC = () => {
               {/* State & District Selectors */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block font-bold text-[#74796F] text-[10px] uppercase mb-1">State</label>
+                  <label className="block font-bold text-[#68766C] text-[10px] uppercase mb-1">State</label>
                   <select
                     value={selectedState}
                     onChange={(e) => setSelectedState(e.target.value)}
-                    className="w-full p-2.5 bg-[#FFFFFF] border border-[#D6D8C8] rounded-xl text-xs font-semibold text-[#30342F] focus:ring-1 focus:ring-[#B85042] cursor-pointer"
+                    className="w-full p-2.5 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs font-semibold text-[#29372D] focus:ring-1 focus:ring-[#1B3022] cursor-pointer"
                   >
-                    <option value="Assam" className="bg-[#E7E8D1]">Assam</option>
-                    <option value="Arunachal" className="bg-[#E7E8D1]">Arunachal Pradesh</option>
-                    <option value="Manipur" className="bg-[#E7E8D1]">Manipur</option>
-                    <option value="Meghalaya" className="bg-[#E7E8D1]">Meghalaya</option>
-                    <option value="Mizoram" className="bg-[#E7E8D1]">Mizoram</option>
-                    <option value="Nagaland" className="bg-[#E7E8D1]">Nagaland</option>
-                    <option value="Sikkim" className="bg-[#E7E8D1]">Sikkim</option>
-                    <option value="Tripura" className="bg-[#E7E8D1]">Tripura</option>
+                    <option value="Assam" className="bg-[#F4F5F0]">Assam</option>
+                    <option value="Arunachal" className="bg-[#F4F5F0]">Arunachal Pradesh</option>
+                    <option value="Manipur" className="bg-[#F4F5F0]">Manipur</option>
+                    <option value="Meghalaya" className="bg-[#F4F5F0]">Meghalaya</option>
+                    <option value="Mizoram" className="bg-[#F4F5F0]">Mizoram</option>
+                    <option value="Nagaland" className="bg-[#F4F5F0]">Nagaland</option>
+                    <option value="Sikkim" className="bg-[#F4F5F0]">Sikkim</option>
+                    <option value="Tripura" className="bg-[#F4F5F0]">Tripura</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#74796F] text-[10px] uppercase mb-1">District</label>
+                  <label className="block font-bold text-[#68766C] text-[10px] uppercase mb-1">District</label>
                   <select
                     value={district}
                     onChange={(e) => setDistrict(e.target.value)}
-                    className="w-full p-2.5 bg-[#FFFFFF] border border-[#D6D8C8] rounded-xl text-xs font-semibold text-[#30342F] focus:ring-1 focus:ring-[#B85042] cursor-pointer"
+                    className="w-full p-2.5 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs font-semibold text-[#29372D] focus:ring-1 focus:ring-[#1B3022] cursor-pointer"
                   >
                     {availableDistricts.length > 0 ? (
                       availableDistricts.map((d) => (
-                        <option key={d.id} value={d.id} className="bg-[#E7E8D1]">
+                        <option key={d.id} value={d.id} className="bg-[#F4F5F0]">
                           {d.name} ({d.state})
                         </option>
                       ))
                     ) : (
                       districts.map((d) => (
-                        <option key={d.id} value={d.id} className="bg-[#E7E8D1]">
+                        <option key={d.id} value={d.id} className="bg-[#F4F5F0]">
                           {d.name} ({d.state})
                         </option>
                       ))
@@ -364,7 +364,7 @@ export const FieldReportingApp: React.FC = () => {
 
               {/* Highway Milestone & Voice input */}
               <div>
-                <label className="block font-bold text-[#74796F] text-[10px] uppercase mb-1">
+                <label className="block font-bold text-[#68766C] text-[10px] uppercase mb-1">
                   Highway Milestone / Landmark Point
                 </label>
                 <div className="flex gap-2">
@@ -374,22 +374,22 @@ export const FieldReportingApp: React.FC = () => {
                     value={locationName}
                     onChange={(e) => setLocationName(e.target.value)}
                     placeholder="e.g. NH-27 Changsari Culvert Km 14"
-                    className="flex-1 p-2.5 bg-[#FFFFFF] border border-[#D6D8C8] rounded-xl text-xs font-semibold text-[#30342F] focus:ring-1 focus:ring-[#B85042] focus:outline-none"
+                    className="flex-1 p-2.5 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs font-semibold text-[#29372D] focus:ring-1 focus:ring-[#1B3022] focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={handleCaptureGPS}
                     disabled={isLocating}
-                    className="px-3 py-2 bg-[#D5D8C3] hover:bg-[#D5D8C3] text-[#B85042] border border-[#D6D8C8] rounded-xl font-bold text-xs flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors"
+                    className="px-3 py-2 bg-[#DCE4DB] hover:bg-[#DCE4DB] text-[#1B3022] border border-[#DFE5DD] rounded-xl font-bold text-xs flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors"
                     title="Capture live GPS location"
                   >
-                    <Crosshair className={`w-4 h-4 ${isLocating ? 'animate-spin text-[#B85042]' : ''}`} />
+                    <Crosshair className={`w-4 h-4 ${isLocating ? 'animate-spin text-[#1B3022]' : ''}`} />
                     <span className="hidden sm:inline">Capture GPS</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleVoiceRecord}
-                    className="px-3 py-2 bg-[#D5D8C3] hover:bg-[#D5D8C3] text-[#FFB547] border border-[#D6D8C8] rounded-xl font-bold text-xs flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors"
+                    className="px-3 py-2 bg-[#DCE4DB] hover:bg-[#DCE4DB] text-[#FFB547] border border-[#DFE5DD] rounded-xl font-bold text-xs flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors"
                     title="Voice-to-Text"
                   >
                     <Mic className={`w-4 h-4 ${isListeningVoice ? 'text-[#FF5252] animate-pulse' : ''}`} />
@@ -400,34 +400,34 @@ export const FieldReportingApp: React.FC = () => {
             </div>
 
             {/* Step 2: Incident Classification & Severity */}
-            <div className="space-y-3 p-3.5 bg-[#E7E8D1] rounded-xl border border-[#D6D8C8]">
-              <span className="font-bold text-[#30342F] text-[11px] uppercase block">
+            <div className="space-y-3 p-3.5 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD]">
+              <span className="font-bold text-[#29372D] text-[11px] uppercase block">
                 Step 2: Incident Category &amp; Severity
               </span>
 
               <div>
-                <label className="block font-bold text-[#74796F] text-[10px] uppercase mb-1">Incident Category</label>
+                <label className="block font-bold text-[#68766C] text-[10px] uppercase mb-1">Incident Category</label>
                 <select
                   value={incidentType}
                   onChange={(e) => setIncidentType(e.target.value)}
-                  className="w-full p-2.5 bg-[#FFFFFF] border border-[#D6D8C8] rounded-xl text-xs font-semibold text-[#30342F] focus:ring-1 focus:ring-[#B85042] cursor-pointer"
+                  className="w-full p-2.5 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs font-semibold text-[#29372D] focus:ring-1 focus:ring-[#1B3022] cursor-pointer"
                 >
-                  <option value="Roadbed Erosion / Pavement Subsidence" className="bg-[#E7E8D1]">Roadbed Erosion / Pavement Subsidence</option>
-                  <option value="Active Rockslide / Debris Avalanche" className="bg-[#E7E8D1]">Active Rockslide / Debris Avalanche</option>
-                  <option value="Bridge Scour / Girder Damage" className="bg-[#E7E8D1]">Bridge Scour / Girder Damage</option>
-                  <option value="Waterlogging / Flash Flood Submersion" className="bg-[#E7E8D1]">Waterlogging / Flash Flood Submersion</option>
-                  <option value="Pothole Crater Cluster / Rough Pavement" className="bg-[#E7E8D1]">Pothole Crater Cluster / Rough Pavement</option>
-                  <option value="Fallen Tree / Powerline Obstruction" className="bg-[#E7E8D1]">Fallen Tree / Powerline Obstruction</option>
+                  <option value="Roadbed Erosion / Pavement Subsidence" className="bg-[#F4F5F0]">Roadbed Erosion / Pavement Subsidence</option>
+                  <option value="Active Rockslide / Debris Avalanche" className="bg-[#F4F5F0]">Active Rockslide / Debris Avalanche</option>
+                  <option value="Bridge Scour / Girder Damage" className="bg-[#F4F5F0]">Bridge Scour / Girder Damage</option>
+                  <option value="Waterlogging / Flash Flood Submersion" className="bg-[#F4F5F0]">Waterlogging / Flash Flood Submersion</option>
+                  <option value="Pothole Crater Cluster / Rough Pavement" className="bg-[#F4F5F0]">Pothole Crater Cluster / Rough Pavement</option>
+                  <option value="Fallen Tree / Powerline Obstruction" className="bg-[#F4F5F0]">Fallen Tree / Powerline Obstruction</option>
                 </select>
               </div>
 
               {/* Severity Level Radio/Buttons */}
               <div>
-                <label className="block font-bold text-[#74796F] text-[10px] uppercase mb-1.5">Severity Level</label>
+                <label className="block font-bold text-[#68766C] text-[10px] uppercase mb-1.5">Severity Level</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    { id: 'LOW', label: 'Low (Advisory)', color: 'text-[#A7BEAE]', activeBg: 'bg-[#A7BEAE]/20 border-[#A7BEAE]' },
-                    { id: 'MODERATE', label: 'Moderate', color: 'text-[#A7BEAE]', activeBg: 'bg-[#38BDF8]/20 border-[#38BDF8]' },
+                    { id: 'LOW', label: 'Low (Advisory)', color: 'text-[#7C9082]', activeBg: 'bg-[#7C9082]/20 border-[#7C9082]' },
+                    { id: 'MODERATE', label: 'Moderate', color: 'text-[#7C9082]', activeBg: 'bg-[#38BDF8]/20 border-[#38BDF8]' },
                     { id: 'HIGH', label: 'High (Hazard)', color: 'text-[#FFB547]', activeBg: 'bg-[#FFB547]/20 border-[#FFB547]' },
                     { id: 'CRITICAL', label: 'Critical Block', color: 'text-[#FF5252]', activeBg: 'bg-[#FF5252]/20 border-[#FF5252]' }
                   ].map((s) => (
@@ -438,7 +438,7 @@ export const FieldReportingApp: React.FC = () => {
                       className={`p-2.5 rounded-xl border text-center font-bold text-xs transition-all cursor-pointer ${
                         severityLevel === s.id
                           ? `${s.activeBg} ${s.color} shadow-sm`
-                          : 'bg-[#FFFFFF] border-[#D6D8C8] text-[#74796F] hover:text-[#30342F]'
+                          : 'bg-[#FFFFFF] border-[#DFE5DD] text-[#68766C] hover:text-[#29372D]'
                       }`}
                     >
                       {s.label}
@@ -449,55 +449,55 @@ export const FieldReportingApp: React.FC = () => {
             </div>
 
             {/* Step 3: Evidence & Measurements (Optional AR) */}
-            <div className="p-3.5 bg-[#E7E8D1] rounded-xl border border-[#D6D8C8] space-y-2.5">
+            <div className="p-3.5 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD] space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-[#30342F] text-[11px] uppercase flex items-center gap-1.5">
-                  <Ruler className="w-4 h-4 text-[#B85042]" /> Step 3: Damage Dimensions &amp; Measurements
+                <span className="font-bold text-[#29372D] text-[11px] uppercase flex items-center gap-1.5">
+                  <Ruler className="w-4 h-4 text-[#1B3022]" /> Step 3: Damage Dimensions &amp; Measurements
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsARModalOpen(true)}
-                  className="px-3 py-1.5 bg-[#D5D8C3] hover:bg-[#D5D8C3] text-[#B85042] border border-[#D6D8C8] rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-[#DCE4DB] hover:bg-[#DCE4DB] text-[#1B3022] border border-[#DFE5DD] rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-[#B85042]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#1B3022]" />
                   <span>Launch AR LiDAR</span>
                 </button>
               </div>
 
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#D6D8C8]">
-                  <span className="text-[#74796F] block text-[10px] font-bold uppercase">Crack Span</span>
-                  <strong className="text-[#30342F] text-xs font-mono">{crackSpan} m</strong>
+                <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#DFE5DD]">
+                  <span className="text-[#68766C] block text-[10px] font-bold uppercase">Crack Span</span>
+                  <strong className="text-[#29372D] text-xs font-mono">{crackSpan} m</strong>
                 </div>
-                <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#D6D8C8]">
-                  <span className="text-[#74796F] block text-[10px] font-bold uppercase">Pothole Depth</span>
+                <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#DFE5DD]">
+                  <span className="text-[#68766C] block text-[10px] font-bold uppercase">Pothole Depth</span>
                   <strong className="text-[#FFB547] text-xs font-mono">{potholeDepth} cm</strong>
                 </div>
-                <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#D6D8C8]">
-                  <span className="text-[#74796F] block text-[10px] font-bold uppercase">Debris Volume</span>
-                  <strong className="text-[#A7BEAE] text-xs font-mono">{debrisVol} m³</strong>
+                <div className="bg-[#FFFFFF] p-2.5 rounded-xl border border-[#DFE5DD]">
+                  <span className="text-[#68766C] block text-[10px] font-bold uppercase">Debris Volume</span>
+                  <strong className="text-[#7C9082] text-xs font-mono">{debrisVol} m³</strong>
                 </div>
               </div>
             </div>
 
             {/* Step 4: Reporter & Officer Designation */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3.5 bg-[#E7E8D1] rounded-xl border border-[#D6D8C8]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3.5 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD]">
               <div>
-                <label className="block font-bold text-[#74796F] text-[10px] uppercase mb-1">Step 4: Field Official</label>
+                <label className="block font-bold text-[#68766C] text-[10px] uppercase mb-1">Step 4: Field Official</label>
                 <input
                   type="text"
                   value={reporterName}
                   onChange={(e) => setReporterName(e.target.value)}
-                  className="w-full p-2.5 bg-[#FFFFFF] border border-[#D6D8C8] rounded-xl text-xs font-semibold text-[#30342F] focus:ring-1 focus:ring-[#B85042]"
+                  className="w-full p-2.5 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs font-semibold text-[#29372D] focus:ring-1 focus:ring-[#1B3022]"
                 />
               </div>
               <div>
-                <label className="block font-bold text-[#74796F] text-[10px] uppercase mb-1">Designation</label>
+                <label className="block font-bold text-[#68766C] text-[10px] uppercase mb-1">Designation</label>
                 <input
                   type="text"
                   value={reporterRole}
                   onChange={(e) => setReporterRole(e.target.value)}
-                  className="w-full p-2.5 bg-[#FFFFFF] border border-[#D6D8C8] rounded-xl text-xs font-semibold text-[#30342F] focus:ring-1 focus:ring-[#B85042]"
+                  className="w-full p-2.5 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs font-semibold text-[#29372D] focus:ring-1 focus:ring-[#1B3022]"
                 />
               </div>
             </div>
@@ -509,8 +509,8 @@ export const FieldReportingApp: React.FC = () => {
                 onClick={() => setIsSignatureModalOpen(true)}
                 className={`px-4 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border transition-colors cursor-pointer ${
                   signatureSaved
-                    ? 'bg-[#A7BEAE]/20 text-[#A7BEAE] border-[#A7BEAE]/40'
-                    : 'bg-[#FFFFFF] hover:bg-[#D5D8C3] text-[#74796F] hover:text-[#30342F] border-[#D6D8C8]'
+                    ? 'bg-[#7C9082]/20 text-[#7C9082] border-[#7C9082]/40'
+                    : 'bg-[#FFFFFF] hover:bg-[#DCE4DB] text-[#68766C] hover:text-[#29372D] border-[#DFE5DD]'
                 }`}
                 title="Cryptographic Sign-off"
               >
@@ -540,7 +540,7 @@ export const FieldReportingApp: React.FC = () => {
         <div className="lg:col-span-5 space-y-4">
           {/* Gamification Points Leaderboard */}
           <div className="card-command space-y-3 text-xs">
-            <div className="flex items-center justify-between pb-2 border-b border-[#D6D8C8]">
+            <div className="flex items-center justify-between pb-2 border-b border-[#DFE5DD]">
               <span className="font-bold text-[#FFB547] flex items-center gap-2 uppercase tracking-wider">
                 <Award className="w-4 h-4 text-[#FFB547]" /> Field Scout Leaderboard
               </span>
@@ -561,18 +561,18 @@ export const FieldReportingApp: React.FC = () => {
                     setSelectedScout(user);
                     addToast('Inspector Profile', `${user.name} (${user.state}) has ${user.verifiedReports} verified ground inspections.`, 'INFO');
                   }}
-                  className="flex items-center justify-between p-3 rounded-xl bg-[#E7E8D1] hover:bg-[#D5D8C3] border border-[#D6D8C8] hover:border-[#B85042]/50 transition-all cursor-pointer"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#F4F5F0] hover:bg-[#DCE4DB] border border-[#DFE5DD] hover:border-[#1B3022]/50 transition-all cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
                     <span className="font-bold text-xs">{user.rank}</span>
                     <div>
-                      <span className="font-bold text-[#30342F] block">{user.name}</span>
-                      <span className="text-[10px] text-[#74796F]">{user.state} • {user.badge}</span>
+                      <span className="font-bold text-[#29372D] block">{user.name}</span>
+                      <span className="text-[10px] text-[#68766C]">{user.state} • {user.badge}</span>
                     </div>
                   </div>
                   <div className="text-right">
                     <span className="font-black text-[#FFB547] text-xs block font-mono">{user.points} pts</span>
-                    <span className="text-[9px] text-[#74796F]">{user.verifiedReports} logs</span>
+                    <span className="text-[9px] text-[#68766C]">{user.verifiedReports} logs</span>
                   </div>
                 </div>
               ))}
@@ -581,11 +581,11 @@ export const FieldReportingApp: React.FC = () => {
 
           {/* Recent Field Reports Log */}
           <div className="card-command space-y-3 text-xs">
-            <div className="flex items-center justify-between pb-2 border-b border-[#D6D8C8]">
-              <h3 className="font-bold text-[#B85042] text-xs uppercase tracking-wider">
+            <div className="flex items-center justify-between pb-2 border-b border-[#DFE5DD]">
+              <h3 className="font-bold text-[#1B3022] text-xs uppercase tracking-wider">
                 Recent Verified Ground Reports
               </h3>
-              <span className="text-[10px] text-[#74796F] font-mono">
+              <span className="text-[10px] text-[#68766C] font-mono">
                 {fieldReports.length} incidents logged
               </span>
             </div>
@@ -598,16 +598,16 @@ export const FieldReportingApp: React.FC = () => {
                     openDrawer('REPORT', r);
                     addToast('Incident Details Opened', `Viewing verification for ${r.location_name}.`, 'INFO');
                   }}
-                  className="p-3 bg-[#E7E8D1] hover:bg-[#D5D8C3] rounded-xl border border-[#D6D8C8] hover:border-[#B85042]/50 transition-all cursor-pointer space-y-1.5"
+                  className="p-3 bg-[#F4F5F0] hover:bg-[#DCE4DB] rounded-xl border border-[#DFE5DD] hover:border-[#1B3022]/50 transition-all cursor-pointer space-y-1.5"
                 >
-                  <div className="flex justify-between font-bold text-[#30342F]">
+                  <div className="flex justify-between font-bold text-[#29372D]">
                     <span className="truncate flex-1">{r.location_name}</span>
-                    <span className="text-[#A7BEAE] text-[10px] shrink-0 ml-1 font-mono">+{r.points_awarded || 50} pts</span>
+                    <span className="text-[#7C9082] text-[10px] shrink-0 ml-1 font-mono">+{r.points_awarded || 50} pts</span>
                   </div>
-                  <div className="text-[11px] text-[#74796F]">{r.incident_type}</div>
-                  <div className="flex items-center justify-between text-[10px] text-[#B85042] font-semibold pt-1 border-t border-[#D6D8C8]">
+                  <div className="text-[11px] text-[#68766C]">{r.incident_type}</div>
+                  <div className="flex items-center justify-between text-[10px] text-[#1B3022] font-semibold pt-1 border-t border-[#DFE5DD]">
                     <span>AI Severity: {r.ai_severity_predicted || 'MODERATE'}</span>
-                    <span className="text-[#74796F] font-normal">Inspect &rarr;</span>
+                    <span className="text-[#68766C] font-normal">Inspect &rarr;</span>
                   </div>
                 </div>
               ))}
@@ -635,21 +635,21 @@ export const FieldReportingApp: React.FC = () => {
       {/* Monthly State Honors Modal */}
       {showHonorsModal && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[3000] flex items-center justify-center p-4">
-          <div className="bg-[#E7E8D1] rounded-2xl w-full max-w-md overflow-hidden border border-[#D6D8C8] shadow-2xl p-5 space-y-4 text-xs text-[#30342F] animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-[#D6D8C8] pb-2.5">
+          <div className="bg-[#F4F5F0] rounded-2xl w-full max-w-md overflow-hidden border border-[#DFE5DD] shadow-2xl p-5 space-y-4 text-xs text-[#29372D] animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-[#DFE5DD] pb-2.5">
               <div className="flex items-center gap-2">
                 <Award className="w-5 h-5 text-[#FFB547]" />
-                <h3 className="font-bold text-sm text-[#30342F]">MDoNER Monthly Field Honors &amp; Citations</h3>
+                <h3 className="font-bold text-sm text-[#29372D]">MDoNER Monthly Field Honors &amp; Citations</h3>
               </div>
               <button
                 onClick={() => setShowHonorsModal(false)}
-                className="text-[#74796F] hover:text-[#30342F] cursor-pointer"
+                className="text-[#68766C] hover:text-[#29372D] cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-[#74796F] text-xs leading-relaxed">
+            <p className="text-[#68766C] text-xs leading-relaxed">
               Recognizing the top field scouts, PWD road inspectors, and SDRF personnel safeguarding logistics connectivity across Northeast India.
             </p>
 
@@ -660,12 +660,12 @@ export const FieldReportingApp: React.FC = () => {
                   AUGUST 2026
                 </span>
               </div>
-              <div className="text-xs text-[#30342F]">
+              <div className="text-xs text-[#29372D]">
                 Awarded to <strong>Khrawbok Lyngdoh (Meghalaya)</strong> for logging 29 high-altitude road slips ahead of monsoon floods.
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-[#D6D8C8]">
+            <div className="flex justify-end gap-2 pt-2 border-t border-[#DFE5DD]">
               <button
                 onClick={() => {
                   setShowHonorsModal(false);

@@ -36,10 +36,10 @@ export const USSDPhoneModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[6000] flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-[#E7E8D1] text-[#30342F] rounded-3xl p-6 w-full max-w-xs shadow-2xl border-2 border-[#B85042]/30 relative">
+      <div className="bg-[#F4F5F0] text-[#29372D] rounded-3xl p-6 w-full max-w-xs shadow-2xl border-2 border-[#1B3022]/30 relative">
         <button
           onClick={() => setIsUSSDModalOpen(false)}
-          className="absolute top-4 right-4 text-[#74796F] hover:text-[#30342F] transition-colors p-1"
+          className="absolute top-4 right-4 text-[#68766C] hover:text-[#29372D] transition-colors p-1"
         >
           <X className="w-5 h-5" />
         </button>
@@ -48,7 +48,7 @@ export const USSDPhoneModal: React.FC = () => {
           <div className="text-[10px] uppercase font-bold text-[#FFB547] tracking-wider flex items-center justify-center gap-1.5">
             <Radio className="w-3.5 h-3.5 animate-pulse text-[#FFB547]" /> 2G BSNL/Airtel Feature Phone Simulator
           </div>
-          <h4 className="text-xs font-bold text-[#74796F] mt-0.5">NER USSD *123# Emergency Gateway</h4>
+          <h4 className="text-xs font-bold text-[#68766C] mt-0.5">NER USSD *123# Emergency Gateway</h4>
         </div>
 
         {/* Feature Phone Screen */}
@@ -121,14 +121,14 @@ export const USSDPhoneModal: React.FC = () => {
           {ussdScreen === 'IDLE' ? (
             <button
               onClick={handleDial}
-              className="col-span-3 bg-[#A7BEAE] hover:bg-emerald-400 text-slate-950 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-command-card transition-all cursor-pointer"
+              className="col-span-3 bg-[#7C9082] hover:bg-emerald-400 text-slate-950 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-command-card transition-all cursor-pointer"
             >
               <Phone className="w-3.5 h-3.5" /> Call *123# (USSD)
             </button>
           ) : (
             <button
               onClick={resetPhone}
-              className="col-span-3 bg-[#FFFFFF] hover:bg-[#D5D8C3] border border-[#D6D8C8] text-[#74796F] hover:text-[#30342F] py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              className="col-span-3 bg-[#FFFFFF] hover:bg-[#DCE4DB] border border-[#DFE5DD] text-[#68766C] hover:text-[#29372D] py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" /> End / Reset USSD Call
             </button>
