@@ -74,14 +74,14 @@ const MainLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0A0F18] text-[#F5F7FA] flex flex-col font-sans select-none pb-14 lg:pb-0">
-      {/* Top Navbar */}
+    <div className="min-h-screen bg-[#FCF6F5] text-[#252124] flex flex-col font-sans select-none pb-14 lg:pb-0">
+      {/* Top Navbar (Soft Off-White) */}
       <Navbar onMobileMenuToggle={() => setMobileMenuOpen((v) => !v)} />
 
       {/* Connectivity Banner (Adaptive 4G/3G/2G/Offline) */}
       <ConnectivityBanner />
 
-      {/* KPI Status Chips Bar */}
+      {/* KPI Status Chips Bar (White Cards, Cherry Accents) */}
       <KPIBar />
 
       {/* Main Body with Sidebar + Dynamic Module Canvas */}
@@ -95,20 +95,20 @@ const MainLayout: React.FC = () => {
         {/* Dynamic Center Module Canvas */}
         {activeModule === 'ACCESSIBILITY' ? (
           /* Full-Bleed Map Landing Layout (Edge-to-Edge Canvas) */
-          <main className="flex-1 overflow-hidden relative flex flex-col bg-[#0A0F18]">
+          <main className="flex-1 overflow-hidden relative flex flex-col bg-[#FCF6F5]">
             <AccessibilityMonitor />
           </main>
         ) : (
           /* Secondary Module Container with Universal Back Navigation Bar */
-          <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 bg-[#0A0F18]">
+          <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 bg-[#FCF6F5]">
             <div className="max-w-7xl mx-auto space-y-3 sm:space-y-4">
               {/* Universal Navigation Header Bar */}
-              <div className="bg-[#0F1726] border border-[#1E293B] rounded-xl p-2.5 sm:p-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="bg-[#FFFFFF] border border-[#E7DAD8] rounded-xl p-2.5 sm:p-3 flex flex-wrap items-center justify-between gap-2 shadow-sm">
                 {/* Back Button and Breadcrumb Trail */}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={goBack}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#162235] hover:bg-[#1C304B] text-[#0EA5E9] border border-[#1E293B] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FCF6F5] hover:bg-[#EDE4E2] text-[#990011] border border-[#E7DAD8] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
                     title={`Back to ${prevMeta ? prevMeta.short : 'Main GIS Map'}`}
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
@@ -117,24 +117,24 @@ const MainLayout: React.FC = () => {
 
                   <button
                     onClick={goToLanding}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#0A0F18] hover:bg-[#162235] text-[#94A3B8] hover:text-[#F5F7FA] border border-[#1E293B] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#FFFFFF] hover:bg-[#EDE4E2] text-[#252124] hover:text-[#990011] border border-[#E7DAD8] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
                     title="Return to Landing Page (Main GIS Map)"
                   >
-                    <Home className="w-3.5 h-3.5 text-[#0EA5E9]" />
+                    <Home className="w-3.5 h-3.5 text-[#990011]" />
                     <span className="hidden sm:inline">GIS Map</span>
                   </button>
 
-                  <div className="hidden md:flex items-center gap-1 text-xs text-[#64748B]">
-                    <div className="h-4 w-px bg-[#1E293B] mx-1" />
-                    <span onClick={goToLanding} className="hover:text-[#0EA5E9] cursor-pointer font-medium">Command</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-[#64748B]" />
-                    <span className="font-semibold text-[#F5F7FA] truncate max-w-[240px]">{currentMeta.short}</span>
+                  <div className="hidden md:flex items-center gap-1 text-xs text-[#786D6D]">
+                    <div className="h-4 w-px bg-[#E7DAD8] mx-1" />
+                    <span onClick={goToLanding} className="hover:text-[#990011] cursor-pointer font-medium">Command</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-[#786D6D]" />
+                    <span className="font-semibold text-[#252124] truncate max-w-[240px]">{currentMeta.short}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs font-semibold">
-                  <span className="bg-[#0EA5E9]/10 text-[#0EA5E9] border border-[#0EA5E9]/20 px-2.5 py-1 rounded-full flex items-center gap-1 text-[11px] font-mono">
-                    <Sparkles className="w-3 h-3 text-[#0EA5E9]" />
+                  <span className="bg-[#990011]/10 text-[#990011] border border-[#990011]/20 px-2.5 py-1 rounded-full flex items-center gap-1 text-[11px] font-mono">
+                    <Sparkles className="w-3 h-3 text-[#990011]" />
                     <span className="hidden sm:inline">NER Logistics Grid v2.0</span>
                     <span className="sm:hidden">NERALIS</span>
                   </span>
@@ -155,13 +155,13 @@ const MainLayout: React.FC = () => {
       </div>
 
       {/* Mobile Bottom Navigation Bar (Thumb Friendly for Android/iPhone) */}
-      <nav className="fixed bottom-0 inset-x-0 h-14 bg-[#0A0F18]/95 backdrop-blur-md border-t border-[#1E293B] z-[3400] lg:hidden flex items-center justify-around px-2 pb-safe shadow-xl">
+      <nav className="fixed bottom-0 inset-x-0 h-14 bg-[#FCF6F5]/95 backdrop-blur-md border-t border-[#E7DAD8] z-[3400] lg:hidden flex items-center justify-around px-2 pb-safe shadow-md">
         <button
           onClick={() => navigateToModule('ACCESSIBILITY')}
           className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'ACCESSIBILITY'
-              ? 'text-[#0EA5E9] font-semibold'
-              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+              ? 'text-[#990011] font-semibold'
+              : 'text-[#786D6D] hover:text-[#252124]'
           }`}
         >
           <Map className="w-4 h-4 mb-0.5" />
@@ -172,8 +172,8 @@ const MainLayout: React.FC = () => {
           onClick={() => navigateToModule('ROUTE')}
           className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'ROUTE'
-              ? 'text-[#0EA5E9] font-semibold'
-              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+              ? 'text-[#990011] font-semibold'
+              : 'text-[#786D6D] hover:text-[#252124]'
           }`}
         >
           <Route className="w-4 h-4 mb-0.5" />
@@ -184,8 +184,8 @@ const MainLayout: React.FC = () => {
           onClick={() => navigateToModule('FLEET')}
           className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'FLEET'
-              ? 'text-[#0EA5E9] font-semibold'
-              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+              ? 'text-[#990011] font-semibold'
+              : 'text-[#786D6D] hover:text-[#252124]'
           }`}
         >
           <Truck className="w-4 h-4 mb-0.5" />
@@ -196,8 +196,8 @@ const MainLayout: React.FC = () => {
           onClick={() => navigateToModule('ALERT')}
           className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'ALERT'
-              ? 'text-[#0EA5E9] font-semibold'
-              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+              ? 'text-[#990011] font-semibold'
+              : 'text-[#786D6D] hover:text-[#252124]'
           }`}
         >
           <BellRing className="w-4 h-4 mb-0.5" />
@@ -208,8 +208,8 @@ const MainLayout: React.FC = () => {
           onClick={() => navigateToModule('FIELD_APP')}
           className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors ${
             activeModule === 'FIELD_APP'
-              ? 'text-[#0EA5E9] font-semibold'
-              : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+              ? 'text-[#990011] font-semibold'
+              : 'text-[#786D6D] hover:text-[#252124]'
           }`}
         >
           <Smartphone className="w-4 h-4 mb-0.5" />
@@ -218,7 +218,7 @@ const MainLayout: React.FC = () => {
 
         <button
           onClick={() => setMobileMenuOpen(true)}
-          className="flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[#94A3B8] hover:text-[#F5F7FA] transition-colors"
+          className="flex flex-col items-center justify-center py-1 px-2 rounded-lg text-[#786D6D] hover:text-[#252124] transition-colors"
         >
           <Menu className="w-4 h-4 mb-0.5" />
           <span className="text-[10px]">More</span>

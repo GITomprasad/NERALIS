@@ -6,11 +6,11 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
-    @apply bg-[#080D16] text-[#F5F7FA] font-sans antialiased;
+    @apply bg-[#FCF6F5] text-[#252124] font-sans antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
@@ -20,66 +20,66 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #080D16;
+    background: #FCF6F5;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1E2E45;
+    background: #E7DAD8;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #2A3F5E;
+    background: #786D6D;
   }
 }
 
-/* Enterprise Command Center Component Styles */
+/* Enterprise Command Center Component Styles - Cherry Red + Soft Off-White */
 .card-official,
 .card-command {
-  @apply bg-[#111D2D] border border-[#1E2E45] rounded-xl p-4 shadow-command-card transition-all;
+  @apply bg-[#FFFFFF] border border-[#E7DAD8] rounded-xl p-4 shadow-sm transition-all text-[#252124];
 }
 
 .glass-panel {
-  @apply bg-[#111D2D]/90 backdrop-blur-md border border-[#1E2E45] shadow-command-card;
+  @apply bg-[#FFFFFF]/95 backdrop-blur-md border border-[#E7DAD8] shadow-sm;
 }
 
 .btn-primary {
-  @apply bg-[#19C6D2] hover:bg-[#16b2bd] active:scale-[0.98] text-[#080D16] font-bold px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
+  @apply bg-[#990011] hover:bg-[#80000e] active:scale-[0.98] text-white font-medium px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
 .btn-secondary {
-  @apply bg-[#16253B] hover:bg-[#1C304B] active:scale-[0.98] text-[#F5F7FA] border border-[#1E2E45] hover:border-[#438BFF]/50 font-semibold px-4 py-2.5 rounded-lg transition-all inline-flex items-center justify-center gap-2 cursor-pointer;
+  @apply bg-[#FFFFFF] hover:bg-[#EDE4E2] active:scale-[0.98] text-[#252124] border border-[#E7DAD8] hover:border-[#990011]/40 font-medium px-4 py-2.5 rounded-lg transition-all inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
 .btn-blue {
-  @apply bg-[#438BFF] hover:bg-[#3377eb] active:scale-[0.98] text-white font-bold px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
+  @apply bg-[#990011] hover:bg-[#80000e] active:scale-[0.98] text-white font-medium px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
 .btn-danger {
-  @apply bg-[#FF5252] hover:bg-[#e04343] active:scale-[0.98] text-white font-bold px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
+  @apply bg-[#990011] hover:bg-[#80000e] active:scale-[0.98] text-white font-medium px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
-/* Operational Status Badges */
+/* Operational Status Badges - Restrained Enterprise Palette */
 .badge-open {
-  @apply bg-[#20C997]/15 text-[#20C997] border border-[#20C997]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
+  @apply bg-[#10B981]/15 text-[#047857] border border-[#10B981]/30 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-restricted {
-  @apply bg-[#FFB547]/15 text-[#FFB547] border border-[#FFB547]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
+  @apply bg-[#F59E0B]/15 text-[#B45309] border border-[#F59E0B]/30 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-degraded {
-  @apply bg-[#ea580c]/15 text-[#f97316] border border-[#f97316]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
+  @apply bg-[#EA580C]/15 text-[#C2410C] border border-[#EA580C]/30 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-closed {
-  @apply bg-[#FF5252]/15 text-[#FF5252] border border-[#FF5252]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
+  @apply bg-[#990011]/15 text-[#990011] border border-[#990011]/30 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-unknown {
-  @apply bg-[#64748B]/15 text-[#94A3B8] border border-[#64748B]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
+  @apply bg-[#786D6D]/15 text-[#252124] border border-[#786D6D]/30 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-seasonal {
-  @apply bg-[#438BFF]/15 text-[#438BFF] border border-[#438BFF]/30 px-2.5 py-0.5 rounded-full text-xs font-bold;
+  @apply bg-[#EDE4E2] text-[#252124] border border-[#E7DAD8] px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 /* Command Center Data Tables */
@@ -90,50 +90,50 @@
 
 .table-official th,
 .table-command th {
-  @apply bg-[#0D1522] text-[#94A3B8] font-bold text-[11px] tracking-wider uppercase px-4 py-3 border-b border-[#1E2E45];
+  @apply bg-[#EDE4E2] text-[#252124] font-semibold text-[11px] tracking-wider uppercase px-4 py-3 border-b border-[#E7DAD8];
 }
 
 .table-official tr:nth-child(even),
 .table-command tr:nth-child(even) {
-  @apply bg-[#111D2D]/60;
+  @apply bg-[#FFFFFF];
 }
 
 .table-official tr:nth-child(odd),
 .table-command tr:nth-child(odd) {
-  @apply bg-[#0D1522]/40;
+  @apply bg-[#FCF6F5];
 }
 
 .table-official tr:hover,
 .table-command tr:hover {
-  @apply bg-[#16253B]/80;
+  @apply bg-[#EDE4E2]/70;
 }
 
 .table-official td,
 .table-command td {
-  @apply px-4 py-3 text-xs text-[#F5F7FA] border-b border-[#1E2E45]/60;
+  @apply px-4 py-3 text-xs text-[#252124] border-b border-[#E7DAD8];
 }
 
-/* Leaflet Dark Command Theme Overrides */
+/* Leaflet Light Command Theme Overrides */
 .leaflet-container {
   font-family: 'Inter', sans-serif !important;
   width: 100%;
   height: 100%;
-  background-color: #080D16 !important;
+  background-color: #FCF6F5 !important;
 }
 
-/* Dark Popup Container */
+/* Light Popup Container */
 .leaflet-popup-content-wrapper {
-  background-color: #111D2D !important;
-  color: #F5F7FA !important;
-  border: 1px solid #1E2E45 !important;
+  background-color: #FFFFFF !important;
+  color: #252124 !important;
+  border: 1px solid #E7DAD8 !important;
   border-radius: 0.75rem !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(25, 198, 210, 0.2) !important;
+  box-shadow: 0 10px 25px -5px rgba(37, 33, 36, 0.12), 0 0 1px 1px rgba(153, 0, 17, 0.1) !important;
   padding: 0 !important;
 }
 
 .leaflet-popup-tip {
-  background-color: #111D2D !important;
-  border: 1px solid #1E2E45 !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E7DAD8 !important;
 }
 
 .leaflet-popup-content {
@@ -142,35 +142,35 @@
 }
 
 .leaflet-popup-close-button {
-  color: #94A3B8 !important;
+  color: #786D6D !important;
   padding: 6px !important;
 }
 
 .leaflet-popup-close-button:hover {
-  color: #F5F7FA !important;
+  color: #990011 !important;
 }
 
 /* Leaflet Zoom and attribution controls */
 .leaflet-bar a {
-  background-color: #111D2D !important;
-  color: #F5F7FA !important;
-  border-bottom: 1px solid #1E2E45 !important;
+  background-color: #FFFFFF !important;
+  color: #252124 !important;
+  border-bottom: 1px solid #E7DAD8 !important;
 }
 
 .leaflet-bar a:hover {
-  background-color: #16253B !important;
-  color: #19C6D2 !important;
+  background-color: #EDE4E2 !important;
+  color: #990011 !important;
 }
 
 .leaflet-control-attribution {
-  background-color: rgba(8, 13, 22, 0.85) !important;
-  color: #64748B !important;
+  background-color: rgba(252, 246, 245, 0.9) !important;
+  color: #786D6D !important;
   font-size: 9px !important;
   border-top-left-radius: 6px;
 }
 
 .leaflet-control-attribution a {
-  color: #94A3B8 !important;
+  color: #990011 !important;
 }
 
 /* Mobile Safe Areas */

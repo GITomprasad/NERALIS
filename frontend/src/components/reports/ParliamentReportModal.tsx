@@ -22,7 +22,7 @@ export const ParliamentReportModal: React.FC = () => {
     const doc = new jsPDF();
 
     // GoI Header
-    doc.setFillColor(13, 21, 34); // Command Navy #0D1522
+    doc.setFillColor(153, 0, 17); // Cherry Red #990011
     doc.rect(0, 0, 210, 24, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(14);
@@ -91,48 +91,48 @@ export const ParliamentReportModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[6000] flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-[#0D1522] rounded-2xl w-full max-w-3xl overflow-hidden border border-cyan-500/20 shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-[#FCF6F5] rounded-2xl w-full max-w-3xl overflow-hidden border border-[#E7DAD8] shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="bg-[#0A101D] text-[#F5F7FA] px-6 py-4 flex items-center justify-between border-b border-[#1E2E45]">
+        <div className="bg-[#FCF6F5] text-[#252124] px-6 py-4 flex items-center justify-between border-b border-[#E7DAD8]">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center border border-amber-500/30">
               <Award className="w-5 h-5 text-[#FFB547]" />
             </div>
             <div>
-              <span className="text-[10px] font-bold text-[#19C6D2] uppercase tracking-wider block">
+              <span className="text-[10px] font-bold text-[#990011] uppercase tracking-wider block">
                 Official Government Status Report
               </span>
-              <h3 className="text-base font-bold text-[#F5F7FA]">
+              <h3 className="text-base font-bold text-[#252124]">
                 NERALIS Parliamentary &amp; Legislative Brief
               </h3>
             </div>
           </div>
           <button
             onClick={() => setIsParliamentModalOpen(false)}
-            className="text-[#64748B] hover:text-[#F5F7FA] transition-colors p-1"
+            className="text-[#786D6D] hover:text-[#252124] transition-colors p-1"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Document Body */}
-        <div className="p-6 overflow-y-auto space-y-6 text-xs text-[#94A3B8]">
+        <div className="p-6 overflow-y-auto space-y-6 text-xs text-[#786D6D]">
           {/* Executive Overview Banner */}
-          <div className="bg-[#111D2D] p-4 rounded-xl border border-cyan-500/30">
-            <h4 className="font-black text-[#19C6D2] text-sm mb-1">
+          <div className="bg-[#FFFFFF] p-4 rounded-xl border border-[#990011]/30">
+            <h4 className="font-black text-[#990011] text-sm mb-1">
               Executive Summary for Standing Committee on Development of NER
             </h4>
-            <p className="text-[#94A3B8] leading-relaxed text-xs">
+            <p className="text-[#786D6D] leading-relaxed text-xs">
               The AI-Based Smart Logistics &amp; Accessibility Intelligence Platform (NERALIS) has established unified GIS, predictive flood/landslide forecasting, and NavIC multi-modal routing across all 8 North Eastern States (89 districts). Chronic monsoon disruptions have been transformed into proactive 72-hour advance interventions.
             </p>
           </div>
 
           {/* 3-Year TCO vs ROI Card */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="p-3.5 bg-[#111D2D] rounded-xl border border-[#1E2E45]">
-              <span className="text-[10px] uppercase font-bold text-[#64748B]">3-Year Platform TCO</span>
-              <div className="text-xl font-black text-[#F5F7FA] mt-1">₹ 32.80 Cr</div>
-              <p className="text-[10px] text-[#64748B] mt-0.5">Software, Cloud, Edge Nodes, IoT</p>
+            <div className="p-3.5 bg-[#FFFFFF] rounded-xl border border-[#E7DAD8]">
+              <span className="text-[10px] uppercase font-bold text-[#786D6D]">3-Year Platform TCO</span>
+              <div className="text-xl font-black text-[#252124] mt-1">₹ 32.80 Cr</div>
+              <p className="text-[10px] text-[#786D6D] mt-0.5">Software, Cloud, Edge Nodes, IoT</p>
             </div>
             <div className="p-3.5 bg-emerald-950/30 rounded-xl border border-emerald-500/30">
               <span className="text-[10px] uppercase font-bold text-emerald-400">Annual Gross Benefit</span>
@@ -147,7 +147,7 @@ export const ParliamentReportModal: React.FC = () => {
           </div>
 
           {/* Quantified Impact Table */}
-          <div className="border border-[#1E2E45] rounded-xl overflow-hidden shadow-command-card">
+          <div className="border border-[#E7DAD8] rounded-xl overflow-hidden shadow-command-card">
             <table className="w-full text-left table-command">
               <thead>
                 <tr>
@@ -159,40 +159,40 @@ export const ParliamentReportModal: React.FC = () => {
               </thead>
               <tbody>
                 <tr>
-                  <td className="font-bold text-[#F5F7FA] p-2.5">Delivery Delay Rate</td>
-                  <td className="text-[#64748B] p-2.5">45% Delayed</td>
+                  <td className="font-bold text-[#252124] p-2.5">Delivery Delay Rate</td>
+                  <td className="text-[#786D6D] p-2.5">45% Delayed</td>
                   <td className="text-[#20C997] font-bold p-2.5">14.2% Delayed</td>
-                  <td className="font-bold text-[#19C6D2] p-2.5">₹ 420 Cr/yr operational savings</td>
+                  <td className="font-bold text-[#990011] p-2.5">₹ 420 Cr/yr operational savings</td>
                 </tr>
                 <tr>
-                  <td className="font-bold text-[#F5F7FA] p-2.5">Medicine Stockouts</td>
-                  <td className="text-[#64748B] p-2.5">34% PHCs</td>
+                  <td className="font-bold text-[#252124] p-2.5">Medicine Stockouts</td>
+                  <td className="text-[#786D6D] p-2.5">34% PHCs</td>
                   <td className="text-[#20C997] font-bold p-2.5">3.8% Stockouts</td>
-                  <td className="font-bold text-[#19C6D2] p-2.5">Lives Saved &amp; Health Security</td>
+                  <td className="font-bold text-[#990011] p-2.5">Lives Saved &amp; Health Security</td>
                 </tr>
                 <tr>
-                  <td className="font-bold text-[#F5F7FA] p-2.5">Post-Harvest Farm Produce Loss</td>
-                  <td className="text-[#64748B] p-2.5">35% Loss</td>
+                  <td className="font-bold text-[#252124] p-2.5">Post-Harvest Farm Produce Loss</td>
+                  <td className="text-[#786D6D] p-2.5">35% Loss</td>
                   <td className="text-[#20C997] font-bold p-2.5">11.1% Loss</td>
-                  <td className="font-bold text-[#19C6D2] p-2.5">₹ 180 Cr/yr farmer income gain</td>
+                  <td className="font-bold text-[#990011] p-2.5">₹ 180 Cr/yr farmer income gain</td>
                 </tr>
                 <tr>
-                  <td className="font-bold text-[#F5F7FA] p-2.5">Infrastructure Project Delay</td>
-                  <td className="text-[#64748B] p-2.5">6-18 Months</td>
+                  <td className="font-bold text-[#252124] p-2.5">Infrastructure Project Delay</td>
+                  <td className="text-[#786D6D] p-2.5">6-18 Months</td>
                   <td className="text-[#20C997] font-bold p-2.5">2.4 Months</td>
-                  <td className="font-bold text-[#19C6D2] p-2.5">₹ 300 Cr/yr capex savings</td>
+                  <td className="font-bold text-[#990011] p-2.5">₹ 300 Cr/yr capex savings</td>
                 </tr>
                 <tr>
-                  <td className="font-bold text-[#F5F7FA] p-2.5">Disaster Response Turnaround</td>
-                  <td className="text-[#64748B] p-2.5">48-72 Hours</td>
+                  <td className="font-bold text-[#252124] p-2.5">Disaster Response Turnaround</td>
+                  <td className="text-[#786D6D] p-2.5">48-72 Hours</td>
                   <td className="text-[#20C997] font-bold p-2.5">6.8 Hours</td>
-                  <td className="font-bold text-[#19C6D2] p-2.5">Rapid Emergency Relief</td>
+                  <td className="font-bold text-[#990011] p-2.5">Rapid Emergency Relief</td>
                 </tr>
                 <tr>
-                  <td className="font-bold text-[#F5F7FA] p-2.5">Fuel &amp; Routing Efficiency</td>
-                  <td className="text-[#64748B] p-2.5">Suboptimal</td>
+                  <td className="font-bold text-[#252124] p-2.5">Fuel &amp; Routing Efficiency</td>
+                  <td className="text-[#786D6D] p-2.5">Suboptimal</td>
                   <td className="text-[#20C997] font-bold p-2.5">18.6% Saved</td>
-                  <td className="font-bold text-[#19C6D2] p-2.5">₹ 60 Cr/yr fuel savings</td>
+                  <td className="font-bold text-[#990011] p-2.5">₹ 60 Cr/yr fuel savings</td>
                 </tr>
               </tbody>
             </table>
@@ -200,8 +200,8 @@ export const ParliamentReportModal: React.FC = () => {
         </div>
 
         {/* Actions Footer */}
-        <div className="p-4 bg-[#0A101D] border-t border-[#1E2E45] flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 text-[11px] text-[#64748B] font-medium">
+        <div className="p-4 bg-[#FCF6F5] border-t border-[#E7DAD8] flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-1.5 text-[11px] text-[#786D6D] font-medium">
             <ShieldCheck className="w-4 h-4 text-[#20C997]" /> Complies with GFR 2017 &amp; MeitY Guidelines
           </div>
           <div className="flex gap-2">

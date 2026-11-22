@@ -36,10 +36,10 @@ export const USSDPhoneModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[6000] flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-[#0D1522] text-[#F5F7FA] rounded-3xl p-6 w-full max-w-xs shadow-2xl border-2 border-cyan-500/30 relative">
+      <div className="bg-[#FCF6F5] text-[#252124] rounded-3xl p-6 w-full max-w-xs shadow-2xl border-2 border-[#990011]/30 relative">
         <button
           onClick={() => setIsUSSDModalOpen(false)}
-          className="absolute top-4 right-4 text-[#64748B] hover:text-[#F5F7FA] transition-colors p-1"
+          className="absolute top-4 right-4 text-[#786D6D] hover:text-[#252124] transition-colors p-1"
         >
           <X className="w-5 h-5" />
         </button>
@@ -48,7 +48,7 @@ export const USSDPhoneModal: React.FC = () => {
           <div className="text-[10px] uppercase font-bold text-[#FFB547] tracking-wider flex items-center justify-center gap-1.5">
             <Radio className="w-3.5 h-3.5 animate-pulse text-[#FFB547]" /> 2G BSNL/Airtel Feature Phone Simulator
           </div>
-          <h4 className="text-xs font-bold text-[#94A3B8] mt-0.5">NER USSD *123# Emergency Gateway</h4>
+          <h4 className="text-xs font-bold text-[#786D6D] mt-0.5">NER USSD *123# Emergency Gateway</h4>
         </div>
 
         {/* Feature Phone Screen */}
@@ -128,7 +128,7 @@ export const USSDPhoneModal: React.FC = () => {
           ) : (
             <button
               onClick={resetPhone}
-              className="col-span-3 bg-[#111D2D] hover:bg-[#1E2E45] border border-[#1E2E45] text-[#94A3B8] hover:text-[#F5F7FA] py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              className="col-span-3 bg-[#FFFFFF] hover:bg-[#EDE4E2] border border-[#E7DAD8] text-[#786D6D] hover:text-[#252124] py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" /> End / Reset USSD Call
             </button>

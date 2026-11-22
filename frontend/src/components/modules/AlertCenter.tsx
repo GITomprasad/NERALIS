@@ -182,10 +182,10 @@ export const AlertCenter: React.FC = () => {
       {/* Header */}
       <div className="card-command flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-black text-[#F5F7FA]">
+          <h2 className="text-base font-black text-[#252124]">
             {t('module_5')} — Multilingual Broadcast &amp; Emergency Alert Center
           </h2>
-          <p className="text-xs text-[#94A3B8] mt-0.5">
+          <p className="text-xs text-[#786D6D] mt-0.5">
             5-Tier alert hierarchy dispatched across 8 NER regional languages, 2G SMS, IVR voice, and NDMA CAP feeds
           </p>
         </div>
@@ -205,8 +205,8 @@ export const AlertCenter: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left: Active Alerts Queue (5 cols) */}
         <div className="lg:col-span-5 card-command space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-[#1E2E45]">
-            <h3 className="text-xs font-black uppercase tracking-wider text-[#19C6D2]">
+          <div className="flex items-center justify-between pb-2 border-b border-[#E7DAD8]">
+            <h3 className="text-xs font-black uppercase tracking-wider text-[#990011]">
               Dispatched Alerts Queue ({alerts.length})
             </h3>
             <span className="text-[10px] bg-[#FF5252]/15 text-[#FF5252] border border-[#FF5252]/30 font-bold px-2 py-0.5 rounded">
@@ -224,8 +224,8 @@ export const AlertCenter: React.FC = () => {
                   onClick={() => setSelectedAlert(a)}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-[#16253B] border-[#19C6D2] shadow-command-glow'
-                      : 'bg-[#0D1522] border-[#1E2E45] hover:bg-[#111D2D]'
+                      ? 'bg-[#EDE4E2] border-[#990011] shadow-command-glow'
+                      : 'bg-[#FCF6F5] border-[#E7DAD8] hover:bg-[#FFFFFF]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -240,17 +240,17 @@ export const AlertCenter: React.FC = () => {
                     >
                       {a.tier}
                     </span>
-                    <span className="text-[10px] text-[#64748B] font-mono">{a.timestamp}</span>
+                    <span className="text-[10px] text-[#786D6D] font-mono">{a.timestamp}</span>
                   </div>
 
-                  <div className="font-bold text-xs text-[#F5F7FA] mt-1.5">{a.title}</div>
-                  <p className="text-[11px] text-[#94A3B8] mt-0.5 line-clamp-2">
+                  <div className="font-bold text-xs text-[#252124] mt-1.5">{a.title}</div>
+                  <p className="text-[11px] text-[#786D6D] mt-0.5 line-clamp-2">
                     {a.message_i18n?.en || a.title}
                   </p>
 
-                  <div className="mt-2 pt-2 border-t border-[#1E2E45] flex items-center justify-between text-[10px]">
-                    <span className="text-[#64748B]">
-                      Recipients: <strong className="text-[#F5F7FA]">{a.target_recipients_count}</strong>
+                  <div className="mt-2 pt-2 border-t border-[#E7DAD8] flex items-center justify-between text-[10px]">
+                    <span className="text-[#786D6D]">
+                      Recipients: <strong className="text-[#252124]">{a.target_recipients_count}</strong>
                     </span>
                     <span
                       className={`font-semibold ${
@@ -269,24 +269,24 @@ export const AlertCenter: React.FC = () => {
         {/* Right: Multi-Channel Formatter & Regional Translator (7 cols) */}
         <div className="lg:col-span-7 card-command space-y-4 text-xs">
           {/* Header with Language Switcher */}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1E2E45] pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E7DAD8] pb-3">
             <div>
-              <span className="text-[10px] font-bold text-[#64748B] uppercase">Alert Delivery Simulator</span>
-              <h3 className="text-sm font-black text-[#F5F7FA]">
+              <span className="text-[10px] font-bold text-[#786D6D] uppercase">Alert Delivery Simulator</span>
+              <h3 className="text-sm font-black text-[#252124]">
                 {selectedAlert?.title || 'Select Alert'}
               </h3>
             </div>
 
             {/* Regional Language Switcher */}
             <div className="flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-[#19C6D2]" />
+              <Globe className="w-3.5 h-3.5 text-[#990011]" />
               <select
                 value={targetLang}
                 onChange={(e) => setTargetLang(e.target.value as LanguageCode)}
-                className="bg-[#0D1522] border border-[#1E2E45] rounded-xl px-2.5 py-1 text-xs font-bold text-[#F5F7FA] focus:ring-1 focus:ring-[#19C6D2] cursor-pointer"
+                className="bg-[#FCF6F5] border border-[#E7DAD8] rounded-xl px-2.5 py-1 text-xs font-bold text-[#252124] focus:ring-1 focus:ring-[#990011] cursor-pointer"
               >
                 {languages.map((l) => (
-                  <option key={l.code} value={l.code} className="bg-[#0D1522] text-[#F5F7FA]">
+                  <option key={l.code} value={l.code} className="bg-[#FCF6F5] text-[#252124]">
                     {l.native} ({l.label})
                   </option>
                 ))}
@@ -295,11 +295,11 @@ export const AlertCenter: React.FC = () => {
           </div>
 
           {/* Channel Selector Tabs */}
-          <div className="flex flex-wrap gap-1 bg-[#0D1522] p-1 rounded-xl border border-[#1E2E45] text-xs font-bold">
+          <div className="flex flex-wrap gap-1 bg-[#FCF6F5] p-1 rounded-xl border border-[#E7DAD8] text-xs font-bold">
             <button
               onClick={() => setChannelView('WHATSAPP')}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'WHATSAPP' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+                channelView === 'WHATSAPP' ? 'bg-[#990011] text-white font-black' : 'text-[#786D6D] hover:text-[#252124]'
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5 text-[#20C997]" /> WhatsApp
@@ -307,7 +307,7 @@ export const AlertCenter: React.FC = () => {
             <button
               onClick={() => setChannelView('SMS')}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'SMS' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+                channelView === 'SMS' ? 'bg-[#990011] text-white font-black' : 'text-[#786D6D] hover:text-[#252124]'
               }`}
             >
               <Smartphone className="w-3.5 h-3.5 text-[#38BDF8]" /> 2G SMS
@@ -315,7 +315,7 @@ export const AlertCenter: React.FC = () => {
             <button
               onClick={() => setChannelView('VOICE')}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'VOICE' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+                channelView === 'VOICE' ? 'bg-[#990011] text-white font-black' : 'text-[#786D6D] hover:text-[#252124]'
               }`}
             >
               <Volume2 className="w-3.5 h-3.5 text-[#FFB547]" /> IVR Voice
@@ -323,7 +323,7 @@ export const AlertCenter: React.FC = () => {
             <button
               onClick={() => setChannelView('CAP_XML')}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'CAP_XML' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+                channelView === 'CAP_XML' ? 'bg-[#990011] text-white font-black' : 'text-[#786D6D] hover:text-[#252124]'
               }`}
             >
               <FileCode className="w-3.5 h-3.5 text-[#818CF8]" /> NDMA CAP (XML)
@@ -331,7 +331,7 @@ export const AlertCenter: React.FC = () => {
             <button
               onClick={() => setChannelView('MORNING_BRIEF')}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all ${
-                channelView === 'MORNING_BRIEF' ? 'bg-[#19C6D2] text-[#080D16] font-black' : 'text-[#94A3B8] hover:text-[#F5F7FA]'
+                channelView === 'MORNING_BRIEF' ? 'bg-[#990011] text-white font-black' : 'text-[#786D6D] hover:text-[#252124]'
               }`}
             >
               <FileText className="w-3.5 h-3.5 text-[#FF5252]" /> 6 AM Briefing
@@ -340,7 +340,7 @@ export const AlertCenter: React.FC = () => {
 
           {/* CHANNEL PREVIEWS */}
           {channelView === 'WHATSAPP' && (
-            <div className="p-4 bg-[#0B141A] rounded-2xl border border-[#1E2E45] max-w-md mx-auto space-y-2 shadow-inner">
+            <div className="p-4 bg-[#0B141A] rounded-2xl border border-[#E7DAD8] max-w-md mx-auto space-y-2 shadow-inner">
               <div className="bg-[#1F2C34] p-3.5 rounded-2xl rounded-tl-none shadow-md space-y-2 border border-[#2A3942]">
                 <div className="flex items-center justify-between border-b border-[#2A3942] pb-1.5">
                   <span className="font-bold text-[#25D366] text-[11px] flex items-center gap-1">
@@ -380,15 +380,15 @@ export const AlertCenter: React.FC = () => {
           )}
 
           {channelView === 'SMS' && (
-            <div className="p-4 bg-[#080D16] text-[#20C997] font-mono rounded-xl border border-[#1E2E45] space-y-2">
-              <div className="text-[10px] text-[#64748B] flex justify-between">
+            <div className="p-4 bg-[#FCF6F5] text-[#20C997] font-mono rounded-xl border border-[#E7DAD8] space-y-2">
+              <div className="text-[10px] text-[#786D6D] flex justify-between">
                 <span>BSNL / AIRTEL 2G CELL BROADCAST</span>
                 <span>{activeMsgText.length} / 160 chars</span>
               </div>
-              <div className="bg-[#0D1522] p-3 rounded-lg border border-[#1E2E45] text-xs leading-relaxed font-regional text-[#F5F7FA]">
+              <div className="bg-[#FCF6F5] p-3 rounded-lg border border-[#E7DAD8] text-xs leading-relaxed font-regional text-[#252124]">
                 {activeMsgText}
               </div>
-              <div className="text-[10px] text-[#64748B] flex items-center justify-between">
+              <div className="text-[10px] text-[#786D6D] flex items-center justify-between">
                 <span>Auto-compressed for low-bandwidth 2G feature phones.</span>
                 <span className="text-[#20C997] font-bold">✓ Cell Broadcast Pushed</span>
               </div>
@@ -396,7 +396,7 @@ export const AlertCenter: React.FC = () => {
           )}
 
           {channelView === 'VOICE' && (
-            <div className="p-4 bg-[#0D1522] rounded-xl border border-[#FFB547]/30 space-y-3">
+            <div className="p-4 bg-[#FCF6F5] rounded-xl border border-[#FFB547]/30 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-[#FFB547] flex items-center gap-1.5">
                   <Volume2 className="w-4 h-4 text-[#FFB547]" /> Automated Multilingual IVR Voice Broadcast
@@ -405,7 +405,7 @@ export const AlertCenter: React.FC = () => {
                   TTS Engine Active
                 </span>
               </div>
-              <p className="text-xs text-[#F5F7FA] italic bg-[#111D2D] p-3 rounded-lg border border-[#1E2E45] font-regional">
+              <p className="text-xs text-[#252124] italic bg-[#FFFFFF] p-3 rounded-lg border border-[#E7DAD8] font-regional">
                 "{activeMsgText}"
               </p>
               <div className="flex items-center gap-2">
@@ -421,9 +421,9 @@ export const AlertCenter: React.FC = () => {
           )}
 
           {channelView === 'CAP_XML' && (
-            <div className="p-3 bg-[#080D16] text-[#818CF8] font-mono rounded-xl border border-[#1E2E45] space-y-2 text-[11px] overflow-x-auto">
+            <div className="p-3 bg-[#FCF6F5] text-[#818CF8] font-mono rounded-xl border border-[#E7DAD8] space-y-2 text-[11px] overflow-x-auto">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#19C6D2] font-bold">
+                <span className="text-[10px] text-[#990011] font-bold">
                   NDMA Common Alerting Protocol (CAP v1.2 XML Feed)
                 </span>
                 <button
@@ -434,16 +434,16 @@ export const AlertCenter: React.FC = () => {
                   <span>{copiedXml ? 'Copied' : 'Copy CAP XML'}</span>
                 </button>
               </div>
-              <pre className="text-[10px] leading-relaxed text-[#94A3B8] max-h-64 overflow-y-auto">
+              <pre className="text-[10px] leading-relaxed text-[#786D6D] max-h-64 overflow-y-auto">
                 {rawCapXml}
               </pre>
             </div>
           )}
 
           {channelView === 'MORNING_BRIEF' && (
-            <div className="p-4 bg-[#0D1522] rounded-xl border border-[#1E2E45] space-y-2.5">
+            <div className="p-4 bg-[#FCF6F5] rounded-xl border border-[#E7DAD8] space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-[#F5F7FA] text-xs">
+                <span className="font-bold text-[#252124] text-xs">
                   Automated 6 AM Daily Logistics Intelligence Briefing
                 </span>
                 <button
@@ -454,16 +454,16 @@ export const AlertCenter: React.FC = () => {
                   <span>Export Digest</span>
                 </button>
               </div>
-              <div className="bg-[#111D2D] p-3.5 rounded-xl border border-[#1E2E45] text-xs space-y-2">
-                <div className="font-bold text-[#19C6D2]">
+              <div className="bg-[#FFFFFF] p-3.5 rounded-xl border border-[#E7DAD8] text-xs space-y-2">
+                <div className="font-bold text-[#990011]">
                   TOP 5 HIGH-RISK LOGISTICS CORRIDORS FOR TODAY:
                 </div>
-                <div className="space-y-1.5 text-[11px] text-[#94A3B8]">
-                  <div>1. <strong className="text-[#F5F7FA]">NH-10 (Siliguri - Gangtok)</strong>: 82% Risk (Restricted). Bypass light freight via Melli.</div>
-                  <div>2. <strong className="text-[#F5F7FA]">NH-13 (Bomdila - Tawang)</strong>: 79% Risk (Degraded). Pre-position BRO bulldozers.</div>
-                  <div>3. <strong className="text-[#F5F7FA]">NH-37 (Silchar - Imphal)</strong>: 75% Risk (Degraded). River gauge watch at Irang Bridge.</div>
-                  <div>4. <strong className="text-[#F5F7FA]">NH-6 (Sonapur Tunnel)</strong>: 68% Risk (Restricted). Mudflow vacuum pumps deployed.</div>
-                  <div>5. <strong className="text-[#F5F7FA]">NH-2 (Dimapur - Kohima)</strong>: 64% Risk (Restricted). Stagger heavy truck departure.</div>
+                <div className="space-y-1.5 text-[11px] text-[#786D6D]">
+                  <div>1. <strong className="text-[#252124]">NH-10 (Siliguri - Gangtok)</strong>: 82% Risk (Restricted). Bypass light freight via Melli.</div>
+                  <div>2. <strong className="text-[#252124]">NH-13 (Bomdila - Tawang)</strong>: 79% Risk (Degraded). Pre-position BRO bulldozers.</div>
+                  <div>3. <strong className="text-[#252124]">NH-37 (Silchar - Imphal)</strong>: 75% Risk (Degraded). River gauge watch at Irang Bridge.</div>
+                  <div>4. <strong className="text-[#252124]">NH-6 (Sonapur Tunnel)</strong>: 68% Risk (Restricted). Mudflow vacuum pumps deployed.</div>
+                  <div>5. <strong className="text-[#252124]">NH-2 (Dimapur - Kohima)</strong>: 64% Risk (Restricted). Stagger heavy truck departure.</div>
                 </div>
               </div>
             </div>
@@ -474,12 +474,12 @@ export const AlertCenter: React.FC = () => {
       {/* Manual Alert Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[3000] flex items-center justify-center p-4">
-          <div className="bg-[#0D1522] rounded-2xl w-full max-w-md overflow-hidden border border-[#1E2E45] shadow-2xl p-5 space-y-4 text-xs text-[#F5F7FA] animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-[#1E2E45] pb-3">
-              <h3 className="font-bold text-sm text-[#F5F7FA]">Dispatch New Emergency Alert</h3>
+          <div className="bg-[#FCF6F5] rounded-2xl w-full max-w-md overflow-hidden border border-[#E7DAD8] shadow-2xl p-5 space-y-4 text-xs text-[#252124] animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-[#E7DAD8] pb-3">
+              <h3 className="font-bold text-sm text-[#252124]">Dispatch New Emergency Alert</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-[#94A3B8] hover:text-[#F5F7FA] p-1 cursor-pointer"
+                className="text-[#786D6D] hover:text-[#252124] p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -487,45 +487,45 @@ export const AlertCenter: React.FC = () => {
 
             <form onSubmit={handleCreateAlertSubmit} className="space-y-3">
               <div>
-                <label className="block font-bold text-[#94A3B8] mb-1">Alert Title</label>
+                <label className="block font-bold text-[#786D6D] mb-1">Alert Title</label>
                 <input
                   type="text"
                   required
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Landslide Warning on NH-29"
-                  className="w-full p-2.5 bg-[#111D2D] border border-[#1E2E45] rounded-xl text-xs font-semibold text-[#F5F7FA] focus:ring-1 focus:ring-[#19C6D2] focus:outline-none"
+                  className="w-full p-2.5 bg-[#FFFFFF] border border-[#E7DAD8] rounded-xl text-xs font-semibold text-[#252124] focus:ring-1 focus:ring-[#990011] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-[#94A3B8] mb-1">Severity Tier</label>
+                <label className="block font-bold text-[#786D6D] mb-1">Severity Tier</label>
                 <select
                   value={newTier}
                   onChange={(e) => setNewTier(e.target.value)}
-                  className="w-full p-2.5 bg-[#111D2D] border border-[#1E2E45] rounded-xl text-xs font-semibold text-[#F5F7FA] cursor-pointer"
+                  className="w-full p-2.5 bg-[#FFFFFF] border border-[#E7DAD8] rounded-xl text-xs font-semibold text-[#252124] cursor-pointer"
                 >
-                  <option value="T1 - INFO" className="bg-[#0D1522]">T1 — Info (Minor delay notice)</option>
-                  <option value="T2 - ADVISORY" className="bg-[#0D1522]">T2 — Advisory (Route degraded / heavy rain)</option>
-                  <option value="T3 - WARNING" className="bg-[#0D1522]">T3 — Warning (Route closure predicted 6h)</option>
-                  <option value="T4 - CRITICAL" className="bg-[#0D1522]">T4 — Critical (Route fully blocked)</option>
-                  <option value="T5 - DISASTER" className="bg-[#0D1522]">T5 — Disaster (Region isolated / NDRF)</option>
+                  <option value="T1 - INFO" className="bg-[#FCF6F5]">T1 — Info (Minor delay notice)</option>
+                  <option value="T2 - ADVISORY" className="bg-[#FCF6F5]">T2 — Advisory (Route degraded / heavy rain)</option>
+                  <option value="T3 - WARNING" className="bg-[#FCF6F5]">T3 — Warning (Route closure predicted 6h)</option>
+                  <option value="T4 - CRITICAL" className="bg-[#FCF6F5]">T4 — Critical (Route fully blocked)</option>
+                  <option value="T5 - DISASTER" className="bg-[#FCF6F5]">T5 — Disaster (Region isolated / NDRF)</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-bold text-[#94A3B8] mb-1">Message Text (English)</label>
+                <label className="block font-bold text-[#786D6D] mb-1">Message Text (English)</label>
                 <textarea
                   required
                   rows={3}
                   value={newMsgEn}
                   onChange={(e) => setNewMsgEn(e.target.value)}
                   placeholder="Type alert description. System will auto-translate to 8 regional languages."
-                  className="w-full p-2.5 bg-[#111D2D] border border-[#1E2E45] rounded-xl text-xs text-[#F5F7FA] focus:ring-1 focus:ring-[#19C6D2] focus:outline-none"
+                  className="w-full p-2.5 bg-[#FFFFFF] border border-[#E7DAD8] rounded-xl text-xs text-[#252124] focus:ring-1 focus:ring-[#990011] focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#1E2E45]">
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#E7DAD8]">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}

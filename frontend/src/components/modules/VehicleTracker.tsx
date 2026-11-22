@@ -135,15 +135,15 @@ export const VehicleTracker: React.FC = () => {
       <div className="card-command flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-black text-[#F5F7FA]">
+            <h2 className="text-base font-black text-[#252124]">
               {t('module_3')} — Real-Time NavIC &amp; Fleet Telematics
             </h2>
-            <span className="bg-[#19C6D2]/15 text-[#19C6D2] border border-[#19C6D2]/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 font-mono">
-              <Radio className="w-3 h-3 text-[#19C6D2] animate-pulse" />
+            <span className="bg-[#990011]/15 text-[#990011] border border-[#990011]/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 font-mono">
+              <Radio className="w-3 h-3 text-[#990011] animate-pulse" />
               NavIC L5 / S-Band Lock: ±2.4m
             </span>
           </div>
-          <p className="text-xs text-[#94A3B8] mt-0.5">
+          <p className="text-xs text-[#786D6D] mt-0.5">
             Real-time fleet tracking of essential medicines, food grains, and petroleum with cold-chain sensor monitoring
           </p>
         </div>
@@ -172,22 +172,22 @@ export const VehicleTracker: React.FC = () => {
       {/* Fleet Filter Bar */}
       <div className="card-command p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-1.5 font-bold">
-          <span className="text-[#64748B] text-[11px] uppercase mr-1">Fleet Filters:</span>
+          <span className="text-[#786D6D] text-[11px] uppercase mr-1">Fleet Filters:</span>
           {(['ALL', 'MOVING', 'DELAYED', 'AT_RISK', 'OFFLINE'] as const).map((filterKey) => (
             <button
               key={filterKey}
               onClick={() => setFleetFilter(filterKey)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 fleetFilter === filterKey
-                  ? 'bg-[#19C6D2] text-[#080D16] shadow-sm font-black'
-                  : 'bg-[#0D1522] text-[#94A3B8] hover:bg-[#16253B] hover:text-[#F5F7FA] border border-[#1E2E45]'
+                  ? 'bg-[#990011] text-white shadow-sm font-black'
+                  : 'bg-[#FCF6F5] text-[#786D6D] hover:bg-[#EDE4E2] hover:text-[#252124] border border-[#E7DAD8]'
               }`}
             >
               {filterKey === 'ALL' ? `All (${vehicles.length})` : filterKey.replace('_', ' ')}
             </button>
           ))}
         </div>
-        <div className="text-[11px] text-[#94A3B8] font-medium">
+        <div className="text-[11px] text-[#786D6D] font-medium">
           Showing {filteredVehicles.length} of {vehicles.length} tracked vehicles (Live telemetry active)
         </div>
       </div>
@@ -202,18 +202,18 @@ export const VehicleTracker: React.FC = () => {
               onClick={() => setSelectedVehicleId(veh.id)}
               className={`p-4 rounded-xl border transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-[#16253B] border-[#19C6D2] shadow-command-glow'
-                  : 'card-command hover:border-[#1E2E45] hover:bg-[#16253B]/50'
+                  ? 'bg-[#EDE4E2] border-[#990011] shadow-command-glow'
+                  : 'card-command hover:border-[#E7DAD8] hover:bg-[#EDE4E2]/50'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#19C6D2] text-[#080D16]' : 'bg-[#0D1522] text-[#19C6D2] border border-[#1E2E45]'}`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#990011] text-white' : 'bg-[#FCF6F5] text-[#990011] border border-[#E7DAD8]'}`}>
                     <Truck className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="font-mono font-black text-xs text-[#F5F7FA]">{veh.plate_number}</span>
-                    <span className="text-[10px] text-[#94A3B8] block">{veh.id} • {veh.vehicle_type}</span>
+                    <span className="font-mono font-black text-xs text-[#252124]">{veh.plate_number}</span>
+                    <span className="text-[10px] text-[#786D6D] block">{veh.id} • {veh.vehicle_type}</span>
                   </div>
                 </div>
                 <span
@@ -230,17 +230,17 @@ export const VehicleTracker: React.FC = () => {
               </div>
 
               <div className="mt-3 text-xs space-y-1">
-                <div className="font-semibold text-[#F5F7FA] truncate">{veh.cargo_type} ({veh.cargo_weight_tons} MT)</div>
-                <div className="text-[11px] text-[#94A3B8]">
-                  {veh.origin?.split(' ')[0]} &rarr; {veh.destination?.split(' ')[0]} • ETA: <strong className="text-[#19C6D2] font-mono">{veh.eta_destination}</strong>
+                <div className="font-semibold text-[#252124] truncate">{veh.cargo_type} ({veh.cargo_weight_tons} MT)</div>
+                <div className="text-[11px] text-[#786D6D]">
+                  {veh.origin?.split(' ')[0]} &rarr; {veh.destination?.split(' ')[0]} • ETA: <strong className="text-[#990011] font-mono">{veh.eta_destination}</strong>
                 </div>
               </div>
 
-              <div className="mt-3 pt-2.5 border-t border-[#1E2E45] flex items-center justify-between text-[11px]">
-                <span className="text-[#94A3B8]">
+              <div className="mt-3 pt-2.5 border-t border-[#E7DAD8] flex items-center justify-between text-[11px]">
+                <span className="text-[#786D6D]">
                   Speed: <strong className="text-[#20C997] font-mono">{veh.speed_kmh} km/h</strong>
                 </span>
-                <span className="bg-[#0D1522] border border-[#1E2E45] px-2 py-0.5 rounded text-[10px] font-bold text-[#94A3B8] font-mono">
+                <span className="bg-[#FCF6F5] border border-[#E7DAD8] px-2 py-0.5 rounded text-[10px] font-bold text-[#786D6D] font-mono">
                   {veh.network_mode?.split(' ')[0]} • ±2.4m
                 </span>
               </div>
@@ -254,16 +254,16 @@ export const VehicleTracker: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left: Manifest, Telemetry & Cold Chain Chart (7 cols) */}
           <div className="lg:col-span-7 card-command space-y-4 text-xs">
-            <div className="flex items-center justify-between border-b border-[#1E2E45] pb-3">
+            <div className="flex items-center justify-between border-b border-[#E7DAD8] pb-3">
               <div>
-                <span className="text-[10px] font-bold text-[#64748B] uppercase">Telemetry Inspector</span>
-                <h3 className="text-sm font-black text-[#F5F7FA]">
+                <span className="text-[10px] font-bold text-[#786D6D] uppercase">Telemetry Inspector</span>
+                <h3 className="text-sm font-black text-[#252124]">
                   {currentVehicle.plate_number} — {currentVehicle.driver_name}
                 </h3>
               </div>
               <button
                 onClick={() => openDrawer('VEHICLE', currentVehicle)}
-                className="text-xs font-bold text-[#19C6D2] hover:underline cursor-pointer flex items-center gap-1"
+                className="text-xs font-bold text-[#990011] hover:underline cursor-pointer flex items-center gap-1"
               >
                 <span>Full Manifest Drawer</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -272,9 +272,9 @@ export const VehicleTracker: React.FC = () => {
 
             {/* Cold Chain Real-Time Graph */}
             {currentVehicle.cold_chain ? (
-              <div className="p-4 bg-[#0D1522] rounded-xl border border-[#20C997]/30 space-y-3">
+              <div className="p-4 bg-[#FCF6F5] rounded-xl border border-[#20C997]/30 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#F5F7FA] flex items-center gap-2">
+                  <span className="font-bold text-[#252124] flex items-center gap-2">
                     <Thermometer className="w-4 h-4 text-[#20C997]" />
                     Cold-Chain Vaccine / Plasma Telemetry ({currentVehicle.cold_chain.sensor_id})
                   </span>
@@ -289,7 +289,7 @@ export const VehicleTracker: React.FC = () => {
                       <XAxis dataKey="time" stroke="#64748b" fontSize={10} />
                       <YAxis domain={[0, 10]} stroke="#64748b" fontSize={10} />
                       <Tooltip
-                        contentStyle={{ backgroundColor: '#111D2D', borderColor: '#1E2E45', borderRadius: '8px', color: '#F5F7FA' }}
+                        contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E7DAD8', borderRadius: '8px', color: '#252124' }}
                       />
                       <ReferenceLine y={2.0} stroke="#438BFF" strokeDasharray="3 3" label={{ value: 'Min 2°C', fontSize: 9, fill: '#438BFF' }} />
                       <ReferenceLine y={8.0} stroke="#FF5252" strokeDasharray="3 3" label={{ value: 'Max 8°C', fontSize: 9, fill: '#FF5252' }} />
@@ -298,41 +298,41 @@ export const VehicleTracker: React.FC = () => {
                   </ResponsiveContainer>
                 </div>
 
-                <div className="text-[10px] text-[#94A3B8] flex justify-between">
+                <div className="text-[10px] text-[#786D6D] flex justify-between">
                   <span>Target Safe Window: 2.0°C – 8.0°C (WHO Pharma Standard)</span>
                   <span className="text-[#20C997] font-bold">Tamper Seal: ENGAGED</span>
                 </div>
               </div>
             ) : (
-              <div className="p-4 bg-[#0D1522] rounded-xl border border-[#1E2E45] text-[#94A3B8] space-y-1">
-                <div className="font-bold text-[#F5F7FA]">Standard Logistics Manifest</div>
-                <div className="text-xs">Cargo: <strong className="text-[#19C6D2]">{currentVehicle.cargo_type}</strong> ({currentVehicle.cargo_weight_tons} MT)</div>
+              <div className="p-4 bg-[#FCF6F5] rounded-xl border border-[#E7DAD8] text-[#786D6D] space-y-1">
+                <div className="font-bold text-[#252124]">Standard Logistics Manifest</div>
+                <div className="text-xs">Cargo: <strong className="text-[#990011]">{currentVehicle.cargo_type}</strong> ({currentVehicle.cargo_weight_tons} MT)</div>
                 <div className="text-[11px]">Origin: {currentVehicle.origin} &rarr; Destination: {currentVehicle.destination}</div>
               </div>
             )}
 
             {/* Fuel & Driver Safety Metrics */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-[#0D1522] rounded-xl border border-[#1E2E45]">
-                <div className="flex items-center justify-between text-[#94A3B8]">
+              <div className="p-3 bg-[#FCF6F5] rounded-xl border border-[#E7DAD8]">
+                <div className="flex items-center justify-between text-[#786D6D]">
                   <span className="flex items-center gap-1.5 font-bold">
                     <Fuel className="w-3.5 h-3.5 text-[#438BFF]" /> Fuel Tank Sensor
                   </span>
-                  <span className="font-bold text-[#F5F7FA] font-mono">{currentVehicle.fuel_monitor?.tank_level_pct || 72}%</span>
+                  <span className="font-bold text-[#252124] font-mono">{currentVehicle.fuel_monitor?.tank_level_pct || 72}%</span>
                 </div>
                 <div className="text-[10px] text-[#20C997] mt-1 font-semibold">
                   IQR Anomaly Detection: Normal (No Siphon Loss)
                 </div>
               </div>
 
-              <div className="p-3 bg-[#0D1522] rounded-xl border border-[#1E2E45]">
-                <div className="flex items-center justify-between text-[#94A3B8]">
+              <div className="p-3 bg-[#FCF6F5] rounded-xl border border-[#E7DAD8]">
+                <div className="flex items-center justify-between text-[#786D6D]">
                   <span className="flex items-center gap-1.5 font-bold">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#20C997]" /> Driver Safety Score
                   </span>
-                  <span className="font-black text-sm text-[#F5F7FA] font-mono">{currentVehicle.driver_score || 90} / 100</span>
+                  <span className="font-black text-sm text-[#252124] font-mono">{currentVehicle.driver_score || 90} / 100</span>
                 </div>
-                <div className="text-[10px] text-[#94A3B8] mt-1">
+                <div className="text-[10px] text-[#786D6D] mt-1">
                   Harsh Braking: 0 • Fatigue Compliance: 100%
                 </div>
               </div>
@@ -342,7 +342,7 @@ export const VehicleTracker: React.FC = () => {
           {/* Right: Historical Journey Playback Tool (5 cols) */}
           <div className="lg:col-span-5 card-command space-y-4 text-xs">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-[#19C6D2] text-xs uppercase tracking-wider flex items-center gap-1.5">
+              <h3 className="font-bold text-[#990011] text-xs uppercase tracking-wider flex items-center gap-1.5">
                 <Clock className="w-4 h-4 text-[#FFB547]" /> Historical Trip Playback
               </h3>
               <div className="flex items-center gap-1.5">
@@ -358,7 +358,7 @@ export const VehicleTracker: React.FC = () => {
                     setIsPlayingPlayback(false);
                     setPlaybackIndex(0);
                   }}
-                  className="bg-[#0D1522] hover:bg-[#16253B] text-[#94A3B8] border border-[#1E2E45] p-1 rounded-lg cursor-pointer"
+                  className="bg-[#FCF6F5] hover:bg-[#EDE4E2] text-[#786D6D] border border-[#E7DAD8] p-1 rounded-lg cursor-pointer"
                   title="Reset Playback"
                 >
                   <RotateCcw className="w-3 h-3" />
@@ -368,9 +368,9 @@ export const VehicleTracker: React.FC = () => {
 
             {/* Scrubber slider */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-[11px] font-bold text-[#94A3B8]">
+              <div className="flex justify-between text-[11px] font-bold text-[#786D6D]">
                 <span>Waypoint {playbackIndex + 1} of {waypoints.length}</span>
-                <span className="text-[#19C6D2] font-mono">{currentWaypoint?.time || 'Live'}</span>
+                <span className="text-[#990011] font-mono">{currentWaypoint?.time || 'Live'}</span>
               </div>
               <input
                 type="range"
@@ -381,21 +381,21 @@ export const VehicleTracker: React.FC = () => {
                   setIsPlayingPlayback(false);
                   setPlaybackIndex(Number(e.target.value));
                 }}
-                className="w-full accent-[#19C6D2] bg-[#0D1522] cursor-pointer"
+                className="w-full accent-[#990011] bg-[#FCF6F5] cursor-pointer"
               />
             </div>
 
             {/* Current Waypoint Details */}
-            <div className="p-3.5 bg-[#0D1522] rounded-xl border border-[#1E2E45] space-y-2">
-              <div className="text-xs font-bold text-[#F5F7FA]">
+            <div className="p-3.5 bg-[#FCF6F5] rounded-xl border border-[#E7DAD8] space-y-2">
+              <div className="text-xs font-bold text-[#252124]">
                 {currentWaypoint?.checkpoint || currentWaypoint?.location || 'Waypoint'}
               </div>
-              <div className="text-[11px] text-[#94A3B8]">
-                Event: <strong className="text-[#F5F7FA]">{currentWaypoint?.event || 'Logged Telemetry'}</strong>
+              <div className="text-[11px] text-[#786D6D]">
+                Event: <strong className="text-[#252124]">{currentWaypoint?.event || 'Logged Telemetry'}</strong>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-[10px] text-[#94A3B8] pt-1.5 border-t border-[#1E2E45]">
+              <div className="grid grid-cols-2 gap-2 text-[10px] text-[#786D6D] pt-1.5 border-t border-[#E7DAD8]">
                 <div>Recorded Speed: <strong className="text-[#20C997] font-mono">{currentWaypoint?.speed ?? currentWaypoint?.speed_kmh ?? 45} km/h</strong></div>
-                <div>Network Link: <strong className="text-[#F5F7FA]">{currentWaypoint?.network || currentVehicle.network_mode}</strong></div>
+                <div>Network Link: <strong className="text-[#252124]">{currentWaypoint?.network || currentVehicle.network_mode}</strong></div>
                 {currentWaypoint?.temp !== undefined && (
                   <div>Cold-Chain Temp: <strong className="text-[#20C997] font-mono">{currentWaypoint.temp}°C</strong></div>
                 )}
@@ -407,7 +407,7 @@ export const VehicleTracker: React.FC = () => {
             <div className="p-3.5 bg-[#20C997]/10 rounded-xl border border-[#20C997]/30 flex items-center gap-3">
               <FileCheck className="w-5 h-5 text-[#20C997] shrink-0" />
               <div>
-                <span className="font-bold text-[#F5F7FA] block text-xs">
+                <span className="font-bold text-[#252124] block text-xs">
                   GSTN e-Way Bill: {currentVehicle.e_way_bill_no || 'EWB-NER-2026-89104'}
                 </span>
                 <span className="text-[10px] text-[#20C997]">
