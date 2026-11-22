@@ -14,7 +14,11 @@ import {
   Maximize2,
   Minimize2,
   Sun,
-  Moon
+  Moon,
+  ExternalLink,
+  Key,
+  X,
+  Compass
 } from 'lucide-react';
 import { ProvenanceBadge } from '../common/ProvenanceBadge';
 
@@ -224,8 +228,43 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
   const [showVehicles, setShowVehicles] = useState(initialShowVehicles);
   const [showDistricts, setShowDistricts] = useState(initialShowDistricts);
   const [showLayersMenu, setShowLayersMenu] = useState(false);
-  // Default to clean, muted light geographical basemap as requested for GIS enterprise command contrast
-  const [mapTheme, setMapTheme] = useState<'LIGHT' | 'DARK'>('LIGHT');
+  const [showStyleMenu, setShowStyleMenu] = useState(false);
+
+  // CARTO Basemaps API Key Support (Env: VITE_CARTO_API_KEY, fallback to local storage)
+  const envCartoKey =
+    (import.meta as any).env?.VITE_CARTO_API_KEY ||
+    (import.meta as any).env?.VITE_MAP_API_KEY ||
+    '';
+
+  const [customCartoKey, setCustomCartoKey] = useState<string>(() => {
+    try {
+      return localStorage.getItem('NERALIS_CARTO_KEY') || '';
+    } catch {
+      return '';
+    }
+  });
+
+  const [tempInputKey, setTempInputKey] = useState('');
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [showKeyWarning, setShowKeyWarning] = useState(true);
+
+  const activeCartoKey = (customCartoKey || envCartoKey).trim();
+
+  // Map Basemap Styles: Positron (clean light), Voyager (detailed), Dark (dark ops), OSM (open fallback)
+  const [mapStyle, setMapStyle] = useState<'POSITRON' | 'VOYAGER' | 'DARK' | 'OSM'>('POSITRON');
+
+  const handleSaveCustomKey = (key: string) => {
+    const trimmed = key.trim();
+    setCustomCartoKey(trimmed);
+    try {
+      if (trimmed) {
+        localStorage.setItem('NERALIS_CARTO_KEY', trimmed);
+      } else {
+        localStorage.removeItem('NERALIS_CARTO_KEY');
+      }
+    } catch {}
+    setShowKeyModal(false);
+  };
 
   // Fullscreen State & Handlers
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -303,17 +342,27 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
     }
   };
 
-  // Enterprise GIS Tile Provider: CartoDB Positron (light muted) and Dark Matter
-  // Watermark-free, high-speed global CDN, optimal contrast for emergency logistics corridors
-  const configuredTile = (import.meta as any).env?.VITE_MAP_TILE_URL;
-  const tileUrl =
-    configuredTile ||
-    (mapTheme === 'DARK'
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png');
+  // Enterprise GIS Tile Provider: CARTO Basemaps raster tiles with API key support
+  // Query parameter `key` removes the watermark: https://carto.com/basemaps/apikey/
+  const keyParam = activeCartoKey ? `?key=${encodeURIComponent(activeCartoKey)}` : '';
+  const customTileUrl = (import.meta as any).env?.VITE_MAP_TILE_URL;
 
-  const tileAttr =
-    '&copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> | ISRO Bhuvan GIS';
+  let tileUrl = `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png${keyParam}`;
+  let tileAttr = '&copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> | ISRO Bhuvan GIS';
+
+  if (customTileUrl) {
+    tileUrl = customTileUrl.replace('{key}', activeCartoKey).replace('{api_key}', activeCartoKey);
+  } else if (mapStyle === 'VOYAGER') {
+    tileUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png${keyParam}`;
+  } else if (mapStyle === 'DARK') {
+    tileUrl = `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png${keyParam}`;
+  } else if (mapStyle === 'OSM') {
+    tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    tileAttr = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors | ISRO Bhuvan GIS';
+  } else {
+    // Default POSITRON (Muted light geographical map)
+    tileUrl = `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png${keyParam}`;
+  }
 
   return (
     <div
@@ -662,15 +711,223 @@ export const NerGisMap: React.FC<NerGisMapProps> = ({
           ))}
       </MapContainer>
 
+      {/* Top Map Notification Banner if CARTO API key is unconfigured */}
+      {!activeCartoKey && mapStyle !== 'OSM' && showKeyWarning && (
+        <div className="absolute top-3 left-3 right-3 sm:left-auto sm:right-3 sm:max-w-md z-[1100] bg-[#0F1726]/95 border border-[#F59E0B]/50 rounded-xl p-3 shadow-2xl backdrop-blur-md text-xs text-[#F5F7FA] space-y-2 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-[#F59E0B] font-semibold text-xs">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>CARTO API Key Required</span>
+            </div>
+            <button
+              onClick={() => setShowKeyWarning(false)}
+              className="text-[#94A3B8] hover:text-[#F5F7FA] p-0.5 cursor-pointer"
+              title="Dismiss banner"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <p className="text-[11px] text-[#94A3B8] leading-relaxed">
+            CARTO Basemaps requires an API key to remove the repeated watermark.
+            Set <code className="bg-[#162235] text-[#0EA5E9] px-1 py-0.5 rounded font-mono text-[10px]">VITE_CARTO_API_KEY</code> in Render or enter your key below:
+          </p>
+          <div className="flex items-center gap-1.5">
+            <input
+              type="text"
+              placeholder="Paste CARTO API Key..."
+              value={tempInputKey}
+              onChange={(e) => setTempInputKey(e.target.value)}
+              className="flex-1 bg-[#162235] border border-[#1E293B] rounded-lg px-2.5 py-1 text-xs text-[#F5F7FA] placeholder:text-[#64748B] focus:outline-none focus:border-[#0EA5E9]"
+            />
+            <button
+              onClick={() => handleSaveCustomKey(tempInputKey)}
+              className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white font-semibold px-2.5 py-1 rounded-lg text-xs cursor-pointer whitespace-nowrap"
+            >
+              Apply Key
+            </button>
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-[#64748B] pt-0.5">
+            <a
+              href="https://carto.com/basemaps/apikey/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#0EA5E9] hover:underline flex items-center gap-1 font-medium"
+            >
+              <span>Get free CARTO key</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+            <button
+              onClick={() => setMapStyle('OSM')}
+              className="text-[#94A3B8] hover:text-[#F5F7FA] underline cursor-pointer"
+            >
+              Switch to OSM (No Watermark)
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* CARTO Key Settings Modal */}
+      {showKeyModal && (
+        <div className="fixed inset-0 z-[12000] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#0A0F18] border border-[#1E293B] rounded-2xl p-5 max-w-md w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-[#1E293B] pb-3">
+              <div className="flex items-center gap-2">
+                <Key className="w-4 h-4 text-[#0EA5E9]" />
+                <h3 className="font-bold text-sm text-[#F5F7FA]">CARTO Basemaps API Key</h3>
+              </div>
+              <button
+                onClick={() => setShowKeyModal(false)}
+                className="text-[#94A3B8] hover:text-[#F5F7FA] p-1 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-[#94A3B8] leading-relaxed">
+              CARTO requires a publishable API key for watermark-free basemaps. Get a key at{' '}
+              <a
+                href="https://carto.com/basemaps/apikey/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#0EA5E9] hover:underline inline-flex items-center gap-0.5"
+              >
+                carto.com/basemaps/apikey <ExternalLink className="w-3 h-3" />
+              </a>.
+            </p>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-[#94A3B8]">
+                Publishable API Key (Saved in browser session &amp; local storage)
+              </label>
+              <input
+                type="text"
+                placeholder="Paste CARTO API Key..."
+                defaultValue={activeCartoKey}
+                onChange={(e) => setTempInputKey(e.target.value)}
+                className="w-full bg-[#0F1726] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-[#F5F7FA] placeholder:text-[#64748B] focus:outline-none focus:border-[#0EA5E9]"
+              />
+              <span className="text-[10px] text-[#64748B] block">
+                Production builds also read <code className="text-[#0EA5E9] font-mono">VITE_CARTO_API_KEY</code> from Render environment variables.
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-[#1E293B]">
+              {activeCartoKey && (
+                <button
+                  onClick={() => handleSaveCustomKey('')}
+                  className="text-xs text-[#EF4444] hover:underline cursor-pointer"
+                >
+                  Clear Key
+                </button>
+              )}
+              <div className="flex items-center gap-2 ml-auto">
+                <button
+                  onClick={() => setShowKeyModal(false)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:bg-[#162235] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleSaveCustomKey(tempInputKey || activeCartoKey)}
+                  className="px-4 py-1.5 rounded-lg text-xs font-bold bg-[#0EA5E9] hover:bg-[#0284C7] text-white cursor-pointer"
+                >
+                  Save &amp; Reload Map
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Floating Controls (Top-Right) */}
       <div className="absolute top-3 right-3 z-[1000] flex items-center gap-2">
-        {/* Map Theme Toggle (Dark Command / Daylight) */}
+        {/* Basemap Style Selector Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => {
+              setShowStyleMenu(!showStyleMenu);
+              setShowLayersMenu(false);
+            }}
+            className="bg-[#0F1726]/90 backdrop-blur-md border border-[#1E293B] hover:border-[#0EA5E9]/50 text-[#F5F7FA] px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-md cursor-pointer"
+            title="Select GIS Basemap Style"
+          >
+            <Compass className="w-3.5 h-3.5 text-[#0EA5E9]" />
+            <span className="hidden sm:inline">
+              {mapStyle === 'POSITRON' ? 'Positron' : mapStyle === 'VOYAGER' ? 'Voyager' : mapStyle === 'DARK' ? 'Dark Matter' : 'OpenStreetMap'}
+            </span>
+          </button>
+
+          {showStyleMenu && (
+            <div className="absolute right-0 mt-2 w-48 bg-[#0F1726] rounded-xl shadow-2xl border border-[#1E293B] p-2 space-y-1 text-xs z-[1050]">
+              <div className="font-semibold text-[#64748B] text-[10px] uppercase border-b border-[#1E293B] pb-1 px-2">
+                Basemap Provider
+              </div>
+              <button
+                onClick={() => {
+                  setMapStyle('POSITRON');
+                  setShowStyleMenu(false);
+                }}
+                className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+                  mapStyle === 'POSITRON' ? 'bg-[#162235] text-[#0EA5E9] font-semibold' : 'text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#162235]'
+                }`}
+              >
+                <span>CARTO Positron (Light)</span>
+                {mapStyle === 'POSITRON' && <span className="w-1.5 h-1.5 rounded-full bg-[#0EA5E9]" />}
+              </button>
+              <button
+                onClick={() => {
+                  setMapStyle('VOYAGER');
+                  setShowStyleMenu(false);
+                }}
+                className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+                  mapStyle === 'VOYAGER' ? 'bg-[#162235] text-[#0EA5E9] font-semibold' : 'text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#162235]'
+                }`}
+              >
+                <span>CARTO Voyager (Detailed)</span>
+                {mapStyle === 'VOYAGER' && <span className="w-1.5 h-1.5 rounded-full bg-[#0EA5E9]" />}
+              </button>
+              <button
+                onClick={() => {
+                  setMapStyle('DARK');
+                  setShowStyleMenu(false);
+                }}
+                className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+                  mapStyle === 'DARK' ? 'bg-[#162235] text-[#0EA5E9] font-semibold' : 'text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#162235]'
+                }`}
+              >
+                <span>CARTO Dark Matter</span>
+                {mapStyle === 'DARK' && <span className="w-1.5 h-1.5 rounded-full bg-[#0EA5E9]" />}
+              </button>
+              <button
+                onClick={() => {
+                  setMapStyle('OSM');
+                  setShowStyleMenu(false);
+                }}
+                className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+                  mapStyle === 'OSM' ? 'bg-[#162235] text-[#0EA5E9] font-semibold' : 'text-[#94A3B8] hover:text-[#F5F7FA] hover:bg-[#162235]'
+                }`}
+              >
+                <span>OpenStreetMap (No Key)</span>
+                {mapStyle === 'OSM' && <span className="w-1.5 h-1.5 rounded-full bg-[#0EA5E9]" />}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* CARTO Key Config Button */}
         <button
-          onClick={() => setMapTheme(mapTheme === 'DARK' ? 'LIGHT' : 'DARK')}
-          className="bg-[#0D1522]/90 backdrop-blur-md border border-[#1E2E45] hover:border-[#19C6D2]/50 text-[#F5F7FA] p-2 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer"
-          title={mapTheme === 'DARK' ? 'Switch to Daylight Map' : 'Switch to Dark Command Map'}
+          onClick={() => setShowKeyModal(true)}
+          className={`p-1.5 rounded-xl border text-xs font-semibold transition-colors shadow-md cursor-pointer flex items-center gap-1 ${
+            activeCartoKey
+              ? 'bg-[#0F1726]/90 border-[#10B981]/40 text-[#10B981] hover:bg-[#162235]'
+              : 'bg-[#0F1726]/90 border-[#F59E0B]/40 text-[#F59E0B] hover:bg-[#162235]'
+          }`}
+          title={activeCartoKey ? 'CARTO Key Active (Click to edit)' : 'Configure CARTO API Key'}
         >
-          {mapTheme === 'DARK' ? <Sun className="w-4 h-4 text-[#FFB547]" /> : <Moon className="w-4 h-4 text-[#19C6D2]" />}
+          <Key className="w-3.5 h-3.5" />
+          <span className="hidden md:inline text-[10px]">
+            {activeCartoKey ? 'Key Active' : 'Set Key'}
+          </span>
         </button>
 
         {/* Fullscreen Toggle Button */}
