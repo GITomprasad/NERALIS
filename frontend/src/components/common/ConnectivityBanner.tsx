@@ -43,23 +43,23 @@ export const ConnectivityBanner: React.FC = () => {
   // If optimal 4G and Auto mode, show compact, non-intrusive status pill
   if (connectivityStatus === 'GOOD' && networkOverride === 'AUTO') {
     return (
-      <div className="bg-[#F4F5F0]/95 border-b border-[#DFE5DD] px-4 py-1.5 text-xs text-[#68766C] flex items-center justify-between transition-all backdrop-blur-md">
+      <div className="bg-[#F5F8FC]/95 border-b border-[#D9E2EC] px-4 py-1.5 text-xs text-[#627D98] flex items-center justify-between transition-all backdrop-blur-md">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7C9082] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#7C9082]"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2477C8] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2477C8]"></span>
           </span>
-          <span className="font-bold text-[#7C9082]">High-Speed 4G Link Active</span>
+          <span className="font-bold text-[#2477C8]">High-Speed 4G Link Active</span>
           <span className="text-[#334155] hidden sm:inline">|</span>
-          <span className="text-[#68766C] hidden sm:inline">Full GIS Telemetry Stream (IMD + ISRO NavIC + CWC)</span>
+          <span className="text-[#627D98] hidden sm:inline">Full GIS Telemetry Stream (IMD + ISRO NavIC + CWC)</span>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-[#68766C] text-[11px] hidden md:inline">
-            Synced: <span className="text-[#29372D] font-mono">{lastSyncedAt || 'Live'}</span>
+          <span className="text-[#627D98] text-[11px] hidden md:inline">
+            Synced: <span className="text-[#102A43] font-mono">{lastSyncedAt || 'Live'}</span>
           </span>
-          <div className="flex items-center gap-1 bg-[#FFFFFF] border border-[#DFE5DD] rounded-lg px-2 py-0.5 text-[11px]">
-            <span className="text-[#68766C]">Simulate:</span>
+          <div className="flex items-center gap-1 bg-[#FFFFFF] border border-[#D9E2EC] rounded-lg px-2 py-0.5 text-[11px]">
+            <span className="text-[#627D98]">Simulate:</span>
             <button
               onClick={() => setNetworkOverride('LIMITED')}
               className="text-[#FFB547] hover:text-amber-300 font-mono hover:underline px-1 cursor-pointer"
@@ -115,10 +115,10 @@ export const ConnectivityBanner: React.FC = () => {
           </div>
 
           <div className="text-xs">
-            <span className="font-bold text-[#29372D]">
+            <span className="font-bold text-[#102A43]">
               {isCritical ? 'Ultra-Lite Bandwidth Compression Engaged.' : 'Low-Bandwidth Mode Active.'}
             </span>{' '}
-            <span className="text-[#68766C] text-[11px] hidden sm:inline">
+            <span className="text-[#627D98] text-[11px] hidden sm:inline">
               Serving IndexedDB cached corridors and delta updates under 2 KB.
             </span>
           </div>
@@ -138,7 +138,7 @@ export const ConnectivityBanner: React.FC = () => {
           <button
             onClick={handleSync}
             disabled={isSyncing}
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FFFFFF] hover:bg-[#DCE4DB] border border-[#1B3022]/30 text-[#1B3022] rounded-lg text-xs font-bold transition-all disabled:opacity-50 cursor-pointer shadow-command-card"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FFFFFF] hover:bg-[#EBF2FA] border border-[#F58220]/30 text-[#F58220] rounded-lg text-xs font-bold transition-all disabled:opacity-50 cursor-pointer shadow-command-card"
           >
             <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
             <span>{isSyncing ? 'Syncing...' : 'Delta Sync'}</span>
@@ -146,7 +146,7 @@ export const ConnectivityBanner: React.FC = () => {
 
           <button
             onClick={() => setShowCriticalDrawer(!showCriticalDrawer)}
-            className="flex items-center gap-1 px-2 py-1 bg-[#FFFFFF] text-[#68766C] hover:text-[#29372D] border border-[#DFE5DD] rounded-lg text-xs font-medium cursor-pointer"
+            className="flex items-center gap-1 px-2 py-1 bg-[#FFFFFF] text-[#627D98] hover:text-[#102A43] border border-[#D9E2EC] rounded-lg text-xs font-medium cursor-pointer"
           >
             <span>Diagnostics</span>
             {showCriticalDrawer ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -156,21 +156,21 @@ export const ConnectivityBanner: React.FC = () => {
 
       {/* Expanded Diagnostics Drawer */}
       {showCriticalDrawer && (
-        <div className="mt-3 pt-3 border-t border-[#DFE5DD] text-xs grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-w-7xl mx-auto animate-fadeIn">
-          <div className="p-2.5 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD]">
-            <div className="text-[10px] uppercase font-bold text-[#68766C]">Payload Compression</div>
-            <div className="text-sm font-black text-[#7C9082] mt-0.5">87% Compressed</div>
-            <div className="text-[10px] text-[#68766C] mt-0.5">High-res satellite overlays disabled; vector lines rendered locally.</div>
+        <div className="mt-3 pt-3 border-t border-[#D9E2EC] text-xs grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-w-7xl mx-auto animate-fadeIn">
+          <div className="p-2.5 bg-[#F5F8FC] rounded-xl border border-[#D9E2EC]">
+            <div className="text-[10px] uppercase font-bold text-[#627D98]">Payload Compression</div>
+            <div className="text-sm font-black text-[#2477C8] mt-0.5">87% Compressed</div>
+            <div className="text-[10px] text-[#627D98] mt-0.5">High-res satellite overlays disabled; vector lines rendered locally.</div>
           </div>
-          <div className="p-2.5 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD]">
-            <div className="text-[10px] uppercase font-bold text-[#68766C]">Local Cache Status</div>
-            <div className="text-sm font-black text-[#7C9082] mt-0.5">IndexedDB Operational</div>
-            <div className="text-[10px] text-[#68766C] mt-0.5">All 89 districts and 4 key corridors pre-cached in browser.</div>
+          <div className="p-2.5 bg-[#F5F8FC] rounded-xl border border-[#D9E2EC]">
+            <div className="text-[10px] uppercase font-bold text-[#627D98]">Local Cache Status</div>
+            <div className="text-sm font-black text-[#2477C8] mt-0.5">IndexedDB Operational</div>
+            <div className="text-[10px] text-[#627D98] mt-0.5">All 89 districts and 4 key corridors pre-cached in browser.</div>
           </div>
-          <div className="p-2.5 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD]">
-            <div className="text-[10px] uppercase font-bold text-[#68766C]">Emergency Fallback</div>
+          <div className="p-2.5 bg-[#F5F8FC] rounded-xl border border-[#D9E2EC]">
+            <div className="text-[10px] uppercase font-bold text-[#627D98]">Emergency Fallback</div>
             <div className="text-sm font-black text-[#FFB547] mt-0.5">USSD *123# Available</div>
-            <div className="text-[10px] text-[#68766C] mt-0.5">Field staff can dial zero-data GSM USSD gateway for status.</div>
+            <div className="text-[10px] text-[#627D98] mt-0.5">Field staff can dial zero-data GSM USSD gateway for status.</div>
           </div>
         </div>
       )}

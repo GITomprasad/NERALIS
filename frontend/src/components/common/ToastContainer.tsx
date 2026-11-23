@@ -17,34 +17,34 @@ export const ToastContainer: React.FC = () => {
         return (
           <div
             key={toast.id}
-            className={`pointer-events-auto p-3.5 rounded-xl shadow-2xl border backdrop-blur-md bg-[#F4F5F0]/95 flex items-start gap-3 transition-all animate-in slide-in-from-right duration-200 ${
+            className={`pointer-events-auto p-3.5 rounded-xl shadow-2xl border backdrop-blur-md bg-[#F5F8FC]/95 flex items-start gap-3 transition-all animate-in slide-in-from-right duration-200 ${
               isDanger
                 ? 'border-l-4 border-l-[#FF5252] border-rose-500/30 text-rose-200'
                 : isWarning
                 ? 'border-l-4 border-l-[#FFB547] border-amber-500/30 text-amber-200'
                 : isSuccess
                 ? 'border-l-4 border-l-[#20C997] border-emerald-500/30 text-emerald-200'
-                : 'border-l-4 border-l-[#19C6D2] border-[#1B3022]/30 text-cyan-200'
+                : 'border-l-4 border-l-[#19C6D2] border-[#F58220]/30 text-cyan-200'
             }`}
           >
             <div className="shrink-0 mt-0.5">
               {isDanger && <XCircle className="w-4 h-4 text-[#FF5252]" />}
               {isWarning && <AlertTriangle className="w-4 h-4 text-[#FFB547]" />}
-              {isSuccess && <CheckCircle className="w-4 h-4 text-[#7C9082]" />}
-              {!isDanger && !isWarning && !isSuccess && <Info className="w-4 h-4 text-[#1B3022]" />}
+              {isSuccess && <CheckCircle className="w-4 h-4 text-[#2477C8]" />}
+              {!isDanger && !isWarning && !isSuccess && <Info className="w-4 h-4 text-[#F58220]" />}
             </div>
 
             <div className="flex-1 min-w-0 text-xs">
               <div className="flex items-center justify-between gap-2">
-                <span className="font-bold text-[#29372D] truncate">{toast.title}</span>
-                <span className="text-[10px] text-[#68766C] shrink-0 font-mono">{toast.timestamp}</span>
+                <span className="font-bold text-[#102A43] truncate">{toast.title}</span>
+                <span className="text-[10px] text-[#627D98] shrink-0 font-mono">{toast.timestamp}</span>
               </div>
-              <p className="text-[#68766C] mt-0.5 leading-snug">{toast.message}</p>
+              <p className="text-[#627D98] mt-0.5 leading-snug">{toast.message}</p>
             </div>
 
             <button
               onClick={() => dismissToast(toast.id)}
-              className="text-[#68766C] hover:text-[#29372D] transition-colors shrink-0 p-0.5 rounded cursor-pointer"
+              className="text-[#627D98] hover:text-[#102A43] transition-colors shrink-0 p-0.5 rounded cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

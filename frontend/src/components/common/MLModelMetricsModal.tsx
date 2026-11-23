@@ -19,108 +19,108 @@ export const MLModelMetricsModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[6000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-      <div className="bg-[#F4F5F0] rounded-2xl max-w-2xl w-full border border-[#DFE5DD] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="bg-[#F5F8FC] rounded-2xl max-w-2xl w-full border border-[#D9E2EC] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="bg-[#F4F5F0] text-[#29372D] p-4 sm:p-5 flex items-center justify-between border-b border-[#DFE5DD]">
+        <div className="bg-[#F5F8FC] text-[#102A43] p-4 sm:p-5 flex items-center justify-between border-b border-[#D9E2EC]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-purple-300" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-black text-sm text-[#29372D]">AI Disruption Model Evaluation Baseline</h3>
-                <span className="bg-emerald-500/20 text-[#7C9082] border border-emerald-500/30 font-extrabold text-[10px] px-2 py-0.5 rounded-full">
+                <h3 className="font-black text-sm text-[#102A43]">AI Disruption Model Evaluation Baseline</h3>
+                <span className="bg-emerald-500/20 text-[#2477C8] border border-emerald-500/30 font-extrabold text-[10px] px-2 py-0.5 rounded-full">
                   Accuracy: {metrics?.accuracy_pct || 85.1}%
                 </span>
               </div>
-              <p className="text-[11px] text-[#68766C]">
+              <p className="text-[11px] text-[#627D98]">
                 {metrics?.algorithm || 'Tuned Balanced Random Forest (NASA + IMD Historical)'} • Out-of-Fold Cross Validation
               </p>
             </div>
           </div>
           <button
             onClick={() => setIsModelMetricsModalOpen(false)}
-            className="w-8 h-8 rounded-lg bg-[#FFFFFF] hover:bg-[#DCE4DB] text-[#68766C] hover:text-[#29372D] flex items-center justify-center transition-colors cursor-pointer border border-[#DFE5DD]"
+            className="w-8 h-8 rounded-lg bg-[#FFFFFF] hover:bg-[#EBF2FA] text-[#627D98] hover:text-[#102A43] flex items-center justify-center transition-colors cursor-pointer border border-[#D9E2EC]"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tab Buttons */}
-        <div className="flex items-center bg-[#F4F5F0] p-1.5 border-b border-[#DFE5DD] text-xs font-bold text-[#68766C] gap-1 overflow-x-auto">
+        <div className="flex items-center bg-[#F5F8FC] p-1.5 border-b border-[#D9E2EC] text-xs font-bold text-[#627D98] gap-1 overflow-x-auto">
           <button
             onClick={() => setActiveTab('SUMMARY')}
-            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${activeTab === 'SUMMARY' ? 'bg-[#FFFFFF] text-[#1B3022] border border-[#1B3022]/30 shadow-command-card' : 'hover:bg-[#FFFFFF]/60'}`}
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${activeTab === 'SUMMARY' ? 'bg-[#FFFFFF] text-[#F58220] border border-[#F58220]/30 shadow-command-card' : 'hover:bg-[#FFFFFF]/60'}`}
           >
             Benchmark Summary
           </button>
           <button
             onClick={() => setActiveTab('CONFUSION')}
-            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${activeTab === 'CONFUSION' ? 'bg-[#FFFFFF] text-[#1B3022] border border-[#1B3022]/30 shadow-command-card' : 'hover:bg-[#FFFFFF]/60'}`}
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${activeTab === 'CONFUSION' ? 'bg-[#FFFFFF] text-[#F58220] border border-[#F58220]/30 shadow-command-card' : 'hover:bg-[#FFFFFF]/60'}`}
           >
             Confusion Matrix ({metrics?.test_samples_count || 348} Historical Events)
           </button>
           <button
             onClick={() => setActiveTab('FEATURES')}
-            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${activeTab === 'FEATURES' ? 'bg-[#FFFFFF] text-[#1B3022] border border-[#1B3022]/30 shadow-command-card' : 'hover:bg-[#FFFFFF]/60'}`}
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${activeTab === 'FEATURES' ? 'bg-[#FFFFFF] text-[#F58220] border border-[#F58220]/30 shadow-command-card' : 'hover:bg-[#FFFFFF]/60'}`}
           >
             Feature Importance (XAI)
           </button>
           <button
             onClick={() => setActiveTab('CALIBRATION')}
-            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${activeTab === 'CALIBRATION' ? 'bg-[#FFFFFF] text-[#1B3022] border border-[#1B3022]/30 shadow-command-card' : 'hover:bg-[#FFFFFF]/60'}`}
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${activeTab === 'CALIBRATION' ? 'bg-[#FFFFFF] text-[#F58220] border border-[#F58220]/30 shadow-command-card' : 'hover:bg-[#FFFFFF]/60'}`}
           >
             ROC Curve &amp; Calibration
           </button>
         </div>
 
         {/* Modal Content */}
-        <div className="p-5 space-y-4 overflow-y-auto text-xs text-[#68766C]">
+        <div className="p-5 space-y-4 overflow-y-auto text-xs text-[#627D98]">
           {activeTab === 'SUMMARY' && metrics && (
             <div className="space-y-4">
               {/* Primary KPI Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="p-3 bg-[#FFFFFF] border border-emerald-500/30 rounded-xl text-center">
-                  <div className="text-[10px] font-bold text-[#68766C] uppercase">Raw Accuracy</div>
-                  <div className="text-xl font-black text-[#7C9082] mt-0.5">{metrics.accuracy_pct}%</div>
-                  <div className="text-[9px] text-[#7C9082]/80 font-semibold mt-0.5">84% Medium Base</div>
+                  <div className="text-[10px] font-bold text-[#627D98] uppercase">Raw Accuracy</div>
+                  <div className="text-xl font-black text-[#2477C8] mt-0.5">{metrics.accuracy_pct}%</div>
+                  <div className="text-[9px] text-[#2477C8]/80 font-semibold mt-0.5">84% Medium Base</div>
                 </div>
                 <div className="p-3 bg-[#FFFFFF] border border-purple-500/30 rounded-xl text-center">
-                  <div className="text-[10px] font-bold text-[#68766C] uppercase">Balanced Acc</div>
+                  <div className="text-[10px] font-bold text-[#627D98] uppercase">Balanced Acc</div>
                   <div className="text-xl font-black text-purple-300 mt-0.5">
                     {metrics.balanced_accuracy ? `${(metrics.balanced_accuracy * 100).toFixed(1)}%` : '52.4%'}
                   </div>
                   <div className="text-[9px] text-purple-400 font-semibold mt-0.5">Honest Multi-Class</div>
                 </div>
-                <div className="p-3 bg-[#FFFFFF] border border-[#1B3022]/30 rounded-xl text-center">
-                  <div className="text-[10px] font-bold text-[#68766C] uppercase">Macro F1</div>
-                  <div className="text-xl font-black text-[#1B3022] mt-0.5">{metrics.macro_f1 || metrics.f1_score}</div>
-                  <div className="text-[9px] text-[#1B3022]/80 font-semibold mt-0.5">Macro Averaged</div>
+                <div className="p-3 bg-[#FFFFFF] border border-[#F58220]/30 rounded-xl text-center">
+                  <div className="text-[10px] font-bold text-[#627D98] uppercase">Macro F1</div>
+                  <div className="text-xl font-black text-[#F58220] mt-0.5">{metrics.macro_f1 || metrics.f1_score}</div>
+                  <div className="text-[9px] text-[#F58220]/80 font-semibold mt-0.5">Macro Averaged</div>
                 </div>
                 <div className="p-3 bg-[#FFFFFF] border border-amber-500/30 rounded-xl text-center">
-                  <div className="text-[10px] font-bold text-[#68766C] uppercase">ROC-AUC</div>
+                  <div className="text-[10px] font-bold text-[#627D98] uppercase">ROC-AUC</div>
                   <div className="text-xl font-black text-[#FFB547] mt-0.5">{metrics.roc_auc}</div>
                   <div className="text-[9px] text-[#FFB547]/80 font-semibold mt-0.5">Out-of-Fold Split</div>
                 </div>
               </div>
 
               {/* Model Architecture Note */}
-              <div className="bg-[#F4F5F0] p-4 rounded-xl border border-[#DFE5DD] space-y-2">
-                <div className="font-black text-[#1B3022] text-[11px] uppercase tracking-wide flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#7C9082]" /> Validation &amp; Audit Provenance
+              <div className="bg-[#F5F8FC] p-4 rounded-xl border border-[#D9E2EC] space-y-2">
+                <div className="font-black text-[#F58220] text-[11px] uppercase tracking-wide flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#2477C8]" /> Validation &amp; Audit Provenance
                 </div>
-                <p className="text-[11px] leading-relaxed text-[#68766C]">
+                <p className="text-[11px] leading-relaxed text-[#627D98]">
                   {metrics.validation_method}. Evaluated on {metrics.dataset || 'NASA Global Landslide Catalog & IMD Historical Precipitation (NER Subdivisions)'}.
                   Features include settlement gazetteer proximity, IMD monsoon rainfall normals, event month seasonality, geospatial coordinates, and macro annual baseline climate.
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
-                  <span className="bg-[#FFFFFF] border border-[#DFE5DD] text-[#29372D] font-bold px-2 py-0.5 rounded text-[10px]">
+                  <span className="bg-[#FFFFFF] border border-[#D9E2EC] text-[#102A43] font-bold px-2 py-0.5 rounded text-[10px]">
                     Training Samples: {metrics.training_samples_count}
                   </span>
-                  <span className="bg-[#FFFFFF] border border-[#DFE5DD] text-[#29372D] font-bold px-2 py-0.5 rounded text-[10px]">
+                  <span className="bg-[#FFFFFF] border border-[#D9E2EC] text-[#102A43] font-bold px-2 py-0.5 rounded text-[10px]">
                     Test Samples: {metrics.test_samples_count}
                   </span>
-                  <span className="bg-emerald-500/15 border border-emerald-500/30 text-[#7C9082] font-bold px-2 py-0.5 rounded text-[10px]">
+                  <span className="bg-emerald-500/15 border border-emerald-500/30 text-[#2477C8] font-bold px-2 py-0.5 rounded text-[10px]">
                     Lead-Time Accuracy: {metrics.lead_time_accuracy_pct}%
                   </span>
                   <span className="bg-purple-500/15 border border-purple-500/30 text-purple-300 font-bold px-2 py-0.5 rounded text-[10px]">
@@ -133,12 +133,12 @@ export const MLModelMetricsModal: React.FC = () => {
 
           {activeTab === 'CONFUSION' && metrics && (
             <div className="space-y-4">
-              <div className="bg-[#F4F5F0] p-4 rounded-xl border border-[#DFE5DD]">
-                <h4 className="font-black text-xs text-[#29372D] mb-3">Confusion Matrix ({metrics.test_samples_count} Out-of-Time Test Records)</h4>
+              <div className="bg-[#F5F8FC] p-4 rounded-xl border border-[#D9E2EC]">
+                <h4 className="font-black text-xs text-[#102A43] mb-3">Confusion Matrix ({metrics.test_samples_count} Out-of-Time Test Records)</h4>
                 <div className="grid grid-cols-2 gap-3 text-center">
                   <div className="bg-emerald-950/30 border border-emerald-500/30 p-3.5 rounded-xl">
                     <div className="text-[10px] font-bold text-emerald-300">True Negatives (No Disruption Correct)</div>
-                    <div className="text-2xl font-black text-[#7C9082] mt-1">{metrics.confusion_matrix.true_negative}</div>
+                    <div className="text-2xl font-black text-[#2477C8] mt-1">{metrics.confusion_matrix.true_negative}</div>
                   </div>
                   <div className="bg-rose-950/30 border border-rose-500/30 p-3.5 rounded-xl">
                     <div className="text-[10px] font-bold text-rose-300">False Positives (False Alarms)</div>
@@ -159,18 +159,18 @@ export const MLModelMetricsModal: React.FC = () => {
 
           {activeTab === 'FEATURES' && metrics && (
             <div className="space-y-3">
-              <h4 className="font-black text-xs text-[#29372D]">Feature Importance (SHAP / Gini Importance)</h4>
+              <h4 className="font-black text-xs text-[#102A43]">Feature Importance (SHAP / Gini Importance)</h4>
               <div className="space-y-2">
                 {metrics.feature_importance.map((f, i) => (
-                  <div key={i} className="bg-[#FFFFFF] p-3 rounded-xl border border-[#DFE5DD]">
+                  <div key={i} className="bg-[#FFFFFF] p-3 rounded-xl border border-[#D9E2EC]">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-bold text-[#29372D]">{f.feature}</span>
+                      <span className="font-bold text-[#102A43]">{f.feature}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-[#68766C] font-semibold">{f.category}</span>
-                        <span className="font-mono font-black text-[#1B3022]">{(f.weight * 100).toFixed(0)}%</span>
+                        <span className="text-[10px] text-[#627D98] font-semibold">{f.category}</span>
+                        <span className="font-mono font-black text-[#F58220]">{(f.weight * 100).toFixed(0)}%</span>
                       </div>
                     </div>
-                    <div className="w-full bg-[#F4F5F0] h-2 rounded-full overflow-hidden border border-[#DFE5DD]">
+                    <div className="w-full bg-[#F5F8FC] h-2 rounded-full overflow-hidden border border-[#D9E2EC]">
                       <div
                         className="bg-gradient-to-r from-[#19C6D2] to-[#438BFF] h-full rounded-full transition-all"
                         style={{ width: `${Math.min(100, f.weight * 100 * 2.8)}%` }}
@@ -184,8 +184,8 @@ export const MLModelMetricsModal: React.FC = () => {
 
           {activeTab === 'CALIBRATION' && metrics && (
             <div className="space-y-3">
-              <h4 className="font-black text-xs text-[#29372D]">ROC Curve &amp; Probability Calibration Table</h4>
-              <div className="overflow-x-auto rounded-xl border border-[#DFE5DD]">
+              <h4 className="font-black text-xs text-[#102A43]">ROC Curve &amp; Probability Calibration Table</h4>
+              <div className="overflow-x-auto rounded-xl border border-[#D9E2EC]">
                 <table className="w-full text-left text-xs table-command">
                   <thead>
                     <tr>
@@ -199,11 +199,11 @@ export const MLModelMetricsModal: React.FC = () => {
                     {metrics.calibration_curve.map((c, i) => (
                       <tr key={i} className="font-mono">
                         <td className="p-2.5 font-bold text-purple-300">{(c.predicted_prob * 100).toFixed(0)}%</td>
-                        <td className="p-2.5 font-bold text-[#29372D]">{(c.actual_frequency * 100).toFixed(0)}%</td>
-                        <td className="p-2.5 text-[#7C9082] font-bold">
+                        <td className="p-2.5 font-bold text-[#102A43]">{(c.actual_frequency * 100).toFixed(0)}%</td>
+                        <td className="p-2.5 text-[#2477C8] font-bold">
                           {((c.predicted_prob - c.actual_frequency) * 100).toFixed(1)}%
                         </td>
-                        <td className="p-2.5 text-[10px] font-sans font-bold text-[#7C9082]">PERFECTLY CALIBRATED</td>
+                        <td className="p-2.5 text-[10px] font-sans font-bold text-[#2477C8]">PERFECTLY CALIBRATED</td>
                       </tr>
                     ))}
                   </tbody>
@@ -214,8 +214,8 @@ export const MLModelMetricsModal: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-3.5 bg-[#F4F5F0] border-t border-[#DFE5DD] flex items-center justify-between">
-          <span className="text-[11px] text-[#68766C] font-mono">Model ID: {metrics?.model_version || 'NERALIS-v3.4'}</span>
+        <div className="p-3.5 bg-[#F5F8FC] border-t border-[#D9E2EC] flex items-center justify-between">
+          <span className="text-[11px] text-[#627D98] font-mono">Model ID: {metrics?.model_version || 'NERALIS-v3.4'}</span>
           <button
             onClick={() => setIsModelMetricsModalOpen(false)}
             className="btn-primary text-xs py-2 px-4 font-bold shadow-command-card"

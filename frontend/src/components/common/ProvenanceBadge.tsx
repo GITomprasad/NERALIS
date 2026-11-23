@@ -49,7 +49,7 @@ export const ProvenanceBadge: React.FC<ProvenanceBadgeProps> = ({
       case 'REPORTED':
         return {
           label: 'REPORTED',
-          bg: 'bg-cyan-500/15 text-cyan-300 border-[#1B3022]/30',
+          bg: 'bg-cyan-500/15 text-cyan-300 border-[#F58220]/30',
           icon: <Radio className="w-3 h-3 text-cyan-300" />,
           desc: 'Field Inspector Telemetry'
         };

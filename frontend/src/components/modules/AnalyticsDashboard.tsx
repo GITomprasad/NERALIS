@@ -118,10 +118,10 @@ export const AnalyticsDashboard: React.FC = () => {
       {/* Top Banner */}
       <div className="card-command flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-black text-[#29372D]">
+          <h2 className="text-base font-black text-[#102A43]">
             {t('module_7')} — Strategic Logistics Analytics &amp; Command Center
           </h2>
-          <p className="text-xs text-[#68766C] mt-0.5">
+          <p className="text-xs text-[#627D98] mt-0.5">
             Macro KPIs, 3-Year ROI analytics, disruption logs, and state comparative governance scorecards
           </p>
         </div>
@@ -131,7 +131,7 @@ export const AnalyticsDashboard: React.FC = () => {
             <Download className="w-3.5 h-3.5" /> CSV
           </button>
           <button onClick={handleExportExcel} className="btn-secondary text-xs py-2 px-3">
-            <Download className="w-3.5 h-3.5 text-[#7C9082]" /> Excel
+            <Download className="w-3.5 h-3.5 text-[#2477C8]" /> Excel
           </button>
           <button
             onClick={() => setIsParliamentModalOpen(true)}
@@ -145,29 +145,29 @@ export const AnalyticsDashboard: React.FC = () => {
       {/* 3 Executive High-Level Analytics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="card-command space-y-1">
-          <span className="text-[10px] uppercase font-bold text-[#68766C]">
+          <span className="text-[10px] uppercase font-bold text-[#627D98]">
             Regional Delivery Delay Reduction
           </span>
-          <div className="text-2xl font-black text-[#7C9082] flex items-center gap-2 font-mono">
-            14.2% <TrendingDown className="w-5 h-5 text-[#7C9082]" />
+          <div className="text-2xl font-black text-[#2477C8] flex items-center gap-2 font-mono">
+            14.2% <TrendingDown className="w-5 h-5 text-[#2477C8]" />
           </div>
-          <p className="text-[11px] text-[#68766C]">Reduced from 45% baseline (₹420 Cr/yr saved)</p>
+          <p className="text-[11px] text-[#627D98]">Reduced from 45% baseline (₹420 Cr/yr saved)</p>
         </div>
 
         <div className="card-command space-y-1">
-          <span className="text-[10px] uppercase font-bold text-[#68766C]">
+          <span className="text-[10px] uppercase font-bold text-[#627D98]">
             PHC Essential Medicine Stockouts
           </span>
-          <div className="text-2xl font-black text-[#7C9082] font-mono">3.8%</div>
-          <p className="text-[11px] text-[#68766C]">Reduced from 34% monsoon stockouts</p>
+          <div className="text-2xl font-black text-[#2477C8] font-mono">3.8%</div>
+          <p className="text-[11px] text-[#627D98]">Reduced from 34% monsoon stockouts</p>
         </div>
 
         <div className="card-command space-y-1">
-          <span className="text-[10px] uppercase font-bold text-[#68766C]">
+          <span className="text-[10px] uppercase font-bold text-[#627D98]">
             Public Investment ROI
           </span>
-          <div className="text-2xl font-black text-[#1B3022] font-mono">29.2× ROI</div>
-          <p className="text-[11px] text-[#68766C]">₹32.8 Cr TCO vs ₹960+ Cr/yr benefit</p>
+          <div className="text-2xl font-black text-[#F58220] font-mono">29.2× ROI</div>
+          <p className="text-[11px] text-[#627D98]">₹32.8 Cr TCO vs ₹960+ Cr/yr benefit</p>
         </div>
       </div>
 
@@ -176,10 +176,10 @@ export const AnalyticsDashboard: React.FC = () => {
         {/* Chart 1: Delay Reduction Over Time (7 cols) */}
         <div className="lg:col-span-7 card-command space-y-3 text-xs">
           <div className="flex items-center justify-between">
-            <span className="font-bold text-[#29372D] text-xs uppercase">
+            <span className="font-bold text-[#102A43] text-xs uppercase">
               Monsoon Delivery Delay Rate Reduction Curve (%)
             </span>
-            <span className="text-[10px] bg-[#7C9082]/15 text-[#7C9082] border border-[#7C9082]/30 font-bold px-2 py-0.5 rounded">
+            <span className="text-[10px] bg-[#2477C8]/15 text-[#2477C8] border border-[#2477C8]/30 font-bold px-2 py-0.5 rounded">
               Target &lt; 15% Achieved
             </span>
           </div>
@@ -201,7 +201,7 @@ export const AnalyticsDashboard: React.FC = () => {
 
         {/* Chart 2: Freight Commodity Share (5 cols) */}
         <div className="lg:col-span-5 card-command space-y-3 text-xs">
-          <span className="font-bold text-[#29372D] text-xs uppercase block">
+          <span className="font-bold text-[#102A43] text-xs uppercase block">
             Critical Freight Volume Breakdown
           </span>
 
@@ -234,15 +234,15 @@ export const AnalyticsDashboard: React.FC = () => {
       {/* Disruption Log Table */}
       <div className="card-command space-y-3 text-xs">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-bold text-[#1B3022] text-xs uppercase">
+          <span className="font-bold text-[#F58220] text-xs uppercase">
             Master Corridor Disruption &amp; Structural Health Log
           </span>
           <div className="flex items-center gap-1.5">
-            <Filter className="w-3.5 h-3.5 text-[#68766C]" />
+            <Filter className="w-3.5 h-3.5 text-[#627D98]" />
             <select
               value={tableFilter}
               onChange={(e) => setTableFilter(e.target.value)}
-              className="bg-[#F4F5F0] border border-[#DFE5DD] rounded-xl px-2.5 py-1 text-xs text-[#29372D] cursor-pointer"
+              className="bg-[#F5F8FC] border border-[#D9E2EC] rounded-xl px-2.5 py-1 text-xs text-[#102A43] cursor-pointer"
             >
               <option value="ALL">All Statuses</option>
               <option value="OPEN">Open Only</option>
@@ -252,7 +252,7 @@ export const AnalyticsDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="border border-[#DFE5DD] rounded-xl overflow-x-auto">
+        <div className="border border-[#D9E2EC] rounded-xl overflow-x-auto">
           <table className="table-command min-w-[600px]">
             <thead>
               <tr>
@@ -268,8 +268,8 @@ export const AnalyticsDashboard: React.FC = () => {
             <tbody>
               {filteredCorridors.slice(0, 10).map((c) => (
                 <tr key={c.id}>
-                  <td className="font-mono font-bold text-[#1B3022]">{c.id}</td>
-                  <td className="font-bold text-[#29372D]">{c.name}</td>
+                  <td className="font-mono font-bold text-[#F58220]">{c.id}</td>
+                  <td className="font-bold text-[#102A43]">{c.name}</td>
                   <td className="font-mono">{c.distance_km} km</td>
                   <td>
                     <span
@@ -289,19 +289,19 @@ export const AnalyticsDashboard: React.FC = () => {
                   <td>
                     <span
                       className={`font-bold font-mono ${
-                        c.risk_score >= 60 ? 'text-[#FF5252]' : c.risk_score >= 35 ? 'text-[#FFB547]' : 'text-[#7C9082]'
+                        c.risk_score >= 60 ? 'text-[#FF5252]' : c.risk_score >= 35 ? 'text-[#FFB547]' : 'text-[#2477C8]'
                       }`}
                     >
                       {c.risk_score}%
                     </span>
                   </td>
                   <td>
-                    <span className="font-mono text-[#29372D]">{c.weight_limit_tons} MT</span>
+                    <span className="font-mono text-[#102A43]">{c.weight_limit_tons} MT</span>
                   </td>
                   <td>
                     <button
                       onClick={() => addToast('Corridor Inspected', `${c.name} diagnostics logged.`, 'INFO')}
-                      className="text-[#1B3022] hover:underline font-bold text-[11px] cursor-pointer"
+                      className="text-[#F58220] hover:underline font-bold text-[11px] cursor-pointer"
                     >
                       View Details &rarr;
                     </button>

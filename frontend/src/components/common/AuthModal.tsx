@@ -172,7 +172,7 @@ export const AuthModal: React.FC = () => {
       id: 'STATE_ADMIN',
       label: 'State Admin (MDoNER HQ)',
       badge: 'ADMIN',
-      badgeColor: 'bg-cyan-500/20 text-cyan-400 border-[#1B3022]/30',
+      badgeColor: 'bg-cyan-500/20 text-cyan-400 border-[#F58220]/30',
       desc: 'Full author control, override road status & alerts',
       icon: '🏛️'
     },
@@ -228,11 +228,11 @@ export const AuthModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[6000] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-      <div className="bg-[#F4F5F0] rounded-2xl max-w-xl w-full border border-[#DFE5DD] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="bg-[#F5F8FC] rounded-2xl max-w-xl w-full border border-[#D9E2EC] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header with GoI Emblem */}
-        <div className="bg-[#F4F5F0] text-[#29372D] p-4 sm:p-5 flex items-center justify-between border-b border-[#DFE5DD]">
+        <div className="bg-[#F5F8FC] text-[#102A43] p-4 sm:p-5 flex items-center justify-between border-b border-[#D9E2EC]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 p-1.5 flex items-center justify-center border border-[#1B3022]/30 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 p-1.5 flex items-center justify-center border border-[#F58220]/30 shrink-0">
               <svg viewBox="0 0 100 100" className="w-7 h-7 fill-[#19C6D2]">
                 <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="4" />
                 <circle cx="50" cy="50" r="16" fill="currentColor" />
@@ -241,32 +241,32 @@ export const AuthModal: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-black text-base text-[#29372D] tracking-wide">NERALIS Portal Access</h3>
+                <h3 className="font-black text-base text-[#102A43] tracking-wide">NERALIS Portal Access</h3>
                 <span className="bg-amber-500/20 text-[#FFB547] text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-500/30">
                   Govt of India
                 </span>
               </div>
-              <p className="text-[11px] text-[#68766C]">
+              <p className="text-[11px] text-[#627D98]">
                 Ministry of Development of North Eastern Region (MDoNER)
               </p>
             </div>
           </div>
           <button
             onClick={closeAuthModal}
-            className="w-8 h-8 rounded-lg bg-[#FFFFFF] hover:bg-[#DCE4DB] text-[#68766C] hover:text-[#29372D] flex items-center justify-center transition-colors cursor-pointer border border-[#DFE5DD]"
+            className="w-8 h-8 rounded-lg bg-[#FFFFFF] hover:bg-[#EBF2FA] text-[#627D98] hover:text-[#102A43] flex items-center justify-center transition-colors cursor-pointer border border-[#D9E2EC]"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tab Switcher (Sign In vs Create Account) */}
-        <div className="flex border-b border-[#DFE5DD] bg-[#F4F5F0] px-5 pt-3 shrink-0 gap-2">
+        <div className="flex border-b border-[#D9E2EC] bg-[#F5F8FC] px-5 pt-3 shrink-0 gap-2">
           <button
             onClick={() => { setTab('SIGNIN'); setErrorMessage(''); setShowGoogleChooser(false); }}
             className={`pb-2.5 px-4 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${
               tab === 'SIGNIN'
-                ? 'border-[#1B3022] text-[#1B3022] font-black'
-                : 'border-transparent text-[#68766C] hover:text-[#68766C]'
+                ? 'border-[#F58220] text-[#F58220] font-black'
+                : 'border-transparent text-[#627D98] hover:text-[#627D98]'
             }`}
           >
             <Lock className="w-3.5 h-3.5" />
@@ -276,8 +276,8 @@ export const AuthModal: React.FC = () => {
             onClick={() => { setTab('SIGNUP'); setErrorMessage(''); setShowGoogleChooser(false); }}
             className={`pb-2.5 px-4 font-bold text-xs sm:text-sm transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${
               tab === 'SIGNUP'
-                ? 'border-[#1B3022] text-[#1B3022] font-black'
-                : 'border-transparent text-[#68766C] hover:text-[#68766C]'
+                ? 'border-[#F58220] text-[#F58220] font-black'
+                : 'border-transparent text-[#627D98] hover:text-[#627D98]'
             }`}
           >
             <User className="w-3.5 h-3.5" />
@@ -294,7 +294,7 @@ export const AuthModal: React.FC = () => {
         )}
 
         {/* Modal Body Container */}
-        <div className="p-4 sm:p-5 overflow-y-auto space-y-4 text-xs text-[#68766C]">
+        <div className="p-4 sm:p-5 overflow-y-auto space-y-4 text-xs text-[#627D98]">
           {/* PRIMARY: GOOGLE IDENTITY SERVICES ID-TOKEN BUTTON */}
           <div className="space-y-2.5">
             {hasGoogleClientId ? (
@@ -307,26 +307,26 @@ export const AuthModal: React.FC = () => {
                   <AlertCircle className="w-4 h-4 text-[#FFB547] shrink-0" />
                   <span>Google Client ID setup required for live Google Sign-In</span>
                 </div>
-                <p className="text-[11px] text-[#68766C] leading-relaxed">
-                  Add <code className="bg-[#F4F5F0] text-amber-300 px-1 py-0.5 rounded font-mono text-[10px]">VITE_GOOGLE_CLIENT_ID</code> to your <code className="bg-[#F4F5F0] text-amber-300 px-1 py-0.5 rounded font-mono text-[10px]">.env</code> for live ID-token verification. For instant testing, use a Sandbox account below.
+                <p className="text-[11px] text-[#627D98] leading-relaxed">
+                  Add <code className="bg-[#F5F8FC] text-amber-300 px-1 py-0.5 rounded font-mono text-[10px]">VITE_GOOGLE_CLIENT_ID</code> to your <code className="bg-[#F5F8FC] text-amber-300 px-1 py-0.5 rounded font-mono text-[10px]">.env</code> for live ID-token verification. For instant testing, use a Sandbox account below.
                 </p>
               </div>
             )}
 
             {isGoogleLoading && (
-              <div className="py-2 text-center text-xs font-semibold text-[#1B3022] flex items-center justify-center gap-2 animate-pulse">
-                <div className="w-3.5 h-3.5 border-2 border-[#1B3022] border-t-transparent rounded-full animate-spin" />
+              <div className="py-2 text-center text-xs font-semibold text-[#F58220] flex items-center justify-center gap-2 animate-pulse">
+                <div className="w-3.5 h-3.5 border-2 border-[#F58220] border-t-transparent rounded-full animate-spin" />
                 <span>Verifying Google ID Token with Backend...</span>
               </div>
             )}
 
             {/* Sandbox / Demo Preset Selector Toggle */}
             <div className="flex items-center justify-between px-1 text-[11px]">
-              <span className="text-[#68766C] font-medium">Google Identity Services (GIS)</span>
+              <span className="text-[#627D98] font-medium">Google Identity Services (GIS)</span>
               <button
                 type="button"
                 onClick={() => setShowGoogleChooser(!showGoogleChooser)}
-                className="text-[#1B3022] hover:text-cyan-300 font-semibold hover:underline cursor-pointer"
+                className="text-[#F58220] hover:text-cyan-300 font-semibold hover:underline cursor-pointer"
               >
                 {showGoogleChooser ? 'Hide Sandbox Profiles' : '⚡ Test with Sandbox Account'}
               </button>
@@ -334,37 +334,37 @@ export const AuthModal: React.FC = () => {
 
             {/* Google Account Selector Dropdown */}
             {showGoogleChooser && (
-              <div className="p-3 bg-[#F4F5F0] border border-[#1B3022]/30 rounded-xl space-y-2 animate-fadeIn">
-                <div className="flex items-center justify-between text-[10px] font-bold text-[#68766C] uppercase tracking-wider">
+              <div className="p-3 bg-[#F5F8FC] border border-[#F58220]/30 rounded-xl space-y-2 animate-fadeIn">
+                <div className="flex items-center justify-between text-[10px] font-bold text-[#627D98] uppercase tracking-wider">
                   <span>Sandbox / Demo Google Profiles:</span>
-                  <span className="text-[#1B3022]">Simulated SSO Fallback</span>
+                  <span className="text-[#F58220]">Simulated SSO Fallback</span>
                 </div>
                 <div className="space-y-1.5">
                   {googlePresetAccounts.map((acc, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleGooglePresetSignIn(acc)}
-                      className="w-full text-left p-2.5 bg-[#FFFFFF] hover:bg-[#DCE4DB] border border-[#DFE5DD] hover:border-[#1B3022]/40 rounded-xl flex items-center justify-between gap-2 transition-all cursor-pointer group"
+                      className="w-full text-left p-2.5 bg-[#FFFFFF] hover:bg-[#EBF2FA] border border-[#D9E2EC] hover:border-[#F58220]/40 rounded-xl flex items-center justify-between gap-2 transition-all cursor-pointer group"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="w-6 h-6 rounded-full bg-[#4285F4] text-white font-bold text-xs flex items-center justify-center shrink-0">
                           {acc.avatar}
                         </div>
                         <div className="min-w-0">
-                          <div className="font-bold text-[#29372D] group-hover:text-[#1B3022] truncate">
+                          <div className="font-bold text-[#102A43] group-hover:text-[#F58220] truncate">
                             {acc.name}
                           </div>
-                          <div className="text-[10px] text-[#68766C] truncate">{acc.email}</div>
+                          <div className="text-[10px] text-[#627D98] truncate">{acc.email}</div>
                         </div>
                       </div>
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#F4F5F0] text-[#68766C] border border-[#DFE5DD] uppercase">
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#F5F8FC] text-[#627D98] border border-[#D9E2EC] uppercase">
                         {acc.badge}
                       </span>
                     </button>
                   ))}
                   <button
                     onClick={() => handleGooglePresetSignIn()}
-                    className="w-full text-center py-1.5 text-[11px] font-bold text-[#1B3022] hover:underline cursor-pointer"
+                    className="w-full text-center py-1.5 text-[11px] font-bold text-[#F58220] hover:underline cursor-pointer"
                   >
                     + Use Default Sandbox Google Account
                   </button>
@@ -374,11 +374,11 @@ export const AuthModal: React.FC = () => {
 
             {/* Divider */}
             <div className="relative flex py-1 items-center">
-              <div className="flex-grow border-t border-[#DFE5DD]"></div>
-              <span className="flex-shrink mx-3 text-[10px] uppercase font-bold text-[#68766C] tracking-wider">
+              <div className="flex-grow border-t border-[#D9E2EC]"></div>
+              <span className="flex-shrink mx-3 text-[10px] uppercase font-bold text-[#627D98] tracking-wider">
                 Or Continue With Email
               </span>
-              <div className="flex-grow border-t border-[#DFE5DD]"></div>
+              <div className="flex-grow border-t border-[#D9E2EC]"></div>
             </div>
           </div>
 
@@ -387,39 +387,39 @@ export const AuthModal: React.FC = () => {
             <div className="space-y-4">
               <form onSubmit={handleSignIn} className="space-y-3">
                 <div>
-                  <label className="block font-bold text-[#29372D] mb-1">Official or Personal Email Address</label>
+                  <label className="block font-bold text-[#102A43] mb-1">Official or Personal Email Address</label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#68766C]" />
+                    <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#627D98]" />
                     <input
                       type="email"
                       required
                       value={signInEmail}
                       onChange={(e) => setSignInEmail(e.target.value)}
                       placeholder="e.g. admin@mdoner.gov.in"
-                      className="w-full pl-9 pr-3 py-2.5 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs text-[#29372D] placeholder-[#68766C] focus:border-[#1B3022] focus:ring-1 focus:ring-[#1B3022]/50 focus:outline-none"
+                      className="w-full pl-9 pr-3 py-2.5 bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl text-xs text-[#102A43] placeholder-[#627D98] focus:border-[#F58220] focus:ring-1 focus:ring-[#F58220]/50 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="font-bold text-[#29372D]">Password</label>
-                    <span className="text-[10px] text-[#1B3022] hover:underline cursor-pointer">Forgot password?</span>
+                    <label className="font-bold text-[#102A43]">Password</label>
+                    <span className="text-[10px] text-[#F58220] hover:underline cursor-pointer">Forgot password?</span>
                   </div>
                   <div className="relative">
-                    <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#68766C]" />
+                    <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#627D98]" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={signInPassword}
                       onChange={(e) => setSignInPassword(e.target.value)}
                       placeholder="Enter your password"
-                      className="w-full pl-9 pr-9 py-2.5 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs text-[#29372D] placeholder-[#68766C] focus:border-[#1B3022] focus:ring-1 focus:ring-[#1B3022]/50 focus:outline-none"
+                      className="w-full pl-9 pr-9 py-2.5 bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl text-xs text-[#102A43] placeholder-[#627D98] focus:border-[#F58220] focus:ring-1 focus:ring-[#F58220]/50 focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#68766C] hover:text-[#29372D]"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#627D98] hover:text-[#102A43]"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -443,12 +443,12 @@ export const AuthModal: React.FC = () => {
               </form>
 
               {/* Quick Demo Login Cards Section */}
-              <div className="pt-3 border-t border-[#DFE5DD] space-y-2">
+              <div className="pt-3 border-t border-[#D9E2EC] space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-[#68766C] uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-[#627D98] uppercase tracking-wider">
                     Quick Demo Persona Logins (1-Click Switch)
                   </span>
-                  <span className="text-[9px] bg-[#FFFFFF] text-[#1B3022] px-1.5 py-0.5 rounded font-mono font-bold border border-[#DFE5DD]">
+                  <span className="text-[9px] bg-[#FFFFFF] text-[#F58220] px-1.5 py-0.5 rounded font-mono font-bold border border-[#D9E2EC]">
                     RBAC Sandbox
                   </span>
                 </div>
@@ -459,15 +459,15 @@ export const AuthModal: React.FC = () => {
                       key={r.id}
                       onClick={() => handleQuickDemoLogin({ role_key: r.id, email: `${r.id.toLowerCase().replace('_', '.')}@neralis.gov.in` })}
                       disabled={isLoading}
-                      className="w-full text-left p-2.5 rounded-xl border border-[#DFE5DD] hover:border-[#1B3022]/40 bg-[#FFFFFF] hover:bg-[#152336] transition-all flex items-center justify-between gap-2 group cursor-pointer"
+                      className="w-full text-left p-2.5 rounded-xl border border-[#D9E2EC] hover:border-[#F58220]/40 bg-[#FFFFFF] hover:bg-[#152336] transition-all flex items-center justify-between gap-2 group cursor-pointer"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <span className="text-base">{r.icon}</span>
                         <div className="min-w-0">
-                          <div className="font-bold text-[#29372D] group-hover:text-[#1B3022] text-xs truncate">
+                          <div className="font-bold text-[#102A43] group-hover:text-[#F58220] text-xs truncate">
                             {r.label}
                           </div>
-                          <div className="text-[10px] text-[#68766C] truncate">{r.desc}</div>
+                          <div className="text-[10px] text-[#627D98] truncate">{r.desc}</div>
                         </div>
                       </div>
                       <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border uppercase shrink-0 ${r.badgeColor}`}>
@@ -482,52 +482,52 @@ export const AuthModal: React.FC = () => {
             /* SIGN UP TAB */
             <form onSubmit={handleSignUp} className="space-y-3">
               <div>
-                <label className="block font-bold text-[#29372D] mb-1">Full Name & Official Designation *</label>
+                <label className="block font-bold text-[#102A43] mb-1">Full Name & Official Designation *</label>
                 <div className="relative">
-                  <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#68766C]" />
+                  <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#627D98]" />
                   <input
                     type="text"
                     required
                     value={signUpName}
                     onChange={(e) => setSignUpName(e.target.value)}
                     placeholder="e.g. Er. Tashi Wangchuk"
-                    className="w-full pl-9 pr-3 py-2 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs text-[#29372D] placeholder-[#68766C] focus:border-[#1B3022] focus:ring-1 focus:ring-[#1B3022]/50 focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2 bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl text-xs text-[#102A43] placeholder-[#627D98] focus:border-[#F58220] focus:ring-1 focus:ring-[#F58220]/50 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-[#29372D] mb-1">Email Address *</label>
+                  <label className="block font-bold text-[#102A43] mb-1">Email Address *</label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#68766C]" />
+                    <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#627D98]" />
                     <input
                       type="email"
                       required
                       value={signUpEmail}
                       onChange={(e) => setSignUpEmail(e.target.value)}
                       placeholder="e.g. inspector@pwd.gov.in"
-                      className="w-full pl-9 pr-3 py-2 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs text-[#29372D] placeholder-[#68766C] focus:border-[#1B3022] focus:ring-1 focus:ring-[#1B3022]/50 focus:outline-none"
+                      className="w-full pl-9 pr-3 py-2 bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl text-xs text-[#102A43] placeholder-[#627D98] focus:border-[#F58220] focus:ring-1 focus:ring-[#F58220]/50 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#29372D] mb-1">Password * (≥ 6 chars)</label>
+                  <label className="block font-bold text-[#102A43] mb-1">Password * (≥ 6 chars)</label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#68766C]" />
+                    <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#627D98]" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={signUpPassword}
                       onChange={(e) => setSignUpPassword(e.target.value)}
                       placeholder="Create secure password"
-                      className="w-full pl-9 pr-9 py-2 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs text-[#29372D] placeholder-[#68766C] focus:border-[#1B3022] focus:ring-1 focus:ring-[#1B3022]/50 focus:outline-none"
+                      className="w-full pl-9 pr-9 py-2 bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl text-xs text-[#102A43] placeholder-[#627D98] focus:border-[#F58220] focus:ring-1 focus:ring-[#F58220]/50 focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#68766C] hover:text-[#29372D]"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#627D98] hover:text-[#102A43]"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -537,7 +537,7 @@ export const AuthModal: React.FC = () => {
 
               {/* Role Selection */}
               <div>
-                <label className="block font-bold text-[#29372D] mb-1.5">Governance Role Assignment *</label>
+                <label className="block font-bold text-[#102A43] mb-1.5">Governance Role Assignment *</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {rolesConfig.map((r) => (
                     <div
@@ -545,8 +545,8 @@ export const AuthModal: React.FC = () => {
                       onClick={() => setSignUpRole(r.id)}
                       className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-start gap-2 ${
                         signUpRole === r.id
-                          ? 'border-[#1B3022] bg-cyan-950/30 shadow-command-card'
-                          : 'border-[#DFE5DD] hover:border-[#DFE5DD] bg-[#FFFFFF]'
+                          ? 'border-[#F58220] bg-cyan-950/30 shadow-command-card'
+                          : 'border-[#D9E2EC] hover:border-[#D9E2EC] bg-[#FFFFFF]'
                       }`}
                     >
                       <input
@@ -558,12 +558,12 @@ export const AuthModal: React.FC = () => {
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1">
-                          <span className="font-bold text-[#29372D] text-xs truncate">{r.label}</span>
+                          <span className="font-bold text-[#102A43] text-xs truncate">{r.label}</span>
                           <span className={`text-[8px] font-black px-1.5 py-0.2 rounded border uppercase ${r.badgeColor}`}>
                             {r.badge}
                           </span>
                         </div>
-                        <p className="text-[10px] text-[#68766C] mt-0.5 leading-tight">{r.desc}</p>
+                        <p className="text-[10px] text-[#627D98] mt-0.5 leading-tight">{r.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -573,11 +573,11 @@ export const AuthModal: React.FC = () => {
               {/* State & District */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-[#29372D] mb-1">State Assignment</label>
+                  <label className="block font-bold text-[#102A43] mb-1">State Assignment</label>
                   <select
                     value={signUpState}
                     onChange={(e) => setSignUpState(e.target.value)}
-                    className="w-full p-2 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs font-medium text-[#29372D] focus:border-[#1B3022]"
+                    className="w-full p-2 bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl text-xs font-medium text-[#102A43] focus:border-[#F58220]"
                   >
                     <option value="Assam">Assam</option>
                     <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -591,13 +591,13 @@ export const AuthModal: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#29372D] mb-1">Assigned District / Station</label>
+                  <label className="block font-bold text-[#102A43] mb-1">Assigned District / Station</label>
                   <input
                     type="text"
                     value={signUpDistrict}
                     onChange={(e) => setSignUpDistrict(e.target.value)}
                     placeholder="e.g. Tawang / East Khasi Hills"
-                    className="w-full p-2 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs text-[#29372D] placeholder-[#68766C] focus:border-[#1B3022]"
+                    className="w-full p-2 bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl text-xs text-[#102A43] placeholder-[#627D98] focus:border-[#F58220]"
                   />
                 </div>
               </div>
@@ -605,24 +605,24 @@ export const AuthModal: React.FC = () => {
               {/* Organization & Mobile */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-[#29372D] mb-1">Department / Organization</label>
+                  <label className="block font-bold text-[#102A43] mb-1">Department / Organization</label>
                   <input
                     type="text"
                     value={signUpOrg}
                     onChange={(e) => setSignUpOrg(e.target.value)}
                     placeholder="e.g. PWD / SDRF / NHIDCL"
-                    className="w-full p-2 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs text-[#29372D] placeholder-[#68766C] focus:border-[#1B3022]"
+                    className="w-full p-2 bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl text-xs text-[#102A43] placeholder-[#627D98] focus:border-[#F58220]"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#29372D] mb-1">Emergency Mobile Number</label>
+                  <label className="block font-bold text-[#102A43] mb-1">Emergency Mobile Number</label>
                   <input
                     type="tel"
                     value={signUpPhone}
                     onChange={(e) => setSignUpPhone(e.target.value)}
                     placeholder="+91 94350 00000"
-                    className="w-full p-2 bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl text-xs text-[#29372D] placeholder-[#68766C] focus:border-[#1B3022]"
+                    className="w-full p-2 bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl text-xs text-[#102A43] placeholder-[#627D98] focus:border-[#F58220]"
                   />
                 </div>
               </div>
@@ -636,7 +636,7 @@ export const AuthModal: React.FC = () => {
                   <span>Registering Account...</span>
                 ) : (
                   <>
-                    <CheckCircle2 className="w-4 h-4 text-[#7C9082]" />
+                    <CheckCircle2 className="w-4 h-4 text-[#2477C8]" />
                     <span>Create & Activate NERALIS Account</span>
                   </>
                 )}
@@ -646,12 +646,12 @@ export const AuthModal: React.FC = () => {
         </div>
 
         {/* Footer / Compliance note */}
-        <div className="p-3 bg-[#F4F5F0] border-t border-[#DFE5DD] text-[10px] text-[#68766C] flex items-center justify-between shrink-0">
+        <div className="p-3 bg-[#F5F8FC] border-t border-[#D9E2EC] text-[10px] text-[#627D98] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5 text-[#7C9082]" />
+            <Shield className="w-3.5 h-3.5 text-[#2477C8]" />
             <span>MDoNER National Logistics Security Standard • Google OAuth 2.0 / SHA-256 RBAC</span>
           </div>
-          <span className="font-mono text-[#1B3022]">v2.2 Production</span>
+          <span className="font-mono text-[#F58220]">v2.2 Production</span>
         </div>
       </div>
     </div>

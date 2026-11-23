@@ -26,129 +26,129 @@ export const KPIBar: React.FC = () => {
   const reportsCount = fieldReports.length || 14;
 
   return (
-    <div className="bg-[#F4F5F0] border-b border-[#DFE5DD] px-3 sm:px-4 lg:px-6 py-2.5 z-10">
+    <div className="bg-[#F5F8FC] border-b border-[#D9E2EC] px-3 sm:px-4 lg:px-6 py-2.5 z-10">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 w-full">
         {/* KPI 1: Corridor Accessibility */}
-        <div className="bg-[#FFFFFF] border border-[#DFE5DD] hover:border-[#1B3022]/30 rounded-xl p-3 flex flex-col justify-between transition-colors shadow-sm">
+        <div className="bg-[#FFFFFF] border border-[#D9E2EC] hover:border-[#138A45]/40 rounded-xl p-3 flex flex-col justify-between transition-colors shadow-sm">
           <div className="flex items-center justify-between gap-1">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6 h-6 rounded-md bg-[#F4F5F0] border border-[#DFE5DD] flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#7C9082]" />
+              <div className="w-6 h-6 rounded-md bg-[#F5F8FC] border border-[#D9E2EC] flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#138A45]" />
               </div>
-              <span className="text-[11px] font-medium text-[#68766C] uppercase tracking-wider truncate">
+              <span className="text-[11px] font-medium text-[#627D98] uppercase tracking-wider truncate">
                 Accessibility
               </span>
             </div>
-            <span className="text-[10px] font-semibold text-[#1B3022] bg-[#7C9082]/25 px-1.5 py-0.5 rounded flex items-center gap-0.5 shrink-0">
+            <span className="text-[10px] font-semibold text-[#138A45] bg-[#138A45]/15 px-1.5 py-0.5 rounded flex items-center gap-0.5 shrink-0">
               <ArrowUpRight className="w-3 h-3" />
               <span>{openPct}%</span>
             </span>
           </div>
           <div className="mt-2">
-            <div className="text-xl font-bold text-[#29372D] tracking-tight">
-              <span className="text-[#1B3022]">{openCorridors}</span> <span className="text-xs font-normal text-[#68766C]">/ {totalCorridors}</span>
+            <div className="text-xl font-bold text-[#102A43] tracking-tight">
+              <span className="text-[#138A45]">{openCorridors}</span> <span className="text-xs font-normal text-[#627D98]">/ {totalCorridors}</span>
             </div>
-            <div className="text-[11px] text-[#68766C] mt-0.5 truncate">
+            <div className="text-[11px] text-[#627D98] mt-0.5 truncate">
               Arterial corridors open
             </div>
           </div>
         </div>
 
         {/* KPI 2: High Risk Corridors */}
-        <div className="bg-[#FFFFFF] border border-[#DFE5DD] hover:border-[#1B3022]/30 rounded-xl p-3 flex flex-col justify-between transition-colors shadow-sm">
+        <div className="bg-[#FFFFFF] border border-[#D9E2EC] hover:border-[#EAB308]/40 rounded-xl p-3 flex flex-col justify-between transition-colors shadow-sm">
           <div className="flex items-center justify-between gap-1">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6 h-6 rounded-md bg-[#F4F5F0] border border-[#DFE5DD] flex items-center justify-center shrink-0">
-                <TrendingUp className="w-3.5 h-3.5 text-[#E59866]" />
+              <div className="w-6 h-6 rounded-md bg-[#F5F8FC] border border-[#D9E2EC] flex items-center justify-center shrink-0">
+                <TrendingUp className="w-3.5 h-3.5 text-[#EAB308]" />
               </div>
-              <span className="text-[11px] font-medium text-[#68766C] uppercase tracking-wider truncate">
+              <span className="text-[11px] font-medium text-[#627D98] uppercase tracking-wider truncate">
                 Disruption Risk
               </span>
             </div>
-            <span className="text-[10px] font-semibold text-[#A04000] bg-[#E59866]/20 px-1.5 py-0.5 rounded shrink-0">
+            <span className="text-[10px] font-semibold text-[#A16207] bg-[#EAB308]/20 px-1.5 py-0.5 rounded shrink-0">
               Watch
             </span>
           </div>
           <div className="mt-2">
-            <div className="text-xl font-bold text-[#29372D] tracking-tight">
-              <span className="text-[#1B3022]">{highRiskCorridors}</span> <span className="text-xs font-normal text-[#68766C]">corridors</span>
+            <div className="text-xl font-bold text-[#102A43] tracking-tight">
+              <span className="text-[#EAB308]">{highRiskCorridors}</span> <span className="text-xs font-normal text-[#627D98]">corridors</span>
             </div>
-            <div className="text-[11px] text-[#68766C] mt-0.5 truncate">
+            <div className="text-[11px] text-[#627D98] mt-0.5 truncate">
               Landslide risk score &ge; 60%
             </div>
           </div>
         </div>
 
         {/* KPI 3: Fleet Tracking */}
-        <div className="bg-[#FFFFFF] border border-[#DFE5DD] hover:border-[#1B3022]/30 rounded-xl p-3 flex flex-col justify-between transition-colors shadow-sm">
+        <div className="bg-[#FFFFFF] border border-[#D9E2EC] hover:border-[#2477C8]/40 rounded-xl p-3 flex flex-col justify-between transition-colors shadow-sm">
           <div className="flex items-center justify-between gap-1">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6 h-6 rounded-md bg-[#F4F5F0] border border-[#DFE5DD] flex items-center justify-center shrink-0">
-                <Truck className="w-3.5 h-3.5 text-[#7C9082]" />
+              <div className="w-6 h-6 rounded-md bg-[#F5F8FC] border border-[#D9E2EC] flex items-center justify-center shrink-0">
+                <Truck className="w-3.5 h-3.5 text-[#2477C8]" />
               </div>
-              <span className="text-[11px] font-medium text-[#68766C] uppercase tracking-wider truncate">
+              <span className="text-[11px] font-medium text-[#627D98] uppercase tracking-wider truncate">
                 Active Fleet
               </span>
             </div>
-            <span className="text-[10px] font-semibold text-[#29372D] bg-[#DCE4DB] px-1.5 py-0.5 rounded shrink-0">
+            <span className="text-[10px] font-semibold text-[#2477C8] bg-[#2477C8]/15 px-1.5 py-0.5 rounded shrink-0">
               97.4%
             </span>
           </div>
           <div className="mt-2">
-            <div className="text-xl font-bold text-[#29372D] tracking-tight">
-              {activeVehiclesCount} <span className="text-xs font-normal text-[#68766C]">tracked</span>
+            <div className="text-xl font-bold text-[#102A43] tracking-tight">
+              <span className="text-[#2477C8]">{activeVehiclesCount}</span> <span className="text-xs font-normal text-[#627D98]">tracked</span>
             </div>
-            <div className="text-[11px] text-[#68766C] mt-0.5 truncate">
+            <div className="text-[11px] text-[#627D98] mt-0.5 truncate">
               {movingVehiclesCount} moving with NavIC/GPS
             </div>
           </div>
         </div>
 
         {/* KPI 4: Active Alerts */}
-        <div className="bg-[#FFFFFF] border border-[#DFE5DD] hover:border-[#1B3022]/30 rounded-xl p-3 flex flex-col justify-between transition-colors shadow-sm">
+        <div className="bg-[#FFFFFF] border border-[#D9E2EC] hover:border-[#DC3545]/40 rounded-xl p-3 flex flex-col justify-between transition-colors shadow-sm">
           <div className="flex items-center justify-between gap-1">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6 h-6 rounded-md bg-[#F4F5F0] border border-[#DFE5DD] flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-3.5 h-3.5 text-[#1B3022]" />
+              <div className="w-6 h-6 rounded-md bg-[#F5F8FC] border border-[#D9E2EC] flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-3.5 h-3.5 text-[#DC3545]" />
               </div>
-              <span className="text-[11px] font-medium text-[#68766C] uppercase tracking-wider truncate">
+              <span className="text-[11px] font-medium text-[#627D98] uppercase tracking-wider truncate">
                 Emergency Alerts
               </span>
             </div>
-            <span className="text-[10px] font-semibold text-[#1B3022] bg-[#1B3022]/15 px-1.5 py-0.5 rounded shrink-0">
+            <span className="text-[10px] font-semibold text-[#DC3545] bg-[#DC3545]/15 px-1.5 py-0.5 rounded shrink-0">
               {activeAlertsCount} Active
             </span>
           </div>
           <div className="mt-2">
-            <div className="text-xl font-bold text-[#29372D] tracking-tight">
-              <span className="text-[#1B3022]">0{activeAlertsCount}</span> <span className="text-xs font-normal text-[#68766C]">/ {totalAlertsCount} total</span>
+            <div className="text-xl font-bold text-[#102A43] tracking-tight">
+              <span className="text-[#DC3545]">0{activeAlertsCount}</span> <span className="text-xs font-normal text-[#627D98]">/ {totalAlertsCount} total</span>
             </div>
-            <div className="text-[11px] text-[#68766C] mt-0.5 truncate">
+            <div className="text-[11px] text-[#627D98] mt-0.5 truncate">
               Critical bulletins unacknowledged
             </div>
           </div>
         </div>
 
         {/* KPI 5: Field Inspections */}
-        <div className="bg-[#FFFFFF] border border-[#DFE5DD] hover:border-[#1B3022]/30 rounded-xl p-3 flex flex-col justify-between transition-colors col-span-2 md:col-span-1 shadow-sm">
+        <div className="bg-[#FFFFFF] border border-[#D9E2EC] hover:border-[#F58220]/40 rounded-xl p-3 flex flex-col justify-between transition-colors col-span-2 md:col-span-1 shadow-sm">
           <div className="flex items-center justify-between gap-1">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6 h-6 rounded-md bg-[#F4F5F0] border border-[#DFE5DD] flex items-center justify-center shrink-0">
-                <Activity className="w-3.5 h-3.5 text-[#7C9082]" />
+              <div className="w-6 h-6 rounded-md bg-[#F5F8FC] border border-[#D9E2EC] flex items-center justify-center shrink-0">
+                <Activity className="w-3.5 h-3.5 text-[#F58220]" />
               </div>
-              <span className="text-[11px] font-medium text-[#68766C] uppercase tracking-wider truncate">
+              <span className="text-[11px] font-medium text-[#627D98] uppercase tracking-wider truncate">
                 Field Reports
               </span>
             </div>
-            <span className="text-[10px] font-semibold text-[#1B3022] bg-[#7C9082]/25 px-1.5 py-0.5 rounded shrink-0">
+            <span className="text-[10px] font-semibold text-[#138A45] bg-[#138A45]/15 px-1.5 py-0.5 rounded shrink-0">
               PWA Sync
             </span>
           </div>
           <div className="mt-2">
-            <div className="text-xl font-bold text-[#29372D] tracking-tight">
-              {reportsCount} <span className="text-xs font-normal text-[#68766C]">verified</span>
+            <div className="text-xl font-bold text-[#102A43] tracking-tight">
+              <span className="text-[#F58220]">{reportsCount}</span> <span className="text-xs font-normal text-[#627D98]">verified</span>
             </div>
-            <div className="text-[11px] text-[#68766C] mt-0.5 truncate">
+            <div className="text-[11px] text-[#627D98] mt-0.5 truncate">
               Geo-tagged field damage reports
             </div>
           </div>

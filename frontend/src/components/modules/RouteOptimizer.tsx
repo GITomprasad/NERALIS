@@ -51,7 +51,7 @@ const VEHICLE_CLASSES: VehicleClassConfig[] = [
     roadSuitability: 'Single-Lane (<2.2m) Passable',
     clearanceNote: 'Passes narrow hillside bypasses, single-lane village shortcuts & emergency landslide detours where heavy trucks get blocked.',
     badge: 'Narrow Track Passable',
-    badgeColor: 'bg-emerald-500/20 text-[#7C9082] border-emerald-500/30'
+    badgeColor: 'bg-emerald-500/20 text-[#2477C8] border-emerald-500/30'
   },
   {
     id: 'FOUR_WHEELER_SCV',
@@ -63,7 +63,7 @@ const VEHICLE_CLASSES: VehicleClassConfig[] = [
     roadSuitability: 'Narrow Mountain Roads (<2.8m)',
     clearanceNote: 'Passes secondary hill roads, steep ghat gradients, and low-capacity Bailey bridges.',
     badge: 'All-Terrain Hill LCV',
-    badgeColor: 'bg-cyan-500/20 text-[#1B3022] border-[#1B3022]/30'
+    badgeColor: 'bg-cyan-500/20 text-[#F58220] border-[#F58220]/30'
   },
   {
     id: 'MEDIUM_TRUCK',
@@ -183,12 +183,12 @@ export const RouteOptimizer: React.FC = () => {
       <div className="card-command flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-black text-[#29372D]">
+            <h2 className="text-base font-black text-[#102A43]">
               {t('module_2')} — Multi-Objective Dijkstra Logistics Router
             </h2>
             <ProvenanceBadge status="PREDICTED" confidence={94.6} />
           </div>
-          <p className="text-xs text-[#68766C] mt-0.5">
+          <p className="text-xs text-[#627D98] mt-0.5">
             Real-time constraint optimization balancing travel time, terrain hazard probabilities, structural bridge load clearances &amp; Brahmaputra NW-2 barge links.
           </p>
         </div>
@@ -203,9 +203,9 @@ export const RouteOptimizer: React.FC = () => {
                 setDestination(p.dest);
                 handleComputeRoute(p.orig, p.dest);
               }}
-              className="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[#FFFFFF] hover:bg-[#DCE4DB] text-[#1B3022] border border-[#DFE5DD] transition-all flex items-center gap-1.5 cursor-pointer shadow-command-card"
+              className="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-[#FFFFFF] hover:bg-[#EBF2FA] text-[#F58220] border border-[#D9E2EC] transition-all flex items-center gap-1.5 cursor-pointer shadow-command-card"
             >
-              <Navigation className="w-3 h-3 text-[#1B3022]" />
+              <Navigation className="w-3 h-3 text-[#F58220]" />
               <span>{p.label}</span>
             </button>
           ))}
@@ -216,16 +216,16 @@ export const RouteOptimizer: React.FC = () => {
         {/* Left Column: Route Configuration HUD (4 cols) */}
         <div className="lg:col-span-4 space-y-4">
           <div className="card-command space-y-4">
-            <h3 className="font-black text-sm text-[#29372D] border-b border-[#DFE5DD] pb-2 flex items-center justify-between">
+            <h3 className="font-black text-sm text-[#102A43] border-b border-[#D9E2EC] pb-2 flex items-center justify-between">
               <span>Route Parameters</span>
-              <span className="text-[10px] font-mono text-[#1B3022]">89 DISTRICT NODES</span>
+              <span className="text-[10px] font-mono text-[#F58220]">89 DISTRICT NODES</span>
             </h3>
 
             {/* Origin & Destination with Swap */}
             <div className="space-y-2.5 relative">
               <div>
-                <label className="text-xs font-bold text-[#68766C] mb-1 flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#7C9082]" /> Origin Node (Dispatch Center)
+                <label className="text-xs font-bold text-[#627D98] mb-1 flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-[#2477C8]" /> Origin Node (Dispatch Center)
                 </label>
                 <select
                   value={origin}
@@ -245,7 +245,7 @@ export const RouteOptimizer: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleSwapNodes}
-                  className="p-1.5 rounded-full bg-[#FFFFFF] hover:bg-[#DCE4DB] border border-[#DFE5DD] text-[#1B3022] shadow-sm transition-transform active:scale-95 cursor-pointer"
+                  className="p-1.5 rounded-full bg-[#FFFFFF] hover:bg-[#EBF2FA] border border-[#D9E2EC] text-[#F58220] shadow-sm transition-transform active:scale-95 cursor-pointer"
                   title="Swap Origin and Destination"
                 >
                   <ArrowLeftRight className="w-3.5 h-3.5" />
@@ -253,7 +253,7 @@ export const RouteOptimizer: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#68766C] mb-1 flex items-center gap-1">
+                <label className="text-xs font-bold text-[#627D98] mb-1 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-[#FF5252]" /> Destination Node (Delivery Target)
                 </label>
                 <select
@@ -271,8 +271,8 @@ export const RouteOptimizer: React.FC = () => {
             </div>
 
             {/* Cargo Profile Picker */}
-            <div className="space-y-2 border-t border-[#DFE5DD] pt-3">
-              <label className="text-xs font-bold text-[#68766C] block">Consignment Commodity Class</label>
+            <div className="space-y-2 border-t border-[#D9E2EC] pt-3">
+              <label className="text-xs font-bold text-[#627D98] block">Consignment Commodity Class</label>
               <div className="grid grid-cols-2 gap-2">
                 {cargoOptions.map((c) => (
                   <button
@@ -281,12 +281,12 @@ export const RouteOptimizer: React.FC = () => {
                     onClick={() => setCargoType(c.type)}
                     className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                       cargoType === c.type
-                        ? 'bg-[#DCE4DB] border-[#1B3022] shadow-command-glow'
-                        : 'bg-[#F4F5F0] border-[#DFE5DD] hover:bg-[#FFFFFF]'
+                        ? 'bg-[#EBF2FA] border-[#F58220] shadow-command-glow'
+                        : 'bg-[#F5F8FC] border-[#D9E2EC] hover:bg-[#FFFFFF]'
                     }`}
                   >
                     <div className="text-base mb-1">{c.icon}</div>
-                    <div className={`font-bold text-xs truncate ${cargoType === c.type ? 'text-[#1B3022]' : 'text-[#29372D]'}`}>
+                    <div className={`font-bold text-xs truncate ${cargoType === c.type ? 'text-[#F58220]' : 'text-[#102A43]'}`}>
                       {c.label}
                     </div>
                   </button>
@@ -295,12 +295,12 @@ export const RouteOptimizer: React.FC = () => {
             </div>
 
             {/* Logistics Vehicle Class & Road Width Clearance Selector */}
-            <div className="space-y-3 border-t border-[#DFE5DD] pt-3">
+            <div className="space-y-3 border-t border-[#D9E2EC] pt-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#68766C] flex items-center gap-1.5">
-                  <Truck className="w-4 h-4 text-[#1B3022]" /> Logistics Vehicle Class &amp; Road Clearance
+                <label className="text-xs font-bold text-[#627D98] flex items-center gap-1.5">
+                  <Truck className="w-4 h-4 text-[#F58220]" /> Logistics Vehicle Class &amp; Road Clearance
                 </label>
-                <span className="text-[10px] bg-[#FFFFFF] text-[#1B3022] font-bold px-1.5 py-0.5 rounded border border-[#DFE5DD] font-mono">
+                <span className="text-[10px] bg-[#FFFFFF] text-[#F58220] font-bold px-1.5 py-0.5 rounded border border-[#D9E2EC] font-mono">
                   {VEHICLE_CLASSES.find((c) => c.id === vehicleClass)?.widthMeters}m Width • {vehicleWeight} MT
                 </span>
               </div>
@@ -316,8 +316,8 @@ export const RouteOptimizer: React.FC = () => {
                       onClick={() => handleVehicleClassSelect(vc.id)}
                       className={`p-2.5 rounded-xl border text-left transition-all relative cursor-pointer ${
                         isSelected
-                          ? 'bg-[#DCE4DB] border-[#1B3022] shadow-command-glow ring-1 ring-[#19C6D2]/30'
-                          : 'bg-[#F4F5F0] border-[#DFE5DD] hover:bg-[#FFFFFF]'
+                          ? 'bg-[#EBF2FA] border-[#F58220] shadow-command-glow ring-1 ring-[#19C6D2]/30'
+                          : 'bg-[#F5F8FC] border-[#D9E2EC] hover:bg-[#FFFFFF]'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-1">
@@ -326,10 +326,10 @@ export const RouteOptimizer: React.FC = () => {
                             {vc.iconEmoji}
                           </span>
                           <div className="min-w-0">
-                            <div className={`font-black text-xs truncate ${isSelected ? 'text-[#1B3022]' : 'text-[#29372D]'}`}>
+                            <div className={`font-black text-xs truncate ${isSelected ? 'text-[#F58220]' : 'text-[#102A43]'}`}>
                               {vc.title}
                             </div>
-                            <div className="text-[10px] text-[#68766C] truncate">{vc.category}</div>
+                            <div className="text-[10px] text-[#627D98] truncate">{vc.category}</div>
                           </div>
                         </div>
                       </div>
@@ -337,7 +337,7 @@ export const RouteOptimizer: React.FC = () => {
                         <span className={`font-bold px-1.5 py-0.5 rounded border ${vc.badgeColor}`}>
                           {vc.badge}
                         </span>
-                        <span className="font-mono text-[#29372D] font-bold">{vc.defaultWeight} MT</span>
+                        <span className="font-mono text-[#102A43] font-bold">{vc.defaultWeight} MT</span>
                       </div>
                     </button>
                   );
@@ -349,17 +349,17 @@ export const RouteOptimizer: React.FC = () => {
                 const activeCfg = VEHICLE_CLASSES.find((c) => c.id === vehicleClass);
                 if (!activeCfg) return null;
                 return (
-                  <div className="p-3 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD] text-xs space-y-1">
+                  <div className="p-3 bg-[#F5F8FC] rounded-xl border border-[#D9E2EC] text-xs space-y-1">
                     <div className="flex items-center justify-between text-[11px] font-bold">
                       <span className="flex items-center gap-1">
-                        <span className="text-[#68766C]">Road Passability:</span>
-                        <span className="text-[#1B3022] font-semibold">{activeCfg.roadSuitability}</span>
+                        <span className="text-[#627D98]">Road Passability:</span>
+                        <span className="text-[#F58220] font-semibold">{activeCfg.roadSuitability}</span>
                       </span>
-                      <span className="text-[10px] text-[#7C9082] font-bold flex items-center gap-0.5">
+                      <span className="text-[10px] text-[#2477C8] font-bold flex items-center gap-0.5">
                         <CheckCircle2 className="w-3 h-3" /> Clearance Active
                       </span>
                     </div>
-                    <p className="text-[10px] text-[#68766C] leading-relaxed">{activeCfg.clearanceNote}</p>
+                    <p className="text-[10px] text-[#627D98] leading-relaxed">{activeCfg.clearanceNote}</p>
                   </div>
                 );
               })()}
@@ -367,8 +367,8 @@ export const RouteOptimizer: React.FC = () => {
               {/* Sliders */}
               <div>
                 <div className="flex justify-between text-xs font-bold mb-1.5">
-                  <span className="text-[#68766C]">Gross Vehicle Weight (Tons)</span>
-                  <span className="text-[#1B3022] font-mono font-black">{vehicleWeight} MT</span>
+                  <span className="text-[#627D98]">Gross Vehicle Weight (Tons)</span>
+                  <span className="text-[#F58220] font-mono font-black">{vehicleWeight} MT</span>
                 </div>
                 <input
                   type="range"
@@ -377,14 +377,14 @@ export const RouteOptimizer: React.FC = () => {
                   step="0.5"
                   value={vehicleWeight}
                   onChange={(e) => setVehicleWeight(Number(e.target.value))}
-                  className="w-full accent-[#1B3022] bg-[#F4F5F0] cursor-pointer"
+                  className="w-full accent-[#F58220] bg-[#F5F8FC] cursor-pointer"
                 />
               </div>
 
               <div>
                 <div className="flex justify-between text-xs font-bold mb-1.5">
-                  <span className="text-[#68766C]">Planned Departure Hour</span>
-                  <span className="text-[#7C9082] font-mono font-black">{departureHour}:00 IST</span>
+                  <span className="text-[#627D98]">Planned Departure Hour</span>
+                  <span className="text-[#2477C8] font-mono font-black">{departureHour}:00 IST</span>
                 </div>
                 <input
                   type="range"
@@ -393,20 +393,20 @@ export const RouteOptimizer: React.FC = () => {
                   step="1"
                   value={departureHour}
                   onChange={(e) => setDepartureHour(Number(e.target.value))}
-                  className="w-full accent-[#438BFF] bg-[#F4F5F0] cursor-pointer"
+                  className="w-full accent-[#438BFF] bg-[#F5F8FC] cursor-pointer"
                 />
               </div>
 
               {/* Multi-Modal Waterway Bypass */}
-              <div className="flex items-center justify-between p-3 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD]">
-                <span className="font-semibold text-[#29372D] flex items-center gap-2 text-xs">
-                  <Ship className="w-4 h-4 text-[#7C9082]" /> Multi-Modal Waterway Bypass (NW-2 Brahmaputra)
+              <div className="flex items-center justify-between p-3 bg-[#F5F8FC] rounded-xl border border-[#D9E2EC]">
+                <span className="font-semibold text-[#102A43] flex items-center gap-2 text-xs">
+                  <Ship className="w-4 h-4 text-[#2477C8]" /> Multi-Modal Waterway Bypass (NW-2 Brahmaputra)
                 </span>
                 <input
                   type="checkbox"
                   checked={includeIntermodal}
                   onChange={(e) => setIncludeIntermodal(e.target.checked)}
-                  className="rounded text-[#1B3022] bg-[#FFFFFF] border-[#DFE5DD] w-4 h-4 cursor-pointer"
+                  className="rounded text-[#F58220] bg-[#FFFFFF] border-[#D9E2EC] w-4 h-4 cursor-pointer"
                 />
               </div>
             </div>
@@ -441,21 +441,21 @@ export const RouteOptimizer: React.FC = () => {
                   <button
                     onClick={() => setSelectedRouteIndex(0)}
                     className={`card-command text-left p-4 cursor-pointer transition-all ${
-                      selectedRouteIndex === 0 ? 'border-[#1B3022] shadow-command-glow bg-[#DCE4DB]' : 'hover:border-[#DFE5DD]'
+                      selectedRouteIndex === 0 ? 'border-[#F58220] shadow-command-glow bg-[#EBF2FA]' : 'hover:border-[#D9E2EC]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="bg-[#1B3022]/15 text-[#1B3022] border border-[#1B3022]/30 text-[10px] font-black px-2 py-0.5 rounded uppercase">
+                      <span className="bg-[#F58220]/15 text-[#F58220] border border-[#F58220]/30 text-[10px] font-black px-2 py-0.5 rounded uppercase">
                         Fastest Primary
                       </span>
-                      <span className="text-xs font-mono font-bold text-[#29372D]">
+                      <span className="text-xs font-mono font-bold text-[#102A43]">
                         {routeResult.primary_route.total_distance_km} KM
                       </span>
                     </div>
-                    <div className="text-sm font-black text-[#29372D] truncate">
+                    <div className="text-sm font-black text-[#102A43] truncate">
                       {routeResult.primary_route.corridors_used?.[0] || 'Strategic Express Path'}
                     </div>
-                    <div className="mt-2 flex items-center justify-between text-xs text-[#68766C]">
+                    <div className="mt-2 flex items-center justify-between text-xs text-[#627D98]">
                       <span>{routeResult.primary_route.total_time_hrs.toFixed(1)} hrs</span>
                       <span className="text-[#FFB547] font-bold">Hazard: {routeResult.primary_route.avg_risk_score}/100</span>
                     </div>
@@ -467,23 +467,23 @@ export const RouteOptimizer: React.FC = () => {
                   <button
                     onClick={() => setSelectedRouteIndex(1)}
                     className={`card-command text-left p-4 cursor-pointer transition-all ${
-                      selectedRouteIndex === 1 ? 'border-[#7C9082] shadow-command-glow bg-[#DCE4DB]' : 'hover:border-[#DFE5DD]'
+                      selectedRouteIndex === 1 ? 'border-[#2477C8] shadow-command-glow bg-[#EBF2FA]' : 'hover:border-[#D9E2EC]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="bg-[#7C9082]/15 text-[#7C9082] border border-[#7C9082]/30 text-[10px] font-black px-2 py-0.5 rounded uppercase">
+                      <span className="bg-[#2477C8]/15 text-[#2477C8] border border-[#2477C8]/30 text-[10px] font-black px-2 py-0.5 rounded uppercase">
                         Most Resilient
                       </span>
-                      <span className="text-xs font-mono font-bold text-[#29372D]">
+                      <span className="text-xs font-mono font-bold text-[#102A43]">
                         {routeResult.alternative_routes[0].total_distance_km} KM
                       </span>
                     </div>
-                    <div className="text-sm font-black text-[#29372D] truncate">
+                    <div className="text-sm font-black text-[#102A43] truncate">
                       {routeResult.alternative_routes[0].corridors_used?.[0] || 'Hazard Avoidance Detour'}
                     </div>
-                    <div className="mt-2 flex items-center justify-between text-xs text-[#68766C]">
+                    <div className="mt-2 flex items-center justify-between text-xs text-[#627D98]">
                       <span>{routeResult.alternative_routes[0].total_time_hrs.toFixed(1)} hrs</span>
-                      <span className="text-[#7C9082] font-bold">Hazard: {routeResult.alternative_routes[0].avg_risk_score}/100</span>
+                      <span className="text-[#2477C8] font-bold">Hazard: {routeResult.alternative_routes[0].avg_risk_score}/100</span>
                     </div>
                   </button>
                 )}
@@ -493,23 +493,23 @@ export const RouteOptimizer: React.FC = () => {
                   <button
                     onClick={() => setSelectedRouteIndex(2)}
                     className={`card-command text-left p-4 cursor-pointer transition-all ${
-                      selectedRouteIndex === 2 ? 'border-[#38BDF8] shadow-command-glow bg-[#DCE4DB]' : 'hover:border-[#DFE5DD]'
+                      selectedRouteIndex === 2 ? 'border-[#38BDF8] shadow-command-glow bg-[#EBF2FA]' : 'hover:border-[#D9E2EC]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="bg-[#38BDF8]/15 text-[#7C9082] border border-[#38BDF8]/30 text-[10px] font-black px-2 py-0.5 rounded uppercase">
+                      <span className="bg-[#38BDF8]/15 text-[#2477C8] border border-[#38BDF8]/30 text-[10px] font-black px-2 py-0.5 rounded uppercase">
                         Multi-Modal Waterway
                       </span>
-                      <span className="text-xs font-mono font-bold text-[#29372D]">
+                      <span className="text-xs font-mono font-bold text-[#102A43]">
                         {routeResult.alternative_routes[1].total_distance_km} KM
                       </span>
                     </div>
-                    <div className="text-sm font-black text-[#29372D] truncate">
+                    <div className="text-sm font-black text-[#102A43] truncate">
                       NW-2 Brahmaputra Barge Bypass
                     </div>
-                    <div className="mt-2 flex items-center justify-between text-xs text-[#68766C]">
+                    <div className="mt-2 flex items-center justify-between text-xs text-[#627D98]">
                       <span>{routeResult.alternative_routes[1].total_time_hrs.toFixed(1)} hrs</span>
-                      <span className="text-[#7C9082] font-bold">Fuel: -34%</span>
+                      <span className="text-[#2477C8] font-bold">Fuel: -34%</span>
                     </div>
                   </button>
                 )}
@@ -518,50 +518,50 @@ export const RouteOptimizer: React.FC = () => {
               {/* Active Route Details Card */}
               {activeDisplayRoute && (
                 <div className="card-command space-y-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#DFE5DD] pb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#D9E2EC] pb-3">
                     <div>
-                      <h4 className="font-black text-sm text-[#29372D]">{activeDisplayRoute.route_tag}</h4>
-                      <p className="text-[11px] text-[#68766C] mt-0.5">{activeDisplayRoute.tradeoff_reason}</p>
+                      <h4 className="font-black text-sm text-[#102A43]">{activeDisplayRoute.route_tag}</h4>
+                      <p className="text-[11px] text-[#627D98] mt-0.5">{activeDisplayRoute.tradeoff_reason}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       {(() => {
                         const vCfg = VEHICLE_CLASSES.find((c) => c.id === vehicleClass);
                         return (
                           <div className="text-right">
-                            <div className="text-[10px] font-bold text-[#68766C]">Vehicle Profile:</div>
-                            <div className="text-xs font-black text-[#1B3022] flex items-center gap-1 justify-end">
+                            <div className="text-[10px] font-bold text-[#627D98]">Vehicle Profile:</div>
+                            <div className="text-xs font-black text-[#F58220] flex items-center gap-1 justify-end">
                               <span>{vCfg?.iconEmoji}</span>
                               <span>{vCfg?.title}</span>
                             </div>
                           </div>
                         );
                       })()}
-                      <div className="text-right border-l border-[#DFE5DD] pl-3">
-                        <div className="text-xs font-bold text-[#68766C]">Departure Window:</div>
-                        <div className="text-xs font-black text-[#7C9082] font-mono">{routeResult.recommended_departure_window}</div>
+                      <div className="text-right border-l border-[#D9E2EC] pl-3">
+                        <div className="text-xs font-bold text-[#627D98]">Departure Window:</div>
+                        <div className="text-xs font-black text-[#2477C8] font-mono">{routeResult.recommended_departure_window}</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Route Metrics Summary */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-                    <div className="bg-[#F4F5F0] p-3 rounded-xl border border-[#DFE5DD]">
-                      <div className="text-[10px] text-[#68766C] font-bold uppercase">Total Distance</div>
-                      <div className="font-black text-[#29372D] mt-0.5">{activeDisplayRoute.total_distance_km} KM</div>
+                    <div className="bg-[#F5F8FC] p-3 rounded-xl border border-[#D9E2EC]">
+                      <div className="text-[10px] text-[#627D98] font-bold uppercase">Total Distance</div>
+                      <div className="font-black text-[#102A43] mt-0.5">{activeDisplayRoute.total_distance_km} KM</div>
                     </div>
-                    <div className="bg-[#F4F5F0] p-3 rounded-xl border border-[#DFE5DD]">
-                      <div className="text-[10px] text-[#68766C] font-bold uppercase">Estimated Time</div>
-                      <div className="font-black text-[#1B3022] mt-0.5 font-mono">
+                    <div className="bg-[#F5F8FC] p-3 rounded-xl border border-[#D9E2EC]">
+                      <div className="text-[10px] text-[#627D98] font-bold uppercase">Estimated Time</div>
+                      <div className="font-black text-[#F58220] mt-0.5 font-mono">
                         {Math.floor(activeDisplayRoute.total_time_hrs)}h {Math.round((activeDisplayRoute.total_time_hrs % 1) * 60)}m
                       </div>
                     </div>
-                    <div className="bg-[#F4F5F0] p-3 rounded-xl border border-[#DFE5DD]">
-                      <div className="text-[10px] text-[#68766C] font-bold uppercase">Hazard Risk Score</div>
+                    <div className="bg-[#F5F8FC] p-3 rounded-xl border border-[#D9E2EC]">
+                      <div className="text-[10px] text-[#627D98] font-bold uppercase">Hazard Risk Score</div>
                       <div className="font-black text-[#FFB547] mt-0.5">{activeDisplayRoute.avg_risk_score} / 100</div>
                     </div>
-                    <div className="bg-[#F4F5F0] p-3 rounded-xl border border-[#DFE5DD]">
-                      <div className="text-[10px] text-[#68766C] font-bold uppercase">Bridges Cleared</div>
-                      <div className="font-black text-[#7C9082] mt-0.5">{activeDisplayRoute.bridges_on_route?.length || 2} Passed</div>
+                    <div className="bg-[#F5F8FC] p-3 rounded-xl border border-[#D9E2EC]">
+                      <div className="text-[10px] text-[#627D98] font-bold uppercase">Bridges Cleared</div>
+                      <div className="font-black text-[#2477C8] mt-0.5">{activeDisplayRoute.bridges_on_route?.length || 2} Passed</div>
                     </div>
                   </div>
 
@@ -587,10 +587,10 @@ export const RouteOptimizer: React.FC = () => {
                     if (journeyWaypoints.length === 0) return null;
 
                     return (
-                      <div className="p-3.5 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD] space-y-2.5 text-xs">
-                        <div className="font-bold text-[#1B3022] text-[11px] uppercase tracking-wider flex items-center justify-between">
+                      <div className="p-3.5 bg-[#F5F8FC] rounded-xl border border-[#D9E2EC] space-y-2.5 text-xs">
+                        <div className="font-bold text-[#F58220] text-[11px] uppercase tracking-wider flex items-center justify-between">
                           <span>Route Journey &amp; Waypoint Sequence:</span>
-                          <span className="text-[10px] text-[#68766C] font-mono">
+                          <span className="text-[10px] text-[#627D98] font-mono">
                             {journeyWaypoints.length} Nodes • {activeDisplayRoute.segments_count || (journeyWaypoints.length - 1)} Corridor Segments
                           </span>
                         </div>
@@ -605,10 +605,10 @@ export const RouteOptimizer: React.FC = () => {
                                   <div
                                     className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] text-white shadow-command-card ${
                                       isOrigin
-                                        ? 'bg-[#7C9082] text-slate-900 ring-2 ring-emerald-500/30'
+                                        ? 'bg-[#2477C8] text-slate-900 ring-2 ring-emerald-500/30'
                                         : isDest
                                         ? 'bg-[#FF5252] text-white ring-2 ring-rose-500/30'
-                                        : 'bg-[#FFFFFF] border border-[#1B3022]/30 text-[#1B3022]'
+                                        : 'bg-[#FFFFFF] border border-[#F58220]/30 text-[#F58220]'
                                     }`}
                                   >
                                     {isDest ? '🎯' : wp.index}
@@ -617,23 +617,23 @@ export const RouteOptimizer: React.FC = () => {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center justify-between">
-                                    <span className="font-black text-[#29372D] text-xs">
+                                    <span className="font-black text-[#102A43] text-xs">
                                       {wp.name} {wp.state ? `(${wp.state})` : ''}
                                     </span>
                                     <span
                                       className={`text-[9px] font-bold px-1.5 py-0.5 rounded border uppercase ${
                                         isOrigin
-                                          ? 'bg-emerald-500/20 text-[#7C9082] border-emerald-500/30'
+                                          ? 'bg-emerald-500/20 text-[#2477C8] border-emerald-500/30'
                                           : isDest
                                           ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
-                                          : 'bg-cyan-500/15 text-[#1B3022] border-[#1B3022]/30'
+                                          : 'bg-cyan-500/15 text-[#F58220] border-[#F58220]/30'
                                       }`}
                                     >
                                       {isOrigin ? 'Origin Departure' : isDest ? 'Destination Target' : 'Transit Junction'}
                                     </span>
                                   </div>
                                   {!isDest && segmentAfter && (
-                                    <div className="text-[10px] text-[#68766C] flex items-center gap-1 mt-0.5 font-mono">
+                                    <div className="text-[10px] text-[#627D98] flex items-center gap-1 mt-0.5 font-mono">
                                       <span>↳ {segmentAfter.name || 'Corridor Link'}</span>
                                       <span>({segmentAfter.distance_km} km • {segmentAfter.duration_hrs}h)</span>
                                     </div>
@@ -648,16 +648,16 @@ export const RouteOptimizer: React.FC = () => {
                   })()}
 
                   {/* Why Recommended / Trade-off Rationale Box */}
-                  <div className="p-3.5 bg-[#F4F5F0] rounded-xl border border-[#DFE5DD] space-y-1.5 text-xs">
-                    <div className="font-bold text-[#1B3022] text-[11px] flex items-center justify-between">
+                  <div className="p-3.5 bg-[#F5F8FC] rounded-xl border border-[#D9E2EC] space-y-1.5 text-xs">
+                    <div className="font-bold text-[#F58220] text-[11px] flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-[#7C9082]" /> Selection Rationale &amp; Safeguards:
+                        <ShieldCheck className="w-4 h-4 text-[#2477C8]" /> Selection Rationale &amp; Safeguards:
                       </span>
-                      <span className="text-[10px] bg-[#7C9082]/15 text-[#7C9082] border border-[#7C9082]/30 font-bold px-2 py-0.5 rounded">
+                      <span className="text-[10px] bg-[#2477C8]/15 text-[#2477C8] border border-[#2477C8]/30 font-bold px-2 py-0.5 rounded">
                         Optimal Policy
                       </span>
                     </div>
-                    <ul className="text-[11px] text-[#68766C] space-y-1 list-disc pl-4">
+                    <ul className="text-[11px] text-[#627D98] space-y-1 list-disc pl-4">
                       <li>
                         <strong>Vehicle Clearance ({VEHICLE_CLASSES.find((c) => c.id === vehicleClass)?.iconEmoji} {VEHICLE_CLASSES.find((c) => c.id === vehicleClass)?.title}):</strong>{' '}
                         {VEHICLE_CLASSES.find((c) => c.id === vehicleClass)?.clearanceNote}
@@ -670,7 +670,7 @@ export const RouteOptimizer: React.FC = () => {
 
                   {/* Action Button */}
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                    <span className="text-xs text-[#68766C]">
+                    <span className="text-xs text-[#627D98]">
                       Itinerary approved for {cargoType} convoy dispatch.
                     </span>
                     <button
@@ -682,7 +682,7 @@ export const RouteOptimizer: React.FC = () => {
                   </div>
 
                   {/* Map Preview */}
-                  <div className="h-80 sm:h-96 rounded-xl overflow-hidden border border-[#DFE5DD] shadow-command-card relative bg-[#F4F5F0]">
+                  <div className="h-80 sm:h-96 rounded-xl overflow-hidden border border-[#D9E2EC] shadow-command-card relative bg-[#F5F8FC]">
                     {(() => {
                       const origD = districts.find((d) => d.id === origin);
                       const destD = districts.find((d) => d.id === destination);
@@ -706,11 +706,11 @@ export const RouteOptimizer: React.FC = () => {
             </div>
           ) : (
             <div className="card-command p-8 text-center space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-[#DCE4DB] text-[#1B3022] flex items-center justify-center mx-auto border border-[#DFE5DD]">
+              <div className="w-12 h-12 rounded-xl bg-[#EBF2FA] text-[#F58220] flex items-center justify-center mx-auto border border-[#D9E2EC]">
                 <Route className="w-6 h-6" />
               </div>
-              <h4 className="font-black text-sm text-[#29372D]">Select Nodes &amp; Calculate Route</h4>
-              <p className="text-xs text-[#68766C] max-w-md mx-auto">
+              <h4 className="font-black text-sm text-[#102A43]">Select Nodes &amp; Calculate Route</h4>
+              <p className="text-xs text-[#627D98] max-w-md mx-auto">
                 Configure origin, destination, vehicle weight, and cargo type on the left panel to calculate AI-optimized routes and resilient alternatives.
               </p>
             </div>

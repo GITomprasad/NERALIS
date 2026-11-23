@@ -7,19 +7,25 @@
 @layer base {
   :root {
     color-scheme: light;
-    --color-deep-pine: #1B3022;
-    --color-deep-pine-hover: #132218;
-    --color-sage-leaf: #7C9082;
-    --color-warm-alabaster: #F4F5F0;
+    --color-saffron: #F58220;
+    --color-saffron-hover: #E06F14;
+    --color-forest-green: #138A45;
+    --color-forest-green-hover: #0F7037;
+    --color-ocean-blue: #2477C8;
+    --color-ocean-blue-hover: #1C64AA;
     --color-pure-white: #FFFFFF;
-    --color-forest-charcoal: #29372D;
-    --color-pale-sage: #DCE4DB;
-    --color-muted-text: #68766C;
-    --color-border: #DFE5DD;
+    --color-navy: #102A43;
+    --color-light-bg: #F5F8FC;
+    --color-dark-text: #263238;
+    --color-hazard-red: #DC3545;
+    --color-warning-yellow: #EAB308;
+    --color-surface-light: #EBF2FA;
+    --color-border: #D9E2EC;
+    --color-muted-text: #627D98;
   }
 
   body {
-    @apply bg-[#F4F5F0] text-[#29372D] font-sans antialiased;
+    @apply bg-[#F5F8FC] text-[#263238] font-sans antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
@@ -29,68 +35,72 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #F4F5F0;
+    background: #F5F8FC;
   }
   ::-webkit-scrollbar-thumb {
-    background: #DFE5DD;
+    background: #D9E2EC;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #68766C;
+    background: #627D98;
   }
 }
 
-/* Enterprise Command Center Component Styles - Deep Pine, Sage Leaf & Warm Alabaster */
+/* Enterprise Command Center Component Styles - Saffron, Forest Green & Ocean Blue */
 .card-official,
 .card-command {
-  @apply bg-[#FFFFFF] border border-[#DFE5DD] rounded-xl p-4 shadow-sm transition-all text-[#29372D];
+  @apply bg-[#FFFFFF] border border-[#D9E2EC] rounded-xl p-4 shadow-sm transition-all text-[#263238];
 }
 
 .glass-panel {
-  @apply bg-[#FFFFFF]/95 backdrop-blur-md border border-[#DFE5DD] shadow-sm;
+  @apply bg-[#FFFFFF]/95 backdrop-blur-md border border-[#D9E2EC] shadow-sm;
 }
 
 .btn-primary {
-  @apply bg-[#1B3022] hover:bg-[#132218] active:scale-[0.98] text-white font-medium px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
+  @apply bg-[#F58220] hover:bg-[#E06F14] active:scale-[0.98] text-white font-semibold px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
 .btn-secondary {
-  @apply bg-[#FFFFFF] hover:bg-[#DCE4DB] active:scale-[0.98] text-[#29372D] border border-[#DFE5DD] hover:border-[#1B3022]/40 font-medium px-4 py-2.5 rounded-lg transition-all inline-flex items-center justify-center gap-2 cursor-pointer;
+  @apply bg-[#FFFFFF] hover:bg-[#EBF2FA] active:scale-[0.98] text-[#102A43] border border-[#D9E2EC] hover:border-[#F58220]/40 font-medium px-4 py-2.5 rounded-lg transition-all inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
 .btn-blue,
-.btn-teal,
-.btn-sage {
-  @apply bg-[#7C9082] hover:bg-[#6B7F71] active:scale-[0.98] text-white font-medium px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
+.btn-ocean {
+  @apply bg-[#2477C8] hover:bg-[#1C64AA] active:scale-[0.98] text-white font-medium px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
+}
+
+.btn-green,
+.btn-forest {
+  @apply bg-[#138A45] hover:bg-[#0F7037] active:scale-[0.98] text-white font-medium px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
 .btn-danger {
-  @apply bg-[#DC2626] hover:bg-[#B91C1C] active:scale-[0.98] text-white font-medium px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
+  @apply bg-[#DC3545] hover:bg-[#BD2130] active:scale-[0.98] text-white font-medium px-4 py-2.5 rounded-lg transition-all shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer;
 }
 
-/* Operational Status Badges - Deep Pine & Sage Leaf Palette */
+/* Operational Status Badges - Saffron, Forest Green, Warning Yellow & Critical Red */
 .badge-open {
-  @apply bg-[#7C9082]/20 text-[#1B3022] border border-[#7C9082]/45 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#138A45]/15 text-[#138A45] border border-[#138A45]/35 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-restricted {
-  @apply bg-[#D97706]/15 text-[#92400E] border border-[#D97706]/35 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#EAB308]/15 text-[#A16207] border border-[#EAB308]/35 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-degraded {
-  @apply bg-[#EA580C]/15 text-[#9A3412] border border-[#EA580C]/35 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#F58220]/15 text-[#C25E00] border border-[#F58220]/35 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-closed {
-  @apply bg-[#DC2626]/15 text-[#991B1B] border border-[#DC2626]/35 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#DC3545]/15 text-[#DC3545] border border-[#DC3545]/35 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-unknown {
-  @apply bg-[#DCE4DB] text-[#68766C] border border-[#DFE5DD] px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#EBF2FA] text-[#627D98] border border-[#D9E2EC] px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 .badge-seasonal {
-  @apply bg-[#7C9082]/15 text-[#29372D] border border-[#7C9082]/30 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply bg-[#2477C8]/15 text-[#102A43] border border-[#2477C8]/30 px-2.5 py-0.5 rounded-full text-xs font-semibold;
 }
 
 /* Command Center Data Tables */
@@ -101,7 +111,7 @@
 
 .table-official th,
 .table-command th {
-  @apply bg-[#DCE4DB] text-[#29372D] font-semibold text-[11px] tracking-wider uppercase px-4 py-3 border-b border-[#DFE5DD];
+  @apply bg-[#EBF2FA] text-[#102A43] font-semibold text-[11px] tracking-wider uppercase px-4 py-3 border-b border-[#D9E2EC];
 }
 
 .table-official tr:nth-child(even),
@@ -111,40 +121,40 @@
 
 .table-official tr:nth-child(odd),
 .table-command tr:nth-child(odd) {
-  @apply bg-[#FAFBF7];
+  @apply bg-[#F8FAFD];
 }
 
 .table-official tr:hover,
 .table-command tr:hover {
-  @apply bg-[#DCE4DB]/50;
+  @apply bg-[#EBF2FA]/60;
 }
 
 .table-official td,
 .table-command td {
-  @apply px-4 py-3 text-xs text-[#29372D] border-b border-[#DFE5DD];
+  @apply px-4 py-3 text-xs text-[#263238] border-b border-[#D9E2EC];
 }
 
-/* Leaflet Light Command Theme Overrides - Warm Alabaster, Deep Pine & Sage Leaf */
+/* Leaflet Light Command Theme Overrides - Light Background & Saffron/Ocean */
 .leaflet-container {
   font-family: 'Inter', sans-serif !important;
   width: 100%;
   height: 100%;
-  background-color: #F4F5F0 !important;
+  background-color: #F5F8FC !important;
 }
 
 /* Light Popup Container */
 .leaflet-popup-content-wrapper {
   background-color: #FFFFFF !important;
-  color: #29372D !important;
-  border: 1px solid #DFE5DD !important;
+  color: #263238 !important;
+  border: 1px solid #D9E2EC !important;
   border-radius: 0.75rem !important;
-  box-shadow: 0 10px 25px -5px rgba(41, 55, 45, 0.12), 0 0 1px 1px rgba(27, 48, 34, 0.1) !important;
+  box-shadow: 0 10px 25px -5px rgba(16, 42, 67, 0.12), 0 0 1px 1px rgba(245, 130, 32, 0.1) !important;
   padding: 0 !important;
 }
 
 .leaflet-popup-tip {
   background-color: #FFFFFF !important;
-  border: 1px solid #DFE5DD !important;
+  border: 1px solid #D9E2EC !important;
 }
 
 .leaflet-popup-content {
@@ -153,35 +163,35 @@
 }
 
 .leaflet-popup-close-button {
-  color: #68766C !important;
+  color: #627D98 !important;
   padding: 6px !important;
 }
 
 .leaflet-popup-close-button:hover {
-  color: #1B3022 !important;
+  color: #F58220 !important;
 }
 
 /* Leaflet Zoom and attribution controls */
 .leaflet-bar a {
   background-color: #FFFFFF !important;
-  color: #29372D !important;
-  border-bottom: 1px solid #DFE5DD !important;
+  color: #102A43 !important;
+  border-bottom: 1px solid #D9E2EC !important;
 }
 
 .leaflet-bar a:hover {
-  background-color: #DCE4DB !important;
-  color: #1B3022 !important;
+  background-color: #EBF2FA !important;
+  color: #F58220 !important;
 }
 
 .leaflet-control-attribution {
-  background-color: rgba(244, 245, 240, 0.9) !important;
-  color: #68766C !important;
+  background-color: rgba(245, 248, 252, 0.92) !important;
+  color: #627D98 !important;
   font-size: 9px !important;
   border-top-left-radius: 6px;
 }
 
 .leaflet-control-attribution a {
-  color: #1B3022 !important;
+  color: #2477C8 !important;
 }
 
 /* Mobile Safe Areas */
